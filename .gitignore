@@ -1,4 +1,11 @@
 #
+# Custom IntelliJ .gitignore
+#
+
+*.iml
+.idea
+
+#
 # Java
 #
 
