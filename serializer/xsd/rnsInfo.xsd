@@ -1,0 +1,13 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+    <!-- Global element declaration -->
+    <xsd:element name="rnsInfo" type="RnsType">
+
+    </xsd:element>
+
+    <!-- Type definitions -->
+    <xsd:complexType name="RnsType">
+
+    </xsd:complexType>
+
+</xsd:schema>
