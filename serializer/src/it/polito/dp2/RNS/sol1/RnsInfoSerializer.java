@@ -5,6 +5,7 @@ import it.polito.dp2.RNS.RnsReaderException;
 import it.polito.dp2.RNS.RnsReaderFactory;
 import it.polito.dp2.RNS.sol1.conf.Config;
 import it.polito.dp2.RNS.sol1.jaxb.Converter;
+import it.polito.dp2.RNS.sol1.jaxb.RnsType;
 import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
@@ -80,9 +81,9 @@ public class RnsInfoSerializer {
      *
      * @return the RNS JAXB-compatible object
      */
-//    private JAXBElement<RnsType> toJAXB() {
-//        return converter.getRnsInfo();
-//    }
+    private JAXBElement<RnsType> toJAXB() {
+        return converter.getRnsInfo();
+    }
 
     /**
      * Marshals object obj to the OutputStream os using a schema.

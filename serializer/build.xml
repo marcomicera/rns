@@ -43,6 +43,15 @@
 	
 	<!-- Target init -->
 	<target name="init">
+		<fail message="Unsupported Java version. Required: ${target}.">
+			<condition>
+				<not>
+					<or>
+						<contains string="${java.version}" substring="${target}" casesensitive="false"/>
+					</or>
+				</not>
+			</condition>
+		</fail>
 		<mkdir dir="${build.dir}" />
 	</target>
 
@@ -55,7 +64,7 @@
 
 	<!-- Target generate-bindings -->
 	<target name="generate-bindings" unless="generate-bindings.notRequired" depends="init,-chk-bindings" description="Generate bindings from schema">
-		<exec executable="xjc" failonerror="true" >
+		<exec executable="${java.home}/../bin/xjc" failonerror="true" >
 			<arg value="-d" />
 			<arg value="${gen.dir}" />
 			<arg value="-p" />
