@@ -13,10 +13,13 @@ import javax.xml.bind.*;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 public class RnsInfoSerializer {
 
     private Converter converter;
+    private DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm");
 
     /**
      * Default constructor.

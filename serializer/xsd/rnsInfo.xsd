@@ -7,7 +7,61 @@
 
     <!-- Type definitions -->
     <xsd:complexType name="RnsType">
-
+        <xsd:all>
+            <xsd:element name="places" minOccurs="0" maxOccurs="1" type="PlacesType"/>
+            <xsd:element name="vehicles" minOccurs="0" maxOccurs="1" type="VehiclesType"/>
+        </xsd:all>
     </xsd:complexType>
+
+    <xsd:complexType name="PlacesType">
+        <xsd:all>
+            <xsd:element name="gates" minOccurs="0" maxOccurs="1" type="GatesType"/>
+        </xsd:all>
+    </xsd:complexType>
+
+    <xsd:complexType name="GatesType">
+        <xsd:sequence>
+            <xsd:element name="gate" minOccurs="0" maxOccurs="unbounded" type="GateType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="GateType">
+        <xsd:attribute name="id" type="xsd:token" use="required"/> <!-- TODO unique ID -->
+        <xsd:attribute name="capacity" type="xsd:int" use="required"/>
+        <xsd:attribute name="type" type="GateTypeType" use="required"/>
+    </xsd:complexType>
+
+    <xsd:simpleType name="GateTypeType">
+        <xsd:restriction base="xsd:token">
+            <xsd:enumeration value="IN"/>
+            <xsd:enumeration value="OUT"/>
+            <xsd:enumeration value="INOUT"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="VehiclesType">
+        <xsd:sequence>
+            <xsd:element name="vehicle" minOccurs="0" maxOccurs="unbounded" type="VehicleType">
+                <!-- Vehicle ID uniqueness -->
+                <!--<xsd:unique name="uniqueVehicleId">
+                    <xsd:selector xpath=""/>
+                    <xsd:field xpath=""/>
+                </xsd:unique>-->
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="VehicleType">
+        <xsd:attribute name="id" type="xsd:token" use="required"/> <!-- TODO unique ID -->
+        <xsd:attribute name="entryTime" type="xsd:dateTime" use="required"/> <!-- TODO check date format and other related issues -->
+        <xsd:attribute name="state" type="VehicleState" use="required"/>
+    </xsd:complexType>
+
+    <xsd:simpleType name="VehicleState">
+        <xsd:restriction base="xsd:token">
+            <xsd:enumeration value="PARKED"/>
+            <xsd:enumeration value="IN_TRANSIT"/>
+        </xsd:restriction>
+    </xsd:simpleType>
 
 </xsd:schema>

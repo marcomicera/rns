@@ -1,0 +1,12 @@
+    <rnsInfo>
+        <places>
+            <gates>
+                <gate id="GATE0" capacity="2" type="IN" />
+                <gate id="GATE0" capacity="2" type="IN" />
+            </gates>
+        </places>
+
+        <vehicles>
+            <vehicle id="GATE0" entryTime="2012-11-24T14:25:01+01:00" state="PARKED"/>
+        </vehicles>
+    </rnsInfo>
