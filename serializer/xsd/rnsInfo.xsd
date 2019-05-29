@@ -1,7 +1,39 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 
     <!-- Global element declaration -->
-    <xsd:element name="rnsInfo" type="RnsType"/>
+    <xsd:element name="rnsInfo" type="RnsType">
+        <!-- FIXME can I do this in the IdentifiedEntity complexType? -->
+        <!-- Place ID key: "both places and vehicles are uniquely identified in the system by means of a
+                            unique identifier (there cannot be two Identified entities with the same id) -->
+        <xsd:key name="identifiedEntityKey">
+            <xsd:selector xpath="places/gates/gate|places/parkingAreas/parkingArea|places/roadSegments/roadSegment|vehicles/vehicle"/>
+            <xsd:field xpath="@id"/>
+        </xsd:key>
+
+        <!-- Road ID uniqueness: "The road name uniquely identifies a road in the system,
+                                  i.e. there cannot be two roads with the same name" -->
+        <xsd:key name="roadKey">
+            <xsd:selector xpath="roads/road"/>
+            <xsd:field xpath="@name"/>
+        </xsd:key>
+
+        <!-- Road reference -->
+        <xsd:keyref name="roadRef" refer="roadKey">
+            <xsd:selector xpath="places/roadSegments/roadSegment"/>
+            <xsd:field xpath="@road"/>
+        </xsd:keyref>
+
+        <!-- Connection places references: "a road segment name is unique within a road,
+                                            i.e. a road cannot have two segments with the same name" -->
+        <xsd:keyref name="connectionFromPlaceRef" refer="identifiedEntityKey">
+            <xsd:selector xpath="connections/connection"/>
+            <xsd:field xpath="@from"/>
+        </xsd:keyref>
+        <xsd:keyref name="connectionToPlaceRef" refer="identifiedEntityKey">
+            <xsd:selector xpath="connections/connection"/>
+            <xsd:field xpath="@to"/>
+        </xsd:keyref>
+    </xsd:element>
 
     <!-- Root interface -->
     <xsd:complexType name="IdentifiedEntity">
@@ -10,21 +42,11 @@
 
     <!-- Root type definition -->
     <xsd:complexType name="RnsType">
+        <!-- "The road system is represented by a number of connected places that can have vehicles inside" -->
         <xsd:all>
-            <xsd:element name="places" minOccurs="0" type="PlacesType">
-                <!-- Place ID key -->
-                <xsd:key name="placeKey">
-                    <xsd:selector xpath="gates/gate|parkingAreas/parkingArea|roadSegments/roadSegment"/>
-                    <xsd:field xpath="@id"/>
-                </xsd:key>
-
-                <!-- Place connection reference -->
-                <xsd:keyref name="connectionRef" refer="placeKey">
-                    <xsd:selector
-                            xpath="gates/gate/connectedTo|parkingAreas/parkingArea/connectedTo|roadSegments/roadSegment/connectedTo"/>
-                    <xsd:field xpath="@place"/>
-                </xsd:keyref>
-            </xsd:element>
+            <xsd:element name="places" minOccurs="0" type="PlacesType"/>
+            <xsd:element name="connections" minOccurs="0" type="ConnectionsType"/>
+            <xsd:element name="roads" minOccurs="0" type="RoadsType"/>
             <xsd:element name="vehicles" minOccurs="0" type="VehiclesType"/>
         </xsd:all>
     </xsd:complexType>
@@ -33,24 +55,24 @@
     <xsd:complexType name="PlaceType">
         <xsd:complexContent>
             <xsd:extension base="IdentifiedEntity">
-                <xsd:sequence>
-                    <xsd:element name="connectedTo" minOccurs="0" type="ConnectionType"/>
-                </xsd:sequence>
-
                 <xsd:attribute name="capacity" type="xsd:unsignedInt" use="required"/>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
 
-    <xsd:complexType name="ConnectionType">
-        <xsd:attribute name="place" type="xsd:token" use="required"/>
-    </xsd:complexType>
-
     <xsd:complexType name="PlacesType">
+        <!-- "A place can be a road segment, a parking area or a gate" -->
         <xsd:all>
             <xsd:element name="gates" minOccurs="0" type="GatesType"/>
             <xsd:element name="parkingAreas" minOccurs="0" type="ParkingAreasType"/>
-            <xsd:element name="roadSegments" minOccurs="0" type="RoadSegmentsType"/>
+            <xsd:element name="roadSegments" minOccurs="0" type="RoadSegmentsType">
+                <!-- Road segment's name uniqueness within the same road -->
+                <xsd:unique name="uniqueRoadSegmentInRoad">
+                    <xsd:selector xpath="roadSegment"/>
+                    <xsd:field xpath="@name"/>
+                    <xsd:field xpath="@road"/>
+                </xsd:unique>
+            </xsd:element>
         </xsd:all>
     </xsd:complexType>
 
@@ -61,6 +83,9 @@
     </xsd:complexType>
 
     <xsd:complexType name="GateType">
+        <!-- "Through gates vehicles can enter into or exit from the system.
+              The type of a gate specifies if the gate is for entering only (IN),
+              for exiting only (OUT) or for both (INOUT)." -->
         <xsd:complexContent>
             <xsd:extension base="PlaceType">
                 <xsd:attribute name="type" use="required">
@@ -78,16 +103,31 @@
 
     <xsd:complexType name="ParkingAreasType">
         <xsd:sequence>
-            <xsd:element name="parkingArea" maxOccurs="unbounded" type="ParkingAreaType"/>
+            <xsd:element name="parkingArea" maxOccurs="unbounded" type="ParkingAreaType">
+                <!-- Service's name uniqueness within the same parking area
+                     "[service] each one characterized only by a name, which uniquely
+                     identifies it (there cannot be two services with the same name). -->
+                <xsd:unique name="uniqueServiceInParkingArea">
+                    <xsd:selector xpath="service"/>
+                    <xsd:field xpath="@name"/>
+                </xsd:unique>
+            </xsd:element>
         </xsd:sequence>
     </xsd:complexType>
 
     <xsd:complexType name="ParkingAreaType">
         <xsd:complexContent>
             <xsd:extension base="PlaceType">
-
+                <!-- "A parking area can have any number of services" -->
+                <xsd:sequence>
+                    <xsd:element name="service" minOccurs="0" maxOccurs="unbounded" type="ServiceType"/>
+                </xsd:sequence>
             </xsd:extension>
         </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="ServiceType">
+        <xsd:attribute name="name" type="xsd:token" use="required"/>
     </xsd:complexType>
 
     <xsd:complexType name="RoadSegmentsType">
@@ -98,34 +138,74 @@
 
     <xsd:complexType name="RoadSegmentType">
         <xsd:complexContent>
+            <!-- "Note that a road segment is also an identified entity,
+                  so it also has a unique id, in addition to its name" -->
             <xsd:extension base="PlaceType">
-
+                <!-- "A road segment is characterized by a name and belongs to a road,
+                      which is also characterized by a name." -->
+                <xsd:attribute name="name" type="xsd:token" use="required"/>
+                <xsd:attribute name="road" type="xsd:token" use="required"/>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
 
-    <!-- Vehicles -->
-    <!-- TODO complete -->
+    <!-- Connections -->
+    <xsd:complexType name="ConnectionsType">
+        <xsd:sequence>
+            <xsd:element name="connection" maxOccurs="unbounded" type="ConnectionType"/>
+        </xsd:sequence>
+    </xsd:complexType>
 
+    <xsd:complexType name="ConnectionType">
+        <xsd:attribute name="from" type="xsd:token" use="required"/>
+        <xsd:attribute name="to" type="xsd:token" use="required"/>
+    </xsd:complexType>
+
+    <!-- Roads -->
+    <xsd:complexType name="RoadsType">
+        <xsd:sequence>
+            <xsd:element name="road" maxOccurs="unbounded" type="RoadType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="RoadType">
+        <xsd:attribute name="name" type="xsd:token" use="required"/>
+    </xsd:complexType>
+
+    <!-- Vehicles -->
     <xsd:complexType name="VehiclesType">
         <xsd:sequence>
-            <xsd:element name="vehicle" minOccurs="0" maxOccurs="unbounded" type="VehicleType">
-                <!-- TODO Vehicle ID uniqueness -->
-
-            </xsd:element>
+            <xsd:element name="vehicle" maxOccurs="unbounded" type="VehicleType"/>
         </xsd:sequence>
     </xsd:complexType>
 
     <xsd:complexType name="VehicleType">
         <xsd:complexContent>
             <xsd:extension base="IdentifiedEntity">
-                <!-- TODO complete -->
+                <!-- "A vehicle is characterized by a type, by the time instant
+                      when it entered the system and by a state." -->
+                <xsd:attribute name="type" type="VehicleTypeType" use="required"/>
                 <xsd:attribute name="entryTime" type="xsd:dateTime"
                                use="required"/> <!-- TODO check date format and other related issues -->
                 <xsd:attribute name="state" type="VehicleState" use="required"/>
+
+                <!-- "At any time, each vehicle is in one place,
+                      while each place can contain several vehicles." -->
+                <xsd:attribute name="position" type="xsd:token" use="required"/>
+                <xsd:attribute name="origin" type="xsd:token" use="required"/>
+                <xsd:attribute name="destination" type="xsd:token" use="required"/>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
+
+    <xsd:simpleType name="VehicleTypeType">
+        <xsd:restriction base="xsd:token">
+            <xsd:enumeration value="CAR"/>
+            <xsd:enumeration value="TRUCK"/>
+            <xsd:enumeration value="SHUTTLE"/>
+            <xsd:enumeration value="CARAVAN"/>
+        </xsd:restriction>
+    </xsd:simpleType>
 
     <xsd:simpleType name="VehicleState">
         <xsd:restriction base="xsd:token">
