@@ -54,24 +54,24 @@ public class RnsInfoSerializer {
             System.exit(1);
         }
 
-        String filename = args[0];
+        String fileName = args[0];
 
         // Creating the output file
         FileOutputStream fos = null;
         try {
-            fos = new FileOutputStream(new File(filename), false);
-        } catch (FileNotFoundException e) {
+            fos = new FileOutputStream(new File(fileName), false);
+        } catch (FileNotFoundException | SecurityException e) {
             System.err.println("Could not create output file");
             e.printStackTrace();
             System.exit(1);
         }
 
         // Retrieving data and serializing
-//        JAXBElement<RnsType> rns = null;
+        JAXBElement<RnsType> rns = null;
         try {
             RnsInfoSerializer serializer = new RnsInfoSerializer();
-//            rns = serializer.toJAXB();      // Conversion
-//            serializer.marshal(rns, fos);   // Marshalling
+            rns = serializer.toJAXB();      // Conversion
+            serializer.marshal(rns, fos);   // Marshalling
         } catch (RnsReaderException e) {
             System.err.println("Could not instantiate data generator");
             e.printStackTrace();
