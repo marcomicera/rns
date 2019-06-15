@@ -26,7 +26,7 @@
     <connections>
         <connection from='GATE0' to="GATE0"/>
         <connection from='GATE1' to="GATE1"/>
-        <connection from='GATE3' to="GATE1"/>
+        <connection from='GATE3' to="GATE3"/>
     </connections>
 
     <roads>
@@ -35,6 +35,8 @@
     </roads>
 
     <vehicles>
-        <vehicle id="GATE6" type="CAR" entryTime="2011-05-11T08:38:17-02:00" state="PARKED"/>
+        <vehicle id="CAR1" type="CAR" state="PARKED" position="GATE0" origin="GATE0" destination="GATE2">
+            <entryTime>2011-05-11T08:38:17-02:00</entryTime>
+        </vehicle>
     </vehicles>
 </rnsInfo>

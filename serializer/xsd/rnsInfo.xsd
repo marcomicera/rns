@@ -5,10 +5,17 @@
         <!-- FIXME can I do this in the IdentifiedEntity complexType? -->
         <!-- Place ID key: "both places and vehicles are uniquely identified in the system by means of a
                             unique identifier (there cannot be two Identified entities with the same id) -->
-        <xsd:key name="identifiedEntityKey">
-            <xsd:selector xpath="places/gates/gate|places/parkingAreas/parkingArea|places/roadSegments/roadSegment|vehicles/vehicle"/>
+        <xsd:key name="placeKey">
+            <xsd:selector xpath="places/gates/gate|places/parkingAreas/parkingArea|places/roadSegments/roadSegment"/>
             <xsd:field xpath="@id"/>
         </xsd:key>
+
+        <!-- FIXME this is ugly -->
+        <xsd:unique name="identifiedEntityKey">
+            <xsd:selector
+                    xpath="places/gates/gate|places/parkingAreas/parkingArea|places/roadSegments/roadSegment|vehicles/vehicle"/>
+            <xsd:field xpath="@id"/>
+        </xsd:unique>
 
         <!-- Road ID uniqueness: "The road name uniquely identifies a road in the system,
                                   i.e. there cannot be two roads with the same name" -->
@@ -25,13 +32,29 @@
 
         <!-- Connection places references: "a road segment name is unique within a road,
                                             i.e. a road cannot have two segments with the same name" -->
-        <xsd:keyref name="connectionFromPlaceRef" refer="identifiedEntityKey">
+        <xsd:keyref name="connectionFromPlaceRef" refer="placeKey">
             <xsd:selector xpath="connections/connection"/>
             <xsd:field xpath="@from"/>
         </xsd:keyref>
-        <xsd:keyref name="connectionToPlaceRef" refer="identifiedEntityKey">
+        <xsd:keyref name="connectionToPlaceRef" refer="placeKey">
             <xsd:selector xpath="connections/connection"/>
             <xsd:field xpath="@to"/>
+        </xsd:keyref>
+
+        <!-- Vehicle origin, position and destination references:
+                "At any time, each vehicle is in one place,
+                while each place can contain several vehicles." -->
+        <xsd:keyref name="vehicleOriginPlaceRef" refer="placeKey">
+            <xsd:selector xpath="vehicles/vehicle"/>
+            <xsd:field xpath="@origin"/>
+        </xsd:keyref>
+        <xsd:keyref name="vehiclePositionPlaceRef" refer="placeKey">
+            <xsd:selector xpath="vehicles/vehicle"/>
+            <xsd:field xpath="@position"/>
+        </xsd:keyref>
+        <xsd:keyref name="vehicleDestinationPlaceRef" refer="placeKey">
+            <xsd:selector xpath="vehicles/vehicle"/>
+            <xsd:field xpath="@destination"/>
         </xsd:keyref>
     </xsd:element>
 
@@ -182,11 +205,15 @@
     <xsd:complexType name="VehicleType">
         <xsd:complexContent>
             <xsd:extension base="IdentifiedEntity">
+                <xsd:all>
+                    <!-- TODO check date format and other related issues -->
+                    <xsd:element name="entryTime" type="xsd:dateTime"/>
+                </xsd:all>
+
                 <!-- "A vehicle is characterized by a type, by the time instant
                       when it entered the system and by a state." -->
                 <xsd:attribute name="type" type="VehicleTypeType" use="required"/>
-                <xsd:attribute name="entryTime" type="xsd:dateTime"
-                               use="required"/> <!-- TODO check date format and other related issues -->
+
                 <xsd:attribute name="state" type="VehicleState" use="required"/>
 
                 <!-- "At any time, each vehicle is in one place,
