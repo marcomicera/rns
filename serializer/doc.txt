@@ -1,0 +1,37 @@
+I designed the XML schema to be as modular as possible.
+At the highest level, the rnsInfo root element can only contain up to three child elements:
+places, connections, and vehicles. I will through all of them following the same order.
+The former and the latter contain identifiable elements.
+Those elements extend the 'IdentifiedEntity' complexType, which forces them to contain
+a mandatory token field called "id". The token data type is simply derived from
+the String one: the only difference is that the XML processor will remove line feeds,
+carriage returns, tabs, leading and trailing spaces, and multiple spaces.
+
+1. Places
+This element is subsequently divided into other three child elements:
+gates, parking areas, and road segments. Those extend the 'PlaceType' complexType,
+an extension of the previously-mentioned 'IdentifiedEntity'.
+Besides being identifiable, they also have to express their capacity in terms of
+the maximum number of different vehicles allowed to reside in it at the same time.
+These elements also contain redundant child elements ("nextPlace") regarding
+reachable places from it. This provides better performance when calling the
+'getNextPlaces()' method of the 'PlaceReader' interface.
+This represents a redundancy as all connections are also stored
+in another dedicated XML element. This is due to the fact that the 'RnsReader' interface
+can also claim for all different connections through its  'getConnections()' method.
+These redundancies have been introduced since collections filtering is an expensive operation
+in the Java programming language. This is a clear example of a trade-off between how much data
+is being stored and data-retrieval performance. I decided to go for the latter, as the
+extra-storage dedicated to this optimization is negligible and totally justifies the benefit
+of a quicker connections lookup.
+
+2. Connections
+The reason why this element exists has been fully argued in the previous paragraph.
+It contains a list "connection" elements, storing only the IDs of the two involved places.
+
+3. Vehicles
+This contains a list of vehicles of the RNS system.
+The only aspect of interest here is that entry times are expressed using the ISO 8601 format.
+This is the standard format used by XSD primitive data types like date, dateTime and so on.
+It includes the time zone, as this info may be time-zone dependent
+(e.g., a vehicle traveling across different time zones).

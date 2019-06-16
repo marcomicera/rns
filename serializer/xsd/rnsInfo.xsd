@@ -2,20 +2,17 @@
 
     <!-- Global element declaration -->
     <xsd:element name="rnsInfo" type="RnsType">
-        <!-- FIXME can I do this in the IdentifiedEntity complexType? -->
         <!-- Place ID key: "both places and vehicles are uniquely identified in the system by means of a
                             unique identifier (there cannot be two Identified entities with the same id) -->
-        <xsd:key name="placeKey">
-            <xsd:selector xpath="places/gates/gate|places/parkingAreas/parkingArea|places/roadSegments/roadSegment"/>
-            <xsd:field xpath="@id"/>
-        </xsd:key>
-
-        <!-- FIXME this is ugly -->
         <xsd:unique name="identifiedEntityKey">
             <xsd:selector
                     xpath="places/gates/gate|places/parkingAreas/parkingArea|places/roadSegments/roadSegment|vehicles/vehicle"/>
             <xsd:field xpath="@id"/>
         </xsd:unique>
+        <xsd:key name="placeKey">
+            <xsd:selector xpath="places/gates/gate|places/parkingAreas/parkingArea|places/roadSegments/roadSegment"/>
+            <xsd:field xpath="@id"/>
+        </xsd:key>
 
         <!-- Road ID uniqueness: "The road name uniquely identifies a road in the system,
                                   i.e. there cannot be two roads with the same name".
