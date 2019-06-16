@@ -18,12 +18,15 @@
         </xsd:unique>
 
         <!-- Road ID uniqueness: "The road name uniquely identifies a road in the system,
-                                  i.e. there cannot be two roads with the same name" -->
-        <xsd:unique name="uniqueRoadName">
+                                  i.e. there cannot be two roads with the same name".
+
+                                  Since there is no 'roads' element, there is no need
+                                  to check for their uniqueness. -->
+        <!--<xsd:unique name="uniqueRoadName">
             <xsd:selector
                     xpath="places/roadSegments/roadSegment"/>
             <xsd:field xpath="@road"/>
-        </xsd:unique>
+        </xsd:unique>-->
 
         <!-- Connection places references -->
         <xsd:keyref name="connectionFromPlaceRef" refer="placeKey">

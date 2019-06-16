@@ -68,91 +68,115 @@ public class Converter {
     }
 
     private GatesType getGates() {
-        GatesType gates = new GatesType();
-        List<GateType> gatesList = gates.getGate();
-        for (GateReader gate : monitor.getGates(null)) {
-            GateType tmpGate = new GateType();
-            tmpGate.setId(gate.getId());
-            tmpGate.setType(GateTypeType.fromValue(gate.getType().value()));
-            tmpGate.setCapacity(gate.getCapacity());
-            gatesList.add(tmpGate);
+        if (monitor.getGates(null).isEmpty()) {
+            return null;
         }
+        else {
+            GatesType gates = new GatesType();
+            List<GateType> gatesList = gates.getGate();
+            for (GateReader gate : monitor.getGates(null)) {
+                GateType tmpGate = new GateType();
+                tmpGate.setId(gate.getId());
+                tmpGate.setType(GateTypeType.fromValue(gate.getType().value()));
+                tmpGate.setCapacity(gate.getCapacity());
+                gatesList.add(tmpGate);
+            }
 
-        return gates;
+            return gates;
+        }
     }
 
     private ParkingAreasType getParkingAreas() {
-        ParkingAreasType parkingAreas = new ParkingAreasType();
-        List<ParkingAreaType> parkingAreasList = parkingAreas.getParkingArea();
-        for (ParkingAreaReader parkingArea : monitor.getParkingAreas(null)) {
-            ParkingAreaType tmpParkingArea = new ParkingAreaType();
-            tmpParkingArea.setId(parkingArea.getId());
-            tmpParkingArea.setCapacity(parkingArea.getCapacity());
-            for (String service : parkingArea.getServices()) {
-                ServiceType tmpService = new ServiceType();
-                tmpService.setName(service);
-                tmpParkingArea.getService().add(tmpService);
-            }
-            parkingAreasList.add(tmpParkingArea);
+        if (monitor.getParkingAreas(null).isEmpty()) {
+            return null;
         }
+        else {
+            ParkingAreasType parkingAreas = new ParkingAreasType();
+            List<ParkingAreaType> parkingAreasList = parkingAreas.getParkingArea();
+            for (ParkingAreaReader parkingArea : monitor.getParkingAreas(null)) {
+                ParkingAreaType tmpParkingArea = new ParkingAreaType();
+                tmpParkingArea.setId(parkingArea.getId());
+                tmpParkingArea.setCapacity(parkingArea.getCapacity());
+                for (String service : parkingArea.getServices()) {
+                    ServiceType tmpService = new ServiceType();
+                    tmpService.setName(service);
+                    tmpParkingArea.getService().add(tmpService);
+                }
+                parkingAreasList.add(tmpParkingArea);
+            }
 
-        return parkingAreas;
+            return parkingAreas;
+        }
     }
 
     private RoadSegmentsType getRoadSegments() {
-        RoadSegmentsType roadSegments = new RoadSegmentsType();
-        List<RoadSegmentType> roadSegmentsList = roadSegments.getRoadSegment();
-        for (RoadSegmentReader roadSegment : monitor.getRoadSegments(null)) {
-            RoadSegmentType tmpRoadSegment = new RoadSegmentType();
-            tmpRoadSegment.setId(roadSegment.getId());
-            tmpRoadSegment.setName(roadSegment.getName());
-            tmpRoadSegment.setRoad(roadSegment.getRoadName());
-            tmpRoadSegment.setCapacity(roadSegment.getCapacity());
-            roadSegmentsList.add(tmpRoadSegment);
+        if (monitor.getRoadSegments(null).isEmpty()) {
+            return null;
         }
+        else {
+            RoadSegmentsType roadSegments = new RoadSegmentsType();
+            List<RoadSegmentType> roadSegmentsList = roadSegments.getRoadSegment();
+            for (RoadSegmentReader roadSegment : monitor.getRoadSegments(null)) {
+                RoadSegmentType tmpRoadSegment = new RoadSegmentType();
+                tmpRoadSegment.setId(roadSegment.getId());
+                tmpRoadSegment.setName(roadSegment.getName());
+                tmpRoadSegment.setRoad(roadSegment.getRoadName());
+                tmpRoadSegment.setCapacity(roadSegment.getCapacity());
+                roadSegmentsList.add(tmpRoadSegment);
+            }
 
-        return roadSegments;
+            return roadSegments;
+        }
     }
 
     private ConnectionsType getConnections() {
-        ConnectionsType connections = new ConnectionsType();
-        List<ConnectionType> connectionsList = connections.getConnection();
-        for (ConnectionReader connection : monitor.getConnections()) {
-            ConnectionType tmpConnection = new ConnectionType();
-            tmpConnection.setFrom(connection.getFrom().toString()); // FIXME
-            tmpConnection.setTo(connection.getTo().toString()); // FIXME
-            connectionsList.add(tmpConnection);
+        if (monitor.getConnections().isEmpty()) {
+            return null;
         }
+        else {
+            ConnectionsType connections = new ConnectionsType();
+            List<ConnectionType> connectionsList = connections.getConnection();
+            for (ConnectionReader connection : monitor.getConnections()) {
+                ConnectionType tmpConnection = new ConnectionType();
+                tmpConnection.setFrom(connection.getFrom().getId());
+                tmpConnection.setTo(connection.getTo().getId());
+                connectionsList.add(tmpConnection);
+            }
 
-
-        return connections;
+            return connections;
+        }
     }
 
     private VehiclesType getVehicles() {
-        VehiclesType vehicles = new VehiclesType();
-        List<VehicleType> vehiclesList = vehicles.getVehicle();
-        for (VehicleReader vehicle : monitor.getVehicles(null, null, null)) {
-            VehicleType tmpVehicle = new VehicleType();
-            tmpVehicle.setId(vehicle.getId());
+        if (monitor.getVehicles(null, null, null).isEmpty()) {
+            return null;
+        }
+        else {
+            VehiclesType vehicles = new VehiclesType();
+            List<VehicleType> vehiclesList = vehicles.getVehicle();
+            for (VehicleReader vehicle : monitor.getVehicles(null, null, null)) {
+                VehicleType tmpVehicle = new VehicleType();
+                tmpVehicle.setId(vehicle.getId());
 
-            // Converting the entry time
-            GregorianCalendar entryTime = new GregorianCalendar();
-            entryTime.setTime(vehicle.getEntryTime().getTime());
-            try {
-                tmpVehicle.setEntryTime(DatatypeFactory.newInstance().newXMLGregorianCalendar(entryTime));
-            } catch (DatatypeConfigurationException e) {
-                System.err.println("Invalid entry type for vehicle " + vehicle.getId() + ".");
-                e.printStackTrace();
+                // Converting the entry time
+                GregorianCalendar entryTime = new GregorianCalendar();
+                entryTime.setTime(vehicle.getEntryTime().getTime());
+                try {
+                    tmpVehicle.setEntryTime(DatatypeFactory.newInstance().newXMLGregorianCalendar(entryTime));
+                } catch (DatatypeConfigurationException e) {
+                    System.err.println("Invalid entry type for vehicle " + vehicle.getId() + ".");
+                    e.printStackTrace();
+                }
+
+                tmpVehicle.setType(VehicleTypeType.fromValue(vehicle.getType().value()));
+                tmpVehicle.setState(VehicleState.fromValue(vehicle.getState().value()));
+                tmpVehicle.setPosition(vehicle.getPosition().getId());
+                tmpVehicle.setOrigin(vehicle.getOrigin().getId());
+                tmpVehicle.setDestination(vehicle.getDestination().getId());
+                vehiclesList.add(tmpVehicle);
             }
 
-            tmpVehicle.setType(VehicleTypeType.fromValue(vehicle.getType().value()));
-            tmpVehicle.setState(VehicleState.fromValue(vehicle.getState().value()));
-            tmpVehicle.setPosition(vehicle.getPosition().toString()); // FIXME
-            tmpVehicle.setOrigin(vehicle.getOrigin().toString()); // FIXME
-            tmpVehicle.setDestination(vehicle.getDestination().toString()); // FIXME
-            vehiclesList.add(tmpVehicle);
+            return vehicles;
         }
-
-        return vehicles;
     }
 }

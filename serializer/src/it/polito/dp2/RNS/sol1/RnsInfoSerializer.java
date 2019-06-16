@@ -121,7 +121,7 @@ public class RnsInfoSerializer {
                     ValidationEventLocator vel = ve.getLocator();
                     System.out.println("Line:Col[" + vel.getLineNumber() +
                             ":" + vel.getColumnNumber() +
-                            "]:" + ve.getMessage()
+                            "]: " + ve.getMessage()
                     );
                 }
                 return true;
