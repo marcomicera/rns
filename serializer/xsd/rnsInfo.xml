@@ -3,12 +3,15 @@
          xsi:noNamespaceSchemaLocation="rnsInfo.xsd">
     <places>
         <gates>
-            <gate id="GATE0" capacity="0" type="IN" />
+            <gate id="GATE0" capacity="0" type="IN" >
+                <nextPlace name="GATE1"/>
+            </gate>
             <gate id="GATE1" capacity="2" type="INOUT"/>
         </gates>
 
         <parkingAreas>
             <parkingArea id="GATE2" capacity="1">
+                <nextPlace name="GATE3"/>
                 <service name="Toilet"/>
             </parkingArea>
             <parkingArea id="GATE5" capacity="1">

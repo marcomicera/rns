@@ -28,6 +28,13 @@
             <xsd:field xpath="@road"/>
         </xsd:unique>-->
 
+        <!-- 'NextPlace' name references -->
+        <xsd:keyref name="nextPlaceRef" refer="placeKey">
+            <xsd:selector
+                    xpath="places/gates/gate/nextPlace|places/parkingAreas/parkingArea/nextPlace|places/roadSegments/roadSegment/nextPlace"/>
+            <xsd:field xpath="@name"/>
+        </xsd:keyref>
+
         <!-- Connection places references -->
         <xsd:keyref name="connectionFromPlaceRef" refer="placeKey">
             <xsd:selector xpath="connections/connection"/>
@@ -75,9 +82,16 @@
     <xsd:complexType name="PlaceType">
         <xsd:complexContent>
             <xsd:extension base="IdentifiedEntity">
+                <xsd:sequence>
+                    <xsd:element name="nextPlace" minOccurs="0" maxOccurs="unbounded" type="NextPlaceType"/>
+                </xsd:sequence>
                 <xsd:attribute name="capacity" type="xsd:unsignedInt" use="required"/>
             </xsd:extension>
         </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="NextPlaceType">
+        <xsd:attribute name="name" type="xsd:token" use="required"/>
     </xsd:complexType>
 
     <xsd:complexType name="PlacesType">

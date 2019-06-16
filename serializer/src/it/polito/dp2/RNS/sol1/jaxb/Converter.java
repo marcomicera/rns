@@ -6,7 +6,9 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Converts data retrieved by reader interfaces into JAXB-compatible objects.
@@ -18,6 +20,8 @@ public class Converter {
      */
     private RnsReader monitor;
 
+    private Map<String, PlaceType> placesMap;
+
     /**
      * Default constructor creating a converter with a given monitor.
      *
@@ -25,6 +29,7 @@ public class Converter {
      */
     public Converter(RnsReader monitor) {
         this.monitor = monitor;
+        this.placesMap = new HashMap<>();
     }
 
     /**
@@ -71,8 +76,6 @@ public class Converter {
         places.setParkingAreas(parkingAreas);
         places.setRoadSegments(roadSegments);
 
-        // TODO add next places for each place, based on existing connections
-
         return places;
     }
 
@@ -99,6 +102,7 @@ public class Converter {
                 tmpGate.setType(GateTypeType.fromValue(gate.getType().value()));
                 tmpGate.setCapacity(gate.getCapacity());
                 gatesList.add(tmpGate);
+                placesMap.put(tmpGate.getId(), tmpGate);
             }
 
             return gates;
@@ -132,6 +136,7 @@ public class Converter {
                     tmpParkingArea.getService().add(tmpService);
                 }
                 parkingAreasList.add(tmpParkingArea);
+                placesMap.put(tmpParkingArea.getId(), tmpParkingArea);
             }
 
             return parkingAreas;
@@ -162,6 +167,7 @@ public class Converter {
                 tmpRoadSegment.setRoad(roadSegment.getRoadName());
                 tmpRoadSegment.setCapacity(roadSegment.getCapacity());
                 roadSegmentsList.add(tmpRoadSegment);
+                placesMap.put(tmpRoadSegment.getId(), tmpRoadSegment);
             }
 
             return roadSegments;
@@ -190,6 +196,13 @@ public class Converter {
                 tmpConnection.setFrom(connection.getFrom().getId());
                 tmpConnection.setTo(connection.getTo().getId());
                 connectionsList.add(tmpConnection);
+
+                // Adding the 'nextPlace' element
+                if (placesMap.containsKey(tmpConnection.getFrom())) {
+                    NextPlaceType nextPlace = new NextPlaceType();
+                    nextPlace.setName(tmpConnection.getTo());
+                    placesMap.get(tmpConnection.getFrom()).getNextPlace().add(nextPlace);
+                }
             }
 
             return connections;
