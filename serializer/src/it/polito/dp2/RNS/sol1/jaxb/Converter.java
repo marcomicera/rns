@@ -1,7 +1,6 @@
 package it.polito.dp2.RNS.sol1.jaxb;
 
-import it.polito.dp2.RNS.RnsReader;
-import it.polito.dp2.RNS.VehicleReader;
+import it.polito.dp2.RNS.*;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -32,22 +31,18 @@ public class Converter {
      */
     public JAXBElement<RnsType> getRnsInfo() {
         // Retrieving places
-//        PlacesType places = getPlaces();
+        PlacesType places = getPlaces();
 
         // Retrieving connections
-//        ConnectionsType connections = getConnections();
-
-        // Retrieving roads
-//        RoadsType roads = getRoads();
+        ConnectionsType connections = getConnections();
 
         // Retrieving vehicles
         VehiclesType vehicles = getVehicles();
 
         // Building the RNS object
         RnsType rnsInfo = new RnsType();
-        /*rnsInfo.setPlaces(places);
+        rnsInfo.setPlaces(places);
         rnsInfo.setConnections(connections);
-        rnsInfo.setRoads(roads);*/
         rnsInfo.setVehicles(vehicles);
 
         return new ObjectFactory().createRnsInfo(rnsInfo);
@@ -67,30 +62,70 @@ public class Converter {
         places.setParkingAreas(parkingAreas);
         places.setRoadSegments(roadSegments);
 
+        // TODO add next places for each place, based on existing connections
+
         return places;
     }
 
     private GatesType getGates() {
-        throw new UnsupportedOperationException("Not implemented, yet.");
+        GatesType gates = new GatesType();
+        List<GateType> gatesList = gates.getGate();
+        for (GateReader gate : monitor.getGates(null)) {
+            GateType tmpGate = new GateType();
+            tmpGate.setId(gate.getId());
+            tmpGate.setType(GateTypeType.fromValue(gate.getType().value()));
+            tmpGate.setCapacity(gate.getCapacity());
+            gatesList.add(tmpGate);
+        }
+
+        return gates;
     }
 
     private ParkingAreasType getParkingAreas() {
-        throw new UnsupportedOperationException("Not implemented, yet.");
+        ParkingAreasType parkingAreas = new ParkingAreasType();
+        List<ParkingAreaType> parkingAreasList = parkingAreas.getParkingArea();
+        for (ParkingAreaReader parkingArea : monitor.getParkingAreas(null)) {
+            ParkingAreaType tmpParkingArea = new ParkingAreaType();
+            tmpParkingArea.setId(parkingArea.getId());
+            tmpParkingArea.setCapacity(parkingArea.getCapacity());
+            for (String service : parkingArea.getServices()) {
+                ServiceType tmpService = new ServiceType();
+                tmpService.setName(service);
+                tmpParkingArea.getService().add(tmpService);
+            }
+            parkingAreasList.add(tmpParkingArea);
+        }
+
+        return parkingAreas;
     }
 
     private RoadSegmentsType getRoadSegments() {
-        throw new UnsupportedOperationException("Not implemented, yet.");
+        RoadSegmentsType roadSegments = new RoadSegmentsType();
+        List<RoadSegmentType> roadSegmentsList = roadSegments.getRoadSegment();
+        for (RoadSegmentReader roadSegment : monitor.getRoadSegments(null)) {
+            RoadSegmentType tmpRoadSegment = new RoadSegmentType();
+            tmpRoadSegment.setId(roadSegment.getId());
+            tmpRoadSegment.setName(roadSegment.getName());
+            tmpRoadSegment.setRoad(roadSegment.getRoadName());
+            tmpRoadSegment.setCapacity(roadSegment.getCapacity());
+            roadSegmentsList.add(tmpRoadSegment);
+        }
+
+        return roadSegments;
     }
 
     private ConnectionsType getConnections() {
-        throw new UnsupportedOperationException("Not implemented, yet.");
-    }
+        ConnectionsType connections = new ConnectionsType();
+        List<ConnectionType> connectionsList = connections.getConnection();
+        for (ConnectionReader connection : monitor.getConnections()) {
+            ConnectionType tmpConnection = new ConnectionType();
+            tmpConnection.setFrom(connection.getFrom().toString()); // FIXME
+            tmpConnection.setTo(connection.getTo().toString()); // FIXME
+            connectionsList.add(tmpConnection);
+        }
 
-    private RoadsType getRoads() {
-        RoadsType roads = new RoadsType();
-        List<RoadType> roadsList = roads.getRoad();
 
-        return roads;
+        return connections;
     }
 
     private VehiclesType getVehicles() {
@@ -112,9 +147,9 @@ public class Converter {
 
             tmpVehicle.setType(VehicleTypeType.fromValue(vehicle.getType().value()));
             tmpVehicle.setState(VehicleState.fromValue(vehicle.getState().value()));
-            tmpVehicle.setPosition(vehicle.getPosition().toString());
-            tmpVehicle.setOrigin(vehicle.getOrigin().toString());
-            tmpVehicle.setDestination(vehicle.getDestination().toString());
+            tmpVehicle.setPosition(vehicle.getPosition().toString()); // FIXME
+            tmpVehicle.setOrigin(vehicle.getOrigin().toString()); // FIXME
+            tmpVehicle.setDestination(vehicle.getDestination().toString()); // FIXME
             vehiclesList.add(tmpVehicle);
         }
 
