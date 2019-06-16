@@ -24,12 +24,6 @@ public class RnsInfoSerializer {
     private Converter converter;
 
     /**
-     * Date format used in the RNS XML file.
-     */
-    // TODO use this somehow
-    private DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm");
-
-    /**
      * Default constructor.
      *
      * @throws RnsReaderException thrown if an implementation of RnsReader cannot be created

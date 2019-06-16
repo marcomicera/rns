@@ -194,7 +194,7 @@
         <xsd:complexContent>
             <xsd:extension base="IdentifiedEntity">
                 <xsd:all>
-                    <!-- TODO check date format and other related issues -->
+                    <!-- ISO 8601 format: https://www.w3.org/TR/xmlschema-2/#isoformats -->
                     <xsd:element name="entryTime" type="xsd:dateTime"/>
                 </xsd:all>
 
