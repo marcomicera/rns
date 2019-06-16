@@ -32,22 +32,22 @@ public class Converter {
      */
     public JAXBElement<RnsType> getRnsInfo() {
         // Retrieving places
-        PlacesType places = getPlaces();
+//        PlacesType places = getPlaces();
 
         // Retrieving connections
-        ConnectionsType connections = getConnections();
+//        ConnectionsType connections = getConnections();
 
         // Retrieving roads
-        RoadsType roads = getRoads();
+//        RoadsType roads = getRoads();
 
         // Retrieving vehicles
         VehiclesType vehicles = getVehicles();
 
         // Building the RNS object
         RnsType rnsInfo = new RnsType();
-        rnsInfo.setPlaces(places);
+        /*rnsInfo.setPlaces(places);
         rnsInfo.setConnections(connections);
-        rnsInfo.setRoads(roads);
+        rnsInfo.setRoads(roads);*/
         rnsInfo.setVehicles(vehicles);
 
         return new ObjectFactory().createRnsInfo(rnsInfo);
@@ -87,7 +87,10 @@ public class Converter {
     }
 
     private RoadsType getRoads() {
-        throw new UnsupportedOperationException("Not implemented, yet.");
+        RoadsType roads = new RoadsType();
+        List<RoadType> roadsList = roads.getRoad();
+
+        return roads;
     }
 
     private VehiclesType getVehicles() {
@@ -102,21 +105,13 @@ public class Converter {
             entryTime.setTime(vehicle.getEntryTime().getTime());
             try {
                 tmpVehicle.setEntryTime(DatatypeFactory.newInstance().newXMLGregorianCalendar(entryTime));
-            } catch(DatatypeConfigurationException e) {
+            } catch (DatatypeConfigurationException e) {
                 System.err.println("Invalid entry type for vehicle " + vehicle.getId() + ".");
                 e.printStackTrace();
             }
 
-            tmpVehicle.setType(
-                    VehicleTypeType.fromValue(
-                            vehicle.getType().value()
-                    )
-            );
-            tmpVehicle.setState(
-                    VehicleState.fromValue(
-                            vehicle.getState().value()
-                    )
-            );
+            tmpVehicle.setType(VehicleTypeType.fromValue(vehicle.getType().value()));
+            tmpVehicle.setState(VehicleState.fromValue(vehicle.getState().value()));
             tmpVehicle.setPosition(vehicle.getPosition().toString());
             tmpVehicle.setOrigin(vehicle.getOrigin().toString());
             tmpVehicle.setDestination(vehicle.getDestination().toString());

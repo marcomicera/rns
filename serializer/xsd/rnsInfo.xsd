@@ -19,19 +19,13 @@
 
         <!-- Road ID uniqueness: "The road name uniquely identifies a road in the system,
                                   i.e. there cannot be two roads with the same name" -->
-        <xsd:key name="roadKey">
-            <xsd:selector xpath="roads/road"/>
-            <xsd:field xpath="@name"/>
-        </xsd:key>
-
-        <!-- Road reference -->
-        <xsd:keyref name="roadRef" refer="roadKey">
-            <xsd:selector xpath="places/roadSegments/roadSegment"/>
+        <xsd:unique name="uniqueRoadName">
+            <xsd:selector
+                    xpath="places/roadSegments/roadSegment"/>
             <xsd:field xpath="@road"/>
-        </xsd:keyref>
+        </xsd:unique>
 
-        <!-- Connection places references: "a road segment name is unique within a road,
-                                            i.e. a road cannot have two segments with the same name" -->
+        <!-- Connection places references -->
         <xsd:keyref name="connectionFromPlaceRef" refer="placeKey">
             <xsd:selector xpath="connections/connection"/>
             <xsd:field xpath="@from"/>
@@ -69,7 +63,7 @@
         <xsd:all>
             <xsd:element name="places" minOccurs="0" type="PlacesType"/>
             <xsd:element name="connections" minOccurs="0" type="ConnectionsType"/>
-            <xsd:element name="roads" minOccurs="0" type="RoadsType"/>
+            <!--<xsd:element name="roads" minOccurs="0" type="RoadsType"/>-->
             <xsd:element name="vehicles" minOccurs="0" type="VehiclesType"/>
         </xsd:all>
     </xsd:complexType>
@@ -89,7 +83,9 @@
             <xsd:element name="gates" minOccurs="0" type="GatesType"/>
             <xsd:element name="parkingAreas" minOccurs="0" type="ParkingAreasType"/>
             <xsd:element name="roadSegments" minOccurs="0" type="RoadSegmentsType">
-                <!-- Road segment's name uniqueness within the same road -->
+                <!-- Road segment's name uniqueness within the same road:
+                        "a road segment name is unique within a road,
+                        i.e. a road cannot have two segments with the same name" -->
                 <xsd:unique name="uniqueRoadSegmentInRoad">
                     <xsd:selector xpath="roadSegment"/>
                     <xsd:field xpath="@name"/>
@@ -182,17 +178,6 @@
     <xsd:complexType name="ConnectionType">
         <xsd:attribute name="from" type="xsd:token" use="required"/>
         <xsd:attribute name="to" type="xsd:token" use="required"/>
-    </xsd:complexType>
-
-    <!-- Roads -->
-    <xsd:complexType name="RoadsType">
-        <xsd:sequence>
-            <xsd:element name="road" maxOccurs="unbounded" type="RoadType"/>
-        </xsd:sequence>
-    </xsd:complexType>
-
-    <xsd:complexType name="RoadType">
-        <xsd:attribute name="name" type="xsd:token" use="required"/>
     </xsd:complexType>
 
     <!-- Vehicles -->

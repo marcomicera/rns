@@ -18,8 +18,8 @@
         </parkingAreas>
 
         <roadSegments>
-            <roadSegment id="GATE3" name="White avenue" capacity="3" road="R2"/>
-            <roadSegment id="GATE4" name="White avenue" capacity="3" road="R1"/>
+            <roadSegment id="GATE3" name="White avenue" capacity="3" road="R1"/>
+            <roadSegment id="GATE4" name="White avenue" capacity="3" road="R2"/>
         </roadSegments>
     </places>
 
@@ -28,11 +28,6 @@
         <connection from='GATE1' to="GATE1"/>
         <connection from='GATE3' to="GATE3"/>
     </connections>
-
-    <roads>
-        <road name="R1"/>
-        <road name="R2"/>
-    </roads>
 
     <vehicles>
         <vehicle id="CAR1" type="CAR" state="PARKED" position="GATE0" origin="GATE0" destination="GATE2">
