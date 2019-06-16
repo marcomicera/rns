@@ -18,7 +18,15 @@ import java.text.SimpleDateFormat;
 
 public class RnsInfoSerializer {
 
+    /**
+     * Converts data retrieved by reader interfaces into JAXB-compatible objects.
+     */
     private Converter converter;
+
+    /**
+     * Date format used in the RNS XML file.
+     */
+    // TODO use this somehow
     private DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy hh:mm");
 
     /**
@@ -49,11 +57,11 @@ public class RnsInfoSerializer {
      * @param args args[0]  represents the output file name
      */
     public static void main(String[] args) {
+        // Arguments checking
         if (args.length != 1) {
             System.err.println("Usage: java RnsInfoSerializer filename");
             System.exit(1);
         }
-
         String fileName = args[0];
 
         // Creating the output file
