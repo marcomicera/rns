@@ -13,8 +13,6 @@ import javax.xml.bind.*;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 
 public class RnsInfoSerializer {
 
@@ -29,6 +27,7 @@ public class RnsInfoSerializer {
      * @throws RnsReaderException thrown if an implementation of RnsReader cannot be created
      */
     private RnsInfoSerializer() throws RnsReaderException {
+        // FIXME use FactoryConfigurationError or RnsReaderException?
         this(RnsReaderFactory.newInstance().newRnsReader());
     }
 
@@ -69,11 +68,10 @@ public class RnsInfoSerializer {
         }
 
         // Retrieving data and serializing
-        JAXBElement<RnsType> rns = null;
         try {
             RnsInfoSerializer serializer = new RnsInfoSerializer();
-            rns = serializer.toJAXB();      // Conversion
-            serializer.marshal(rns, fos);   // Marshalling
+            JAXBElement<RnsType> rns = serializer.toJAXB(); // Conversion
+            serializer.marshal(rns, fos);                   // Marshalling
         } catch (RnsReaderException e) {
             System.err.println("Could not instantiate data generator");
             e.printStackTrace();

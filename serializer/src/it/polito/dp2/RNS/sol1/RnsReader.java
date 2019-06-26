@@ -2,11 +2,28 @@ package it.polito.dp2.RNS.sol1;
 
 import it.polito.dp2.RNS.*;
 import it.polito.dp2.RNS.sol1.conf.Config;
+import it.polito.dp2.RNS.sol1.jaxb.RnsType;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.Calendar;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class RnsReader implements it.polito.dp2.RNS.RnsReader {
+
+    /**
+     * Info about the RNS system.
+     */
+    private RnsType rnsInfo;
+
     /**
      * The XML input file to be loaded and validated.
      */
@@ -18,19 +35,21 @@ public class RnsReader implements it.polito.dp2.RNS.RnsReader {
      * @throws RnsReaderException if the input file name is invalid
      */
     public RnsReader() throws RnsReaderException {
+
         // Retrieving the input file name
         inputFile = System.getProperty(Config.inputFileProperty);
 
-        // If the input file name is invalid
-        if(inputFile == null || inputFile.isEmpty()) {
-            // Throw an exception
-            throw new RnsReaderException("Could not find the input XML file");
+        try {
+            // Retrieving the RNS info from the XML file
+            JAXBContext jc = JAXBContext.newInstance(Config.jaxbClassesPackage);
+            Unmarshaller unmarshaller = jc.createUnmarshaller();
+            XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new FileInputStream(inputFile));
+            rnsInfo = unmarshaller.unmarshal(reader, RnsType.class).getValue();
+        } catch (JAXBException e) {
+            throw new RnsReaderException(e, "Error while creating a JAXB context class.");
+        } catch (XMLStreamException | FileNotFoundException e) {
+            throw new RnsReaderException(e, "Could not find the input XML file.");
         }
-        // The the input file name is valid
-        else {
-
-        }
-
     }
 
     @Override
@@ -64,12 +83,12 @@ public class RnsReader implements it.polito.dp2.RNS.RnsReader {
     }
 
     @Override
-    public Set<VehicleReader> getVehicles(Calendar calendar, Set<VehicleType> set, VehicleState vehicleState) {
+    public Set<VehicleReader> getVehicles(Calendar since, Set<VehicleType> types, VehicleState state) {
         return null;
     }
 
     @Override
-    public VehicleReader getVehicle(String s) {
+    public VehicleReader getVehicle(String id) {
         return null;
     }
 }

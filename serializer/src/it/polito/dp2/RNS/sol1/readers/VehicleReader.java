@@ -6,39 +6,47 @@ import it.polito.dp2.RNS.VehicleType;
 
 import java.util.Calendar;
 
-public class VehicleReader implements it.polito.dp2.RNS.VehicleReader {
+public class VehicleReader extends IdentifiedEntityReader implements it.polito.dp2.RNS.VehicleReader {
+
+    private it.polito.dp2.RNS.sol1.jaxb.VehicleType info;
+
+    public VehicleReader(it.polito.dp2.RNS.sol1.jaxb.VehicleType info) {
+        super(info.getId());
+        this.info = info;
+    }
+
     @Override
     public VehicleType getType() {
-        return null;
+        return VehicleType.fromValue(info.getType().value());
     }
 
     @Override
     public Calendar getEntryTime() {
-        return null;
+        return info.getEntryTime().toGregorianCalendar();
     }
 
     @Override
     public PlaceReader getDestination() {
-        return null;
+        return null; // TODO implement
     }
 
     @Override
     public PlaceReader getOrigin() {
-        return null;
+        return null; // TODO implement
     }
 
     @Override
     public PlaceReader getPosition() {
-        return null;
+        return null; // TODO implement
     }
 
     @Override
     public VehicleState getState() {
-        return null;
+        return VehicleState.fromValue(info.getState().value());
     }
 
     @Override
     public String getId() {
-        return null;
+        return info.getId();
     }
 }
