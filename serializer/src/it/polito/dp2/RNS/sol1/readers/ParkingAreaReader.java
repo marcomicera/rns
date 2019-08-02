@@ -1,27 +1,21 @@
 package it.polito.dp2.RNS.sol1.readers;
 
-import it.polito.dp2.RNS.PlaceReader;
+import it.polito.dp2.RNS.sol1.jaxb.ParkingAreaType;
 
 import java.util.Set;
 
-public class ParkingAreaReader implements it.polito.dp2.RNS.ParkingAreaReader {
+public class ParkingAreaReader extends it.polito.dp2.RNS.sol1.readers.PlaceReader
+        implements it.polito.dp2.RNS.ParkingAreaReader {
+
+    private Set<String> services;
+
+    public ParkingAreaReader(ParkingAreaType parkingArea) {
+        super(parkingArea.getId(), parkingArea.getCapacity());
+        parkingArea.getService().forEach(s -> services.add(s.getName()));
+    }
+
     @Override
     public Set<String> getServices() {
-        return null;
-    }
-
-    @Override
-    public int getCapacity() {
-        return 0;
-    }
-
-    @Override
-    public Set<PlaceReader> getNextPlaces() {
-        return null;
-    }
-
-    @Override
-    public String getId() {
-        return null;
+        return services;
     }
 }

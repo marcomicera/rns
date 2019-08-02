@@ -82,7 +82,7 @@
                 <xsd:sequence>
                     <xsd:element name="nextPlace" minOccurs="0" maxOccurs="unbounded" type="NextPlaceType"/>
                 </xsd:sequence>
-                <xsd:attribute name="capacity" type="xsd:unsignedInt" use="required"/>
+                <xsd:attribute name="capacity" type="xsd:unsignedShort" use="required"/>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>

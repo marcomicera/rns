@@ -1,28 +1,19 @@
 package it.polito.dp2.RNS.sol1.readers;
 
 import it.polito.dp2.RNS.GateType;
-import it.polito.dp2.RNS.PlaceReader;
 
-import java.util.Set;
+public class GateReader extends it.polito.dp2.RNS.sol1.readers.PlaceReader
+        implements it.polito.dp2.RNS.GateReader {
 
-public class GateReader implements it.polito.dp2.RNS.GateReader {
+    private GateType type;
+
+    public GateReader(it.polito.dp2.RNS.sol1.jaxb.GateType gate) {
+        super(gate.getId(), gate.getCapacity());
+        type = GateType.fromValue(gate.getType().value());
+    }
+
     @Override
     public GateType getType() {
-        return null;
-    }
-
-    @Override
-    public int getCapacity() {
-        return 0;
-    }
-
-    @Override
-    public Set<PlaceReader> getNextPlaces() {
-        return null;
-    }
-
-    @Override
-    public String getId() {
-        return null;
+        return type;
     }
 }

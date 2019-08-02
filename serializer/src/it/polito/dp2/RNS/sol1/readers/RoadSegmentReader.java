@@ -1,32 +1,26 @@
 package it.polito.dp2.RNS.sol1.readers;
 
-import it.polito.dp2.RNS.PlaceReader;
+import it.polito.dp2.RNS.sol1.jaxb.RoadSegmentType;
 
-import java.util.Set;
+public class RoadSegmentReader extends it.polito.dp2.RNS.sol1.readers.PlaceReader
+        implements it.polito.dp2.RNS.RoadSegmentReader {
 
-public class RoadSegmentReader implements it.polito.dp2.RNS.RoadSegmentReader {
+    private String name;
+    private String road;
+
+    public RoadSegmentReader(RoadSegmentType roadSegment) {
+        super(roadSegment.getId(), roadSegment.getCapacity());
+        name = roadSegment.getName();
+        road = roadSegment.getRoad();
+    }
+
     @Override
     public String getName() {
-        return null;
+        return name;
     }
 
     @Override
     public String getRoadName() {
-        return null;
-    }
-
-    @Override
-    public int getCapacity() {
-        return 0;
-    }
-
-    @Override
-    public Set<PlaceReader> getNextPlaces() {
-        return null;
-    }
-
-    @Override
-    public String getId() {
-        return null;
+        return road;
     }
 }

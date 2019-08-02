@@ -1,7 +1,9 @@
 #
 # Custom project files
 #
-serializer/out1.xml
+out1.xml
+testout.xml
+temp*/
 
 #
 # Custom IntelliJ .gitignore

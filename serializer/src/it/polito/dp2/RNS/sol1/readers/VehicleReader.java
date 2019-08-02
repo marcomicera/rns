@@ -8,21 +8,19 @@ import java.util.Calendar;
 
 public class VehicleReader extends IdentifiedEntityReader implements it.polito.dp2.RNS.VehicleReader {
 
-    private it.polito.dp2.RNS.sol1.jaxb.VehicleType info;
-
     public VehicleReader(it.polito.dp2.RNS.sol1.jaxb.VehicleType info) {
         super(info.getId());
-        this.info = info;
+        // TODO implement
     }
 
     @Override
     public VehicleType getType() {
-        return VehicleType.fromValue(info.getType().value());
+        return null; // TODO implement
     }
 
     @Override
     public Calendar getEntryTime() {
-        return info.getEntryTime().toGregorianCalendar();
+        return null; // TODO implement
     }
 
     @Override
@@ -42,11 +40,6 @@ public class VehicleReader extends IdentifiedEntityReader implements it.polito.d
 
     @Override
     public VehicleState getState() {
-        return VehicleState.fromValue(info.getState().value());
-    }
-
-    @Override
-    public String getId() {
-        return info.getId();
+        return null; // TODO implement
     }
 }
