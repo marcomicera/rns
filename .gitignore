@@ -27,8 +27,6 @@ serializer/out1.xml
 .mtj.tmp/
 
 # Package Files #
-*.jar
-*.war
 *.nar
 *.ear
 *.zip
