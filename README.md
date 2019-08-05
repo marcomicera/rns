@@ -6,3 +6,8 @@
   - [Assignments FAQs](https://pad.polito.it:8080/enginframe/dp2/dp2.xml?_uri=//dp2/assignment_faqs)
   - [Examples](https://pad.polito.it:8080/enginframe/dp2/dp2.xml?_uri=//dp2/material)
 - [`it.polito.dp2.RNS` package](https://pad.polito.it:8080/enginframe/dp2/assignments/lab1/doc/index.html)
+
+#### Software
+- `openjdk-8-jdk`
+- [Apache Ant 1.9.6](https://archive.apache.org/dist/ant/binaries/apache-ant-1.9.6-bin.tar.gz) 
+- [Neo4J 3.2.3](https://neo4j.com/download-thanks/?edition=community&release=3.2.3&flavour=unix)
