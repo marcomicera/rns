@@ -6,11 +6,13 @@ import java.util.Set;
 public class PlaceReader extends IdentifiedEntityReader implements it.polito.dp2.RNS.PlaceReader {
 
     protected int capacity;
+    protected PlaceType placeType;
     protected Set<it.polito.dp2.RNS.PlaceReader> nextPlaces;
 
-    public PlaceReader(String id, int capacity) {
+    public PlaceReader(String id, int capacity, PlaceType type) {
         super(id);
         this.capacity = capacity;
+        this.placeType = type;
     }
 
     public boolean addNextPlace(PlaceReader nextPlace) {
@@ -26,4 +28,6 @@ public class PlaceReader extends IdentifiedEntityReader implements it.polito.dp2
     public Set<it.polito.dp2.RNS.PlaceReader> getNextPlaces() {
         return nextPlaces;
     }
+
+    public PlaceType getPlaceType() { return placeType; }
 }

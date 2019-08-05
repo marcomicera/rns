@@ -22,7 +22,7 @@ import static org.junit.Assert.*;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.ConcurrentHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;

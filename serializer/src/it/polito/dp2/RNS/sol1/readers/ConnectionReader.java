@@ -1,15 +1,15 @@
 package it.polito.dp2.RNS.sol1.readers;
 
 import it.polito.dp2.RNS.PlaceReader;
-import it.polito.dp2.RNS.sol1.jaxb.ConnectionType;
 
 public class ConnectionReader implements it.polito.dp2.RNS.ConnectionReader {
 
     private PlaceReader from;
     private PlaceReader to;
 
-    public ConnectionReader(ConnectionType connection) {
-
+    public ConnectionReader(PlaceReader from, PlaceReader to) {
+        this.from = from;
+        this.to = to;
     }
 
     @Override

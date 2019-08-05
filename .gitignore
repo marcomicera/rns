@@ -4,6 +4,7 @@
 out1.xml
 testout.xml
 temp*/
+serializer/src/it/polito/dp2/RNS/sol1/fiddles
 
 #
 # Custom IntelliJ .gitignore

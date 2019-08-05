@@ -1,6 +1,5 @@
 package it.polito.dp2.RNS.sol1;
 
-import com.google.common.collect.Iterables;
 import it.polito.dp2.RNS.*;
 import it.polito.dp2.RNS.sol1.conf.Config;
 import it.polito.dp2.RNS.sol1.jaxb.NextPlaceType;
@@ -15,7 +14,14 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.*;
+import java.lang.ref.WeakReference;
+import java.util.Calendar;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class RnsReader implements it.polito.dp2.RNS.RnsReader {
 
@@ -27,9 +33,12 @@ public class RnsReader implements it.polito.dp2.RNS.RnsReader {
     /**
      * Cached data for serving clients.
      */
-    private Map<String, it.polito.dp2.RNS.sol1.readers.PlaceReader> places = new HashMap<>();
-    private Set<it.polito.dp2.RNS.sol1.readers.ConnectionReader> connections = new HashSet<>();
-    private Map<String, it.polito.dp2.RNS.sol1.readers.VehicleReader> vehicles = new HashMap<>();
+    private Map<String, GateReader> gates = new ConcurrentHashMap<>();
+    private Map<String, ParkingAreaReader> parkingAreas = new ConcurrentHashMap<>();
+    private Map<String, RoadSegmentReader> roadSegments = new ConcurrentHashMap<>();
+    private Map<String, WeakReference<it.polito.dp2.RNS.sol1.readers.PlaceReader>> places = new ConcurrentHashMap<>();
+    private Set<ConnectionReader> connections = new HashSet<>();
+    private Map<String, VehicleReader> vehicles = new ConcurrentHashMap<>();
 
     /**
      * The XML input file to be loaded and validated.
@@ -44,7 +53,6 @@ public class RnsReader implements it.polito.dp2.RNS.RnsReader {
     public RnsReader() throws RnsReaderException {
 
         // Retrieving the input file name
-        System.setProperty(Config.inputFileProperty, "/home/marcomicera/git/rns/serializer/out1.xml"); // TODO delete
         inputFile = System.getProperty(Config.inputFileProperty);
 
         try {
@@ -55,8 +63,7 @@ public class RnsReader implements it.polito.dp2.RNS.RnsReader {
             rnsInfo = unmarshaller.unmarshal(reader, RnsType.class).getValue();
 
             // Converting data into readers that will then serve client requests
-            readPlaces();
-            readConnections();
+            readPlacesAndConnections();
             readVehicles();
         } catch (JAXBException e) {
             throw new RnsReaderException(e, "Error while creating a JAXB context class.");
@@ -65,79 +72,80 @@ public class RnsReader implements it.polito.dp2.RNS.RnsReader {
         }
     }
 
-    private void readPlaces() {
+    private void readPlacesAndConnections() {
         // Gates
-        rnsInfo.getPlaces().getGates().getGate().forEach(g ->
-                places.put(g.getId(), new it.polito.dp2.RNS.sol1.readers.GateReader(g)));
+        rnsInfo.getPlaces().getGates().getGate().forEach(g -> {
+            it.polito.dp2.RNS.sol1.readers.GateReader newGate = new it.polito.dp2.RNS.sol1.readers.GateReader(g);
+            gates.put(g.getId(), newGate);
+            places.put(g.getId(), new WeakReference<>(newGate));
+        });
         // Parking areas
-        rnsInfo.getPlaces().getParkingAreas().getParkingArea().forEach(pa ->
-                places.put(pa.getId(), new it.polito.dp2.RNS.sol1.readers.ParkingAreaReader(pa)));
-        // Segments
-        rnsInfo.getPlaces().getRoadSegments().getRoadSegment().forEach(rs ->
-                places.put(rs.getId(), new it.polito.dp2.RNS.sol1.readers.RoadSegmentReader(rs)));
+        rnsInfo.getPlaces().getParkingAreas().getParkingArea().forEach(pa -> {
+            it.polito.dp2.RNS.sol1.readers.ParkingAreaReader newParkingArea = new it.polito.dp2.RNS.sol1.readers.ParkingAreaReader(pa);
+            parkingAreas.put(pa.getId(), newParkingArea);
+            places.put(pa.getId(), new WeakReference<>(newParkingArea));
+        });
+        // Road segments
+        rnsInfo.getPlaces().getRoadSegments().getRoadSegment().forEach(rs -> {
+            it.polito.dp2.RNS.sol1.readers.RoadSegmentReader newRoadSegment = new it.polito.dp2.RNS.sol1.readers.RoadSegmentReader(rs);
+            roadSegments.put(rs.getId(), newRoadSegment);
+            places.put(rs.getId(), new WeakReference<>(newRoadSegment));
+        });
         // Connecting places
-        Iterables.concat(
-                rnsInfo.getPlaces().getGates().getGate(),
-                rnsInfo.getPlaces().getParkingAreas().getParkingArea(),
-                rnsInfo.getPlaces().getRoadSegments().getRoadSegment()
+        Stream.concat(
+                Stream.concat(
+                        rnsInfo.getPlaces().getGates().getGate().stream(),
+                        rnsInfo.getPlaces().getParkingAreas().getParkingArea().stream()),
+                rnsInfo.getPlaces().getRoadSegments().getRoadSegment().stream()
         ).forEach((PlaceType place) -> {
             place.getNextPlace().forEach((NextPlaceType nextPlace) -> {
-                places.get(place.getId()).addNextPlace(places.get(nextPlace.getName()));
+                it.polito.dp2.RNS.sol1.readers.PlaceReader from = places.get(place.getId()).get();
+                it.polito.dp2.RNS.sol1.readers.PlaceReader to = places.get(nextPlace.getName()).get();
+                connections.add(new it.polito.dp2.RNS.sol1.readers.ConnectionReader(from, to));
+                assert from != null;
+                assert to != null;
+                from.addNextPlace(to);
             });
         });
     }
 
-    private void readConnections() {
-        connections = new HashSet<>();
-        rnsInfo.getConnections().getConnection().forEach(c -> connections.add(new it.polito.dp2.RNS.sol1.readers.ConnectionReader(c)));
-    }
-
     private void readVehicles() {
-
-    }
-
-    /**
-     * Testing TODO delete
-     * @param args
-     */
-    public static void main(String[] args) {
-
-        try {
-            RnsReader reader = new RnsReader();
-            System.out.println(reader.getConnections()); // TODO delete
-        } catch (RnsReaderException e) {
-            e.printStackTrace();
-        }
+        rnsInfo.getVehicles().getVehicle().forEach(v ->
+                vehicles.put(v.getId(), new it.polito.dp2.RNS.sol1.readers.VehicleReader(v, places))
+        );
     }
 
     @Override
-    public Set<PlaceReader> getPlaces(String s) {
-        return null;
+    public Set<PlaceReader> getPlaces(String idPrefix) {
+        return places.entrySet().stream().filter(e -> idPrefix == null || e.getKey().startsWith(idPrefix))
+                .map(e -> e.getValue().get()).collect(Collectors.toSet());
     }
 
     @Override
-    public PlaceReader getPlace(String s) {
-        return null;
+    public PlaceReader getPlace(String id) {
+        return (id == null) ? null : places.getOrDefault(id, new WeakReference<>(null)).get();
     }
 
     @Override
-    public Set<GateReader> getGates(GateType gateType) {
-        return null;
+    public Set<GateReader> getGates(GateType type) {
+        return gates.values().stream().filter(g -> type == null || g.getType() == type).collect(Collectors.toSet());
     }
 
     @Override
-    public Set<RoadSegmentReader> getRoadSegments(String s) {
-        return null;
+    public Set<RoadSegmentReader> getRoadSegments(String roadName) {
+        return roadSegments.values().stream().filter(rs -> roadName == null || rs.getRoadName().equals(roadName))
+                .collect(Collectors.toSet());
     }
 
     @Override
-    public Set<ParkingAreaReader> getParkingAreas(Set<String> set) {
-        return null;
+    public Set<ParkingAreaReader> getParkingAreas(Set<String> services) {
+        return parkingAreas.values().stream().filter(pa -> services == null || pa.getServices().containsAll(services))
+                .collect(Collectors.toSet());
     }
 
     @Override
     public Set<ConnectionReader> getConnections() {
-        return null;
+        return connections;
     }
 
     @Override

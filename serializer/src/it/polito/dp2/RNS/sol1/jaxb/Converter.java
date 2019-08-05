@@ -5,10 +5,11 @@ import it.polito.dp2.RNS.*;
 import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
+
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Converts data retrieved by reader interfaces into JAXB-compatible objects.
@@ -29,7 +30,7 @@ public class Converter {
      */
     public Converter(RnsReader monitor) {
         this.monitor = monitor;
-        this.placesMap = new HashMap<>();
+        this.placesMap = new ConcurrentHashMap<>();
     }
 
     /**

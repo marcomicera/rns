@@ -9,7 +9,7 @@ public class RoadSegmentReader extends it.polito.dp2.RNS.sol1.readers.PlaceReade
     private String road;
 
     public RoadSegmentReader(RoadSegmentType roadSegment) {
-        super(roadSegment.getId(), roadSegment.getCapacity());
+        super(roadSegment.getId(), roadSegment.getCapacity(), PlaceType.PARKING_AREA);
         name = roadSegment.getName();
         road = roadSegment.getRoad();
     }
