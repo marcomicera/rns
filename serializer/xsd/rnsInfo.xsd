@@ -70,7 +70,6 @@
         <xsd:all>
             <xsd:element name="places" minOccurs="0" type="PlacesType"/>
             <xsd:element name="connections" minOccurs="0" type="ConnectionsType"/>
-            <!--<xsd:element name="roads" minOccurs="0" type="RoadsType"/>-->
             <xsd:element name="vehicles" minOccurs="0" type="VehiclesType"/>
         </xsd:all>
     </xsd:complexType>

@@ -1,5 +1,6 @@
 package it.polito.dp2.RNS.sol1.readers;
 
+import java.util.HashSet;
 import java.util.Set;
 
 // TODO abstract class? interface?
@@ -7,7 +8,7 @@ public class PlaceReader extends IdentifiedEntityReader implements it.polito.dp2
 
     protected int capacity;
     protected PlaceType placeType;
-    protected Set<it.polito.dp2.RNS.PlaceReader> nextPlaces;
+    protected Set<it.polito.dp2.RNS.PlaceReader> nextPlaces = new HashSet<>();
 
     public PlaceReader(String id, int capacity, PlaceType type) {
         super(id);
@@ -21,7 +22,7 @@ public class PlaceReader extends IdentifiedEntityReader implements it.polito.dp2
 
     @Override
     public int getCapacity() {
-        return 0;
+        return capacity;
     }
 
     @Override
