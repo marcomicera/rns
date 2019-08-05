@@ -128,7 +128,10 @@ public class RnsReader implements it.polito.dp2.RNS.RnsReader {
     private void readVehicles() {
         if (rnsInfo.getVehicles() != null) {
             for (it.polito.dp2.RNS.sol1.jaxb.VehicleType v : rnsInfo.getVehicles().getVehicle()) {
-                vehicles.put(v.getId(), new it.polito.dp2.RNS.sol1.readers.VehicleReader(v, places));
+                PlaceReader o = places.getOrDefault(v.getOrigin(), new WeakReference<>(null)).get();
+                PlaceReader p = places.getOrDefault(v.getPosition(), new WeakReference<>(null)).get();
+                PlaceReader d = places.getOrDefault(v.getDestination(), new WeakReference<>(null)).get();
+                vehicles.put(v.getId(), new it.polito.dp2.RNS.sol1.readers.VehicleReader(v, o, p, d));
             }
         }
     }

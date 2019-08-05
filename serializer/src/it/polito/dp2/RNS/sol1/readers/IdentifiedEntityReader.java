@@ -1,7 +1,6 @@
 package it.polito.dp2.RNS.sol1.readers;
 
-// TODO abstract class? interface?
-public class IdentifiedEntityReader implements it.polito.dp2.RNS.IdentifiedEntityReader {
+public abstract class IdentifiedEntityReader implements it.polito.dp2.RNS.IdentifiedEntityReader {
 
     protected String id;
 

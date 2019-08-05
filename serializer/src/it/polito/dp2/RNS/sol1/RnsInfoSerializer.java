@@ -1,5 +1,6 @@
 package it.polito.dp2.RNS.sol1;
 
+import it.polito.dp2.RNS.FactoryConfigurationError;
 import it.polito.dp2.RNS.RnsReader;
 import it.polito.dp2.RNS.RnsReaderException;
 import it.polito.dp2.RNS.RnsReaderFactory;
@@ -24,10 +25,11 @@ public class RnsInfoSerializer {
     /**
      * Default constructor.
      *
-     * @throws RnsReaderException thrown if an implementation of RnsReader cannot be created
+     * @throws RnsReaderException        thrown if an implementation of RnsReader cannot be created
+     * @throws FactoryConfigurationError thrown if the implementation of the concrete factory is not
+     *                                   available or cannot be instantiated.
      */
-    private RnsInfoSerializer() throws RnsReaderException {
-        // FIXME use FactoryConfigurationError or RnsReaderException?
+    private RnsInfoSerializer() throws RnsReaderException, FactoryConfigurationError {
         this(RnsReaderFactory.newInstance().newRnsReader());
     }
 

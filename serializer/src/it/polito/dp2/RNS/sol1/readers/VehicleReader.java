@@ -5,30 +5,27 @@ import it.polito.dp2.RNS.VehicleState;
 import it.polito.dp2.RNS.VehicleType;
 
 import javax.xml.datatype.XMLGregorianCalendar;
-import java.lang.ref.WeakReference;
 import java.util.Calendar;
-import java.util.Map;
 
 public class VehicleReader extends IdentifiedEntityReader implements it.polito.dp2.RNS.VehicleReader {
 
-    Map<String, WeakReference<it.polito.dp2.RNS.sol1.readers.PlaceReader>> places;
     private VehicleType type;
     private XMLGregorianCalendar entryTime;
     private PlaceReader origin;
     private PlaceReader position;
     private PlaceReader destination;
     private VehicleState state;
-    
+
     public VehicleReader(it.polito.dp2.RNS.sol1.jaxb.VehicleType vehicle,
-                         Map<String, WeakReference<it.polito.dp2.RNS.sol1.readers.PlaceReader>> places // TODO improve
-    ) {
+                         PlaceReader origin,
+                         PlaceReader position,
+                         PlaceReader destination) {
         super(vehicle.getId());
-        this.places = places;
         type = VehicleType.fromValue(vehicle.getType().value());
         entryTime = vehicle.getEntryTime();
-        origin = places.getOrDefault(vehicle.getOrigin(), new WeakReference<>(null)).get();
-        position = places.getOrDefault(vehicle.getPosition(), new WeakReference<>(null)).get();
-        destination = places.getOrDefault(vehicle.getDestination(), new WeakReference<>(null)).get();
+        this.origin = origin;
+        this.position = position;
+        this.destination = destination;
         state = VehicleState.fromValue(vehicle.getState().value());
     }
 
@@ -39,7 +36,7 @@ public class VehicleReader extends IdentifiedEntityReader implements it.polito.d
 
     @Override
     public Calendar getEntryTime() {
-        return entryTime.toGregorianCalendar()  ;
+        return entryTime.toGregorianCalendar();
     }
 
     @Override

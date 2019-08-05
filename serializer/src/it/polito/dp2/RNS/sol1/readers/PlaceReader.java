@@ -3,8 +3,7 @@ package it.polito.dp2.RNS.sol1.readers;
 import java.util.HashSet;
 import java.util.Set;
 
-// TODO abstract class? interface?
-public class PlaceReader extends IdentifiedEntityReader implements it.polito.dp2.RNS.PlaceReader {
+public abstract class PlaceReader extends IdentifiedEntityReader implements it.polito.dp2.RNS.PlaceReader {
 
     protected int capacity;
     protected PlaceType placeType;
