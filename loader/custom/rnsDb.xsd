@@ -1,0 +1,52 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+            jaxb:version="1.0">
+
+    <!--<xsd:annotation>
+        <xsd:appinfo>
+            <jaxb:globalBindings generateIsSetMethod="true"
+                                 localScoping="nested"/>
+        </xsd:appinfo>
+    </xsd:annotation>-->
+
+    <!-- Global element declaration -->
+    <xsd:element name="rnsInfo" type="RnsType"/>
+
+    <!-- Root type definition -->
+    <xsd:complexType name="RnsType">
+        <!-- "The road system is represented by a number of connected places that can have vehicles inside" -->
+        <xsd:all>
+            <xsd:element name="nodes" minOccurs="0" type="NodesType"/>
+            <xsd:element name="relationships" minOccurs="0" type="RelationshipsType"/>
+        </xsd:all>
+    </xsd:complexType>
+
+    <!-- Nodes -->
+    <xsd:complexType name="NodesType">
+        <xsd:sequence>
+            <xsd:element name="node" maxOccurs="unbounded" type="NodeType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="NodeType">
+        <xsd:sequence>
+            <!-- This represents the place ID to which the node belongs to. -->
+            <xsd:element name="id" type="xsd:token"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <!-- Relationships -->
+    <xsd:complexType name="RelationshipsType">
+        <xsd:sequence>
+            <xsd:element name="relation" maxOccurs="unbounded" type="RelationType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="RelationType">
+        <xsd:sequence>
+            <xsd:element name="to" type="xsd:anyURI"/>
+            <!-- Will have value 'ConnectedTo' -->
+            <xsd:element name="type" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+</xsd:schema>
