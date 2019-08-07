@@ -75,10 +75,10 @@ public class RnsReader implements it.polito.dp2.RNS.RnsReader {
 
     private void readPlacesAndConnections() {
 
-        if (rnsInfo.getPlaces() != null) {
+        if (rnsInfo.isSetPlaces()) {
 
             // Gates
-            if (rnsInfo.getPlaces().getGates() != null) {
+            if (rnsInfo.getPlaces().isSetGates()) {
                 for (it.polito.dp2.RNS.sol1.jaxb.GateType g : rnsInfo.getPlaces().getGates().getGate()) {
                     it.polito.dp2.RNS.sol1.readers.GateReader newGate = new it.polito.dp2.RNS.sol1.readers.GateReader(g);
                     gates.put(g.getId(), newGate);
@@ -87,7 +87,7 @@ public class RnsReader implements it.polito.dp2.RNS.RnsReader {
             }
 
             // Parking areas
-            if (rnsInfo.getPlaces().getParkingAreas() != null) {
+            if (rnsInfo.getPlaces().isSetParkingAreas()) {
                 for (ParkingAreaType pa : rnsInfo.getPlaces().getParkingAreas().getParkingArea()) {
                     it.polito.dp2.RNS.sol1.readers.ParkingAreaReader newParkingArea = new it.polito.dp2.RNS.sol1.readers.ParkingAreaReader(pa);
                     parkingAreas.put(pa.getId(), newParkingArea);
@@ -96,7 +96,7 @@ public class RnsReader implements it.polito.dp2.RNS.RnsReader {
             }
 
             // Road segments
-            if (rnsInfo.getPlaces().getRoadSegments() != null) {
+            if (rnsInfo.getPlaces().isSetRoadSegments()) {
                 for (RoadSegmentType rs : rnsInfo.getPlaces().getRoadSegments().getRoadSegment()) {
                     it.polito.dp2.RNS.sol1.readers.RoadSegmentReader newRoadSegment = new it.polito.dp2.RNS.sol1.readers.RoadSegmentReader(rs);
                     roadSegments.put(rs.getId(), newRoadSegment);
@@ -106,7 +106,7 @@ public class RnsReader implements it.polito.dp2.RNS.RnsReader {
         }
 
         // Connecting places
-        if (rnsInfo.getConnections() != null) {
+        if (rnsInfo.isSetConnections()) {
             Stream.concat(
                     Stream.concat(
                             rnsInfo.getPlaces().getGates().getGate().stream(),
@@ -126,7 +126,7 @@ public class RnsReader implements it.polito.dp2.RNS.RnsReader {
     }
 
     private void readVehicles() {
-        if (rnsInfo.getVehicles() != null) {
+        if (rnsInfo.isSetVehicles()) {
             for (it.polito.dp2.RNS.sol1.jaxb.VehicleType v : rnsInfo.getVehicles().getVehicle()) {
                 PlaceReader o = places.getOrDefault(v.getOrigin(), new WeakReference<>(null)).get();
                 PlaceReader p = places.getOrDefault(v.getPosition(), new WeakReference<>(null)).get();

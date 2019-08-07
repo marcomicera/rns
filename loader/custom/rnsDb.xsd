@@ -1,12 +1,12 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
             jaxb:version="1.0">
 
-    <!--<xsd:annotation>
+    <!-- JAXB custom bindings -->
+    <xsd:annotation>
         <xsd:appinfo>
-            <jaxb:globalBindings generateIsSetMethod="true"
-                                 localScoping="nested"/>
+            <jaxb:globalBindings generateIsSetMethod="true"/>
         </xsd:appinfo>
-    </xsd:annotation>-->
+    </xsd:annotation>
 
     <!-- Global element declaration -->
     <xsd:element name="rnsInfo" type="RnsType"/>
