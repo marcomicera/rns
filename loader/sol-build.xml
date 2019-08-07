@@ -19,6 +19,7 @@
             <arg value="${gen.dir}"/>
             <arg value="-p"/>
             <arg value="it.polito.dp2.RNS.sol2.jaxb"/>
+            <arg value="-no-header" />
             <arg value="${schema}"/>
         </exec>
     </target>

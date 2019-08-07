@@ -4,7 +4,8 @@
     <!-- JAXB custom bindings -->
     <xsd:annotation>
         <xsd:appinfo>
-            <jaxb:globalBindings generateIsSetMethod="true"/>
+            <jaxb:globalBindings generateIsSetMethod="true"
+                                 optionalProperty="isSet"/>
         </xsd:appinfo>
     </xsd:annotation>
 
