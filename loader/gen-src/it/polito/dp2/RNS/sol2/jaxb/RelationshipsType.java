@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="relation" type="{}RelationType" maxOccurs="unbounded"/>
+ *         &lt;element name="relation" type="{}RelationshipType" maxOccurs="unbounded"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -35,7 +35,7 @@ import javax.xml.bind.annotation.XmlType;
 public class RelationshipsType {
 
     @XmlElement(required = true)
-    protected List<RelationType> relation;
+    protected List<RelationshipType> relation;
 
     /**
      * Gets the value of the relation property.
@@ -55,13 +55,13 @@ public class RelationshipsType {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link RelationType }
+     * {@link RelationshipType }
      * 
      * 
      */
-    public List<RelationType> getRelation() {
+    public List<RelationshipType> getRelation() {
         if (relation == null) {
-            relation = new ArrayList<RelationType>();
+            relation = new ArrayList<RelationshipType>();
         }
         return this.relation;
     }

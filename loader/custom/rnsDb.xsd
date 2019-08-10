@@ -1,5 +1,5 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
-            jaxb:version="1.0">
+            jaxb:version="2.0">
 
     <!-- JAXB custom bindings -->
     <xsd:annotation>
@@ -37,11 +37,11 @@
     <!-- Relationships -->
     <xsd:complexType name="RelationshipsType">
         <xsd:sequence>
-            <xsd:element name="relation" maxOccurs="unbounded" type="RelationType"/>
+            <xsd:element name="relation" maxOccurs="unbounded" type="RelationshipType"/>
         </xsd:sequence>
     </xsd:complexType>
 
-    <xsd:complexType name="RelationType">
+    <xsd:complexType name="RelationshipType">
         <xsd:sequence>
             <xsd:element name="to" type="xsd:anyURI"/>
             <!-- Will have value 'ConnectedTo' -->

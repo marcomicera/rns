@@ -27,6 +27,11 @@ import java.util.stream.Stream;
 public class RnsReader implements it.polito.dp2.RNS.RnsReader {
 
     /**
+     * When set to true, sanity checks will be enabled.
+     */
+    private static final boolean SANITY_CHECKS = true;
+
+    /**
      * Info about the RNS system.
      */
     private RnsType rnsInfo;
@@ -117,8 +122,10 @@ public class RnsReader implements it.polito.dp2.RNS.RnsReader {
                     it.polito.dp2.RNS.sol1.readers.PlaceReader from = places.get(place.getId()).get();
                     it.polito.dp2.RNS.sol1.readers.PlaceReader to = places.get(nextPlace.getName()).get();
                     connections.add(new it.polito.dp2.RNS.sol1.readers.ConnectionReader(from, to));
-                    assert from != null;
-                    assert to != null;
+                    if (SANITY_CHECKS) {
+                        assert from != null;
+                        assert to != null;
+                    }
                     from.addNextPlace(to);
                 }
             });

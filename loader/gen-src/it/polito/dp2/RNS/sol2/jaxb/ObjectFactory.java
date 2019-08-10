@@ -58,11 +58,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link RelationType }
+     * Create an instance of {@link RelationshipType }
      * 
      */
-    public RelationType createRelationType() {
-        return new RelationType();
+    public RelationshipType createRelationshipType() {
+        return new RelationshipType();
     }
 
     /**

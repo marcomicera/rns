@@ -9,12 +9,12 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for RelationType complex type.
+ * <p>Java class for RelationshipType complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="RelationType">
+ * &lt;complexType name="RelationshipType">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
@@ -29,11 +29,11 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "RelationType", propOrder = {
+@XmlType(name = "RelationshipType", propOrder = {
     "to",
     "type"
 })
-public class RelationType {
+public class RelationshipType {
 
     @XmlElement(required = true)
     @XmlSchemaType(name = "anyURI")
