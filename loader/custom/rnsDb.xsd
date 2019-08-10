@@ -55,6 +55,7 @@
             paragraph 2.18 -->
     <xsd:complexType name="ShortestPathRequestType">
         <xsd:sequence>
+            <!-- The destination node URI -->
             <xsd:element name="to" type="xsd:anyURI"/>
             <xsd:element name="relationships">
                 <xsd:complexType>

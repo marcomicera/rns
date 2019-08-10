@@ -12,7 +12,6 @@ import it.polito.dp2.RNS.lab2.ServiceException;
 import it.polito.dp2.RNS.lab2.UnknownIdException;
 import it.polito.dp2.RNS.sol2.jaxb.*;
 
-import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -21,18 +20,39 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
-import javax.xml.ws.Service;
-import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
+/**
+ * PathFinder is an interface that has to be implemented in DP2 Assignment 2.
+ * A PathFinder lets users find shortest paths in a set of interconnected places (the model).
+ * A PathFinder exploits a remote service, capable of finding shortest paths in
+ * a directed graph (in Assignment 2 this service is NEO4J).
+ * A PathFinder must know how to get the current version of the model,
+ * which may change from time to time.
+ * Only when requested by the user, through the reloadModel operation, a PathFinder gets
+ * (and loads) the current version of the model, which replaces any previously loaded model.
+ * During this operation, the PathFinder also uploads the graph of this model to the remote
+ * service. After this operation, the loaded model can be used to compute shortest paths,
+ * by means of the findShortestPaths operation, until the next reloadModel, which may
+ * cause the loaded model to change.
+ * A PathFinder has 2 states:
+ * 1. initial state: no model loaded (and no graph yet uploaded to remote service).
+ * 2. operating state: model loaded (and graph uploaded to remote service and service ready
+ * to respond to queries).
+ * The current state can be checked by means of the isModelLoaded operation.
+ *
+ */
 public class PathFinder implements it.polito.dp2.RNS.lab2.PathFinder {
 
     /**
      * When set to true, sanity checks will be enabled.
      */
-    private static final boolean SANITY_CHECKS = true;
+    private static final boolean SANITY_CHECKS = false;
 
     /**
      * Web service interaction fields.
@@ -67,40 +87,6 @@ public class PathFinder implements it.polito.dp2.RNS.lab2.PathFinder {
         }
     }
 
-    // TODO testing
-    public static void main(String[] args) throws ServiceException {
-        System.setProperty("it.polito.dp2.RNS.RnsReaderFactory", "it.polito.dp2.RNS.Random.RnsReaderFactoryImpl");
-        System.setProperty("it.polito.dp2.RNS.lab2.URL", "http://localhost:7474/db");
-        new PathFinder().test();
-    }
-
-    // TODO testing
-    private void test() throws ServiceException {
-        PlaceReader newPlace = new PlaceReader() {
-            @Override
-            public int getCapacity() {
-                return 2;
-            }
-
-            @Override
-            public Set<PlaceReader> getNextPlaces() {
-                return null;
-            }
-
-            @Override
-            public String getId() {
-                return "newPlaceId";
-            }
-        };
-        postNode(newPlace);
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
-        client.close();
-    }
-
     /**
      * Returns the base URI of the Neo4JSimpleXML web service.
      *
@@ -117,11 +103,33 @@ public class PathFinder implements it.polito.dp2.RNS.lab2.PathFinder {
         return UriBuilder.fromUri(baseURI + "/data/").build();
     }
 
+    /**
+     * Class destructor.
+     *
+     * @throws Throwable
+     */
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+        client.close();
+    }
+
+    /**
+     * Checks the current state
+     * @return true if the current state is the operating state (model loaded)
+     */
     @Override
     public boolean isModelLoaded() {
         return loaded;
     }
 
+    /**
+     * Loads the current version of the model so that, if the operation is successful,
+     * after the operation the PathFinder is in the operating state (model loaded) and
+     * it can compute shortest paths on the loaded model.
+     * @throws ServiceException if the operation cannot be completed because the remote service is not available or fails
+     * @throws ModelException if the operation cannot be completed because the current model cannot be read or is wrong (the problem is not related to the remote service)
+     */
     @Override
     public void reloadModel() throws ServiceException, ModelException {
 
@@ -142,6 +150,11 @@ public class PathFinder implements it.polito.dp2.RNS.lab2.PathFinder {
         loaded = true;
     }
 
+    /**
+     * Reloads the data retriever, using the corresponding {@code RNSReaderFactory}.
+     *
+     * @throws ModelException in case it was not possible to create an RNS reader instance.
+     */
     private void reloadReader() throws ModelException {
         try {
             rnsReader = RnsReaderFactory.newInstance().newRnsReader();
@@ -150,16 +163,21 @@ public class PathFinder implements it.polito.dp2.RNS.lab2.PathFinder {
         }
     }
 
+    /**
+     * Deletes all the data locally and on the web service.
+     *
+     * @throws ServiceException in case it was not possible to delete something on the web service.
+     */
     private void deleteModel() throws ServiceException {
 
         // Delete relationships
         for (URI relationship : relationships) {
-            deleteRelationship(relationship);
+            deleteConnection(relationship);
         }
 
         // Delete nodes
         for (URI node : nodes.values()) {
-            deleteNode(node);
+            deletePlace(node);
         }
 
         if (SANITY_CHECKS) {
@@ -169,25 +187,38 @@ public class PathFinder implements it.polito.dp2.RNS.lab2.PathFinder {
     }
 
     /**
-     * Stores locally the minimum information needed about all RNS places.
+     * Sends information about RNS places on the web services and keeps track of these object URIs.
+     *
+     * @throws ServiceException in case it was not possible to upload a place to the web service.
      */
     private void readPlaces() throws ServiceException {
 
         for (PlaceReader place : rnsReader.getPlaces(null)) {
-            postNode(place);
+            postPlace(place);
         }
     }
 
+    /**
+     * Sends information about RNS connections on the web services and keeps track of these object URIs.
+     *
+     * @throws ServiceException in case it was not possible to upload a connection to the web service.
+     */
     private void readConnections() throws ServiceException {
 
         for (PlaceReader place : rnsReader.getPlaces(null)) {
             for (PlaceReader nextPlace : place.getNextPlaces()) {
-                postRelationship(place, nextPlace);
+                postConnection(place, nextPlace);
             }
         }
     }
 
-    private void postNode(PlaceReader place) throws ServiceException {
+    /**
+     * Posts a single place object to the web service and keeps track of its URI.
+     *
+     * @param place the place to be stored.
+     * @throws ServiceException in case it was not possible to upload this place.
+     */
+    private void postPlace(PlaceReader place) throws ServiceException {
 
         try {
             NodeType node = objectFactory.createNodeType();
@@ -209,23 +240,36 @@ public class PathFinder implements it.polito.dp2.RNS.lab2.PathFinder {
         }
     }
 
-    private void deleteNode(URI nodeURI) throws ServiceException {
+    /**
+     * Deletes a single place object from the web service.
+     *
+     * @param placeURI the place URI to be deleted.
+     * @throws ServiceException in case it was not possible to delete this place.
+     */
+    private void deletePlace(URI placeURI) throws ServiceException {
 
         try {
-            Response response = client.target(nodeURI).request(MediaType.APPLICATION_JSON).delete();
+            Response response = client.target(placeURI).request(MediaType.APPLICATION_JSON).delete();
 
             if (response.getStatus() == 204) {
-                System.out.println("Node " + nodeURI + " successfully deleted.");
-                nodes.inverse().remove(nodeURI);
+                System.out.println("Node " + placeURI + " successfully deleted.");
+                nodes.inverse().remove(placeURI);
             } else {
-                System.out.println("Node " + nodeURI + " deletion error: error " + response.getStatus());
+                System.out.println("Node " + placeURI + " deletion error: error " + response.getStatus());
             }
         } catch (RuntimeException e) {
-            throw new ServiceException("Error while deleting node " + nodeURI + ": " + e.getMessage(), e.getCause());
+            throw new ServiceException("Error while deleting node " + placeURI + ": " + e.getMessage(), e.getCause());
         }
     }
 
-    private void postRelationship(PlaceReader src, PlaceReader dst) throws ServiceException {
+    /**
+     * Posts a single connection object to the web service and keeps track of its URI.
+     *
+     * @param src the source place from which this connection starts.
+     * @param dst the destination place to which this connection ends.
+     * @throws ServiceException in case it was not possible to upload this connection.
+     */
+    private void postConnection(PlaceReader src, PlaceReader dst) throws ServiceException {
 
         try {
             RelationshipType relationship = objectFactory.createRelationshipType();
@@ -244,31 +288,48 @@ public class PathFinder implements it.polito.dp2.RNS.lab2.PathFinder {
                         " post failed: error " + response.getStatus());
             }
         } catch (RuntimeException e) {
-            throw e;
-            /*throw new ServiceException("Error while creating a relationship between " + src.getId() +
+            throw new ServiceException("Error while creating a relationship between " + src.getId() +
                     " and " + dst.getId() + ": " + e.getMessage(),
-                    e.getCause());*/
-        }
-    }
-
-    private void deleteRelationship(URI relationshipURI) throws ServiceException {
-
-        try {
-            Response response = client.target(relationshipURI).request(MediaType.APPLICATION_JSON).delete();
-
-            if (response.getStatus() == 204) {
-                System.out.println("Relationship " + relationshipURI + " successfully deleted.");
-                relationships.remove(relationshipURI);
-            } else {
-                System.out.println("Relationship " + relationshipURI + " deletion error: error " +
-                        response.getStatus());
-            }
-        } catch (RuntimeException e) {
-            throw new ServiceException("Error while deleting relationship " + relationshipURI + ": " + e.getMessage(),
                     e.getCause());
         }
     }
 
+    /**
+     * Deletes a single connection object from the web service.
+     *
+     * @param connectionURI the connection URI to be deleted.
+     * @throws ServiceException in case it was not possible to delete this connection.
+     */
+    private void deleteConnection(URI connectionURI) throws ServiceException {
+
+        try {
+            Response response = client.target(connectionURI).request(MediaType.APPLICATION_JSON).delete();
+
+            if (response.getStatus() == 204) {
+                System.out.println("Relationship " + connectionURI + " successfully deleted.");
+                relationships.remove(connectionURI);
+            } else {
+                System.out.println("Relationship " + connectionURI + " deletion error: error " +
+                        response.getStatus());
+            }
+        } catch (RuntimeException e) {
+            throw new ServiceException("Error while deleting relationship " + connectionURI + ": " + e.getMessage(),
+                    e.getCause());
+        }
+    }
+
+    /**
+     * Looks for the shortest paths connecting a source place to a destination place
+     * Each path is returned as a list of place identifiers, where the first place in the list is the source
+     * and the last place is the destination.
+     * @param source The id of the source of the paths to be found
+     * @param destination The id of the destination of the paths to be found
+     * @param maxlength The maximum length of the paths to be found (0 or negative means no bound on the length)
+     * @return the set of the shortest paths connecting source to destination
+     * @throws UnknownIdException if source or destination is not a known place identifier
+     * @throws BadStateException if the operation is called when in the initial state (no model loaded)
+     * @throws ServiceException if the operation cannot be completed because the remote service is not available or fails
+     */
     @Override
     public Set<List<String>> findShortestPaths(String source, String destination, int maxlength)
             throws UnknownIdException, BadStateException, ServiceException {
@@ -291,9 +352,7 @@ public class PathFinder implements it.polito.dp2.RNS.lab2.PathFinder {
         spRequest.setRelationships(spRelationships);
         spRequest.getRelationships().setType("ConnectedTo");
         spRequest.getRelationships().setDirection("out");
-        if (SANITY_CHECKS) {
-            assert nodes.size() - 1 > 0;
-        }
+        assert !SANITY_CHECKS || nodes.size() - 1 > 0;
         spRequest.setMaxDepth(maxlength > 0 ? maxlength : nodes.size() - 1);
         spRequest.setAlgorithm("shortestPath");
 
