@@ -9,11 +9,9 @@
     <property name="gen.dir" location="${basedir}/gen-src"/>
     <property name="schema" location="${basedir}/custom/rnsDb.xsd"/>
 
-    <target name="init">
+    <!-- JAXB custom bindings are defined within the XSD schema file -->
+    <target name="generate-artifacts">
         <mkdir dir="${gen.dir}"/>
-    </target>
-
-    <target name="generate-artifacts" depends="init">
         <exec executable="xjc" failonerror="true">
             <arg value="-d"/>
             <arg value="${gen.dir}"/>

@@ -22,17 +22,6 @@
             <xsd:field xpath="@id"/>
         </xsd:key>
 
-        <!-- Road ID uniqueness: "The road name uniquely identifies a road in the system,
-                                  i.e. there cannot be two roads with the same name".
-
-                                  Since there is no 'roads' element, there is no need
-                                  to check for their uniqueness. -->
-        <!--<xsd:unique name="uniqueRoadName">
-            <xsd:selector
-                    xpath="places/roadSegments/roadSegment"/>
-            <xsd:field xpath="@road"/>
-        </xsd:unique>-->
-
         <!-- 'NextPlace' name references -->
         <xsd:keyref name="nextPlaceRef" refer="placeKey">
             <xsd:selector
