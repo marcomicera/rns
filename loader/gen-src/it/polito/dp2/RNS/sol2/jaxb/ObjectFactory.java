@@ -34,19 +34,19 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link ShortestPathRequestType }
+     * 
+     */
+    public ShortestPathRequestType createShortestPathRequestType() {
+        return new ShortestPathRequestType();
+    }
+
+    /**
      * Create an instance of {@link RnsType }
      * 
      */
     public RnsType createRnsType() {
         return new RnsType();
-    }
-
-    /**
-     * Create an instance of {@link RelationshipsType }
-     * 
-     */
-    public RelationshipsType createRelationshipsType() {
-        return new RelationshipsType();
     }
 
     /**
@@ -66,11 +66,35 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link NodesType }
+     * Create an instance of {@link ShortestPathResponseType }
      * 
      */
-    public NodesType createNodesType() {
-        return new NodesType();
+    public ShortestPathResponseType createShortestPathResponseType() {
+        return new ShortestPathResponseType();
+    }
+
+    /**
+     * Create an instance of {@link ShortestPathRequestType.Relationships }
+     * 
+     */
+    public ShortestPathRequestType.Relationships createShortestPathRequestTypeRelationships() {
+        return new ShortestPathRequestType.Relationships();
+    }
+
+    /**
+     * Create an instance of {@link RnsType.Nodes }
+     * 
+     */
+    public RnsType.Nodes createRnsTypeNodes() {
+        return new RnsType.Nodes();
+    }
+
+    /**
+     * Create an instance of {@link RnsType.Relationships }
+     * 
+     */
+    public RnsType.Relationships createRnsTypeRelationships() {
+        return new RnsType.Relationships();
     }
 
     /**

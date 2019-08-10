@@ -12,14 +12,19 @@ import it.polito.dp2.RNS.lab2.ServiceException;
 import it.polito.dp2.RNS.lab2.UnknownIdException;
 import it.polito.dp2.RNS.sol2.jaxb.*;
 
+import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
+import javax.xml.ws.Service;
+import java.math.BigInteger;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 
 public class PathFinder implements it.polito.dp2.RNS.lab2.PathFinder {
@@ -34,7 +39,7 @@ public class PathFinder implements it.polito.dp2.RNS.lab2.PathFinder {
      */
     private RnsReader rnsReader;
     private Client client;
-    private WebTarget target;
+    private WebTarget baseTarget;
 
     /**
      * Local data fields.
@@ -56,7 +61,7 @@ public class PathFinder implements it.polito.dp2.RNS.lab2.PathFinder {
         // Web service interaction fields initialization
         try {
             client = ClientBuilder.newClient();
-            target = client.target(getBaseURI());
+            baseTarget = client.target(getBaseURI());
         } catch (RuntimeException e) {
             throw new ServiceException(e.getMessage(), e.getCause());
         }
@@ -133,6 +138,7 @@ public class PathFinder implements it.polito.dp2.RNS.lab2.PathFinder {
 
         // Reloading the model
         readPlaces();
+        readConnections();
         loaded = true;
     }
 
@@ -167,13 +173,16 @@ public class PathFinder implements it.polito.dp2.RNS.lab2.PathFinder {
      */
     private void readPlaces() throws ServiceException {
 
-        Set<PlaceReader> allPlaces = rnsReader.getPlaces(null);
-        if (allPlaces != null && !allPlaces.isEmpty()) {
-            for (PlaceReader place : rnsReader.getPlaces(null)) {
-                postNode(place);
-                for (PlaceReader nextPlace : place.getNextPlaces()) {
-                    postRelationship(place, nextPlace);
-                }
+        for (PlaceReader place : rnsReader.getPlaces(null)) {
+            postNode(place);
+        }
+    }
+
+    private void readConnections() throws ServiceException {
+
+        for (PlaceReader place : rnsReader.getPlaces(null)) {
+            for (PlaceReader nextPlace : place.getNextPlaces()) {
+                postRelationship(place, nextPlace);
             }
         }
     }
@@ -183,15 +192,15 @@ public class PathFinder implements it.polito.dp2.RNS.lab2.PathFinder {
         try {
             NodeType node = objectFactory.createNodeType();
             node.setId(place.getId());
-            Response response = target.path("node").request(MediaType.APPLICATION_JSON).post(
+            Response response = baseTarget.path("node").request(MediaType.APPLICATION_JSON).post(
                     Entity.entity(node, MediaType.APPLICATION_JSON));
 
             if (response.getStatus() == 201) {
                 URI location = response.getLocation();
-                System.out.println("Node posted successfully at " + location);
+                System.out.println("Node " + place.getId() + " posted successfully at " + location);
                 nodes.put(node.getId(), location);
             } else {
-                System.out.println("Node post failed: error " + response.getStatus());
+                System.out.println("Node " + place.getId() + " post failed: error " + response.getStatus());
             }
 
         } catch (RuntimeException e) {
@@ -222,20 +231,23 @@ public class PathFinder implements it.polito.dp2.RNS.lab2.PathFinder {
             RelationshipType relationship = objectFactory.createRelationshipType();
             relationship.setTo(nodes.get(dst.getId()).toASCIIString());
             relationship.setType("ConnectedTo");
-            Response response = client.target(src.getId()).path("relationship").request(MediaType.APPLICATION_JSON).post(
-                    Entity.entity(relationship, MediaType.APPLICATION_JSON));
+            Response response = client.target(nodes.get(src.getId())).path("relationships")
+                    .request(MediaType.APPLICATION_JSON).post(Entity.entity(relationship, MediaType.APPLICATION_JSON));
 
             if (response.getStatus() == 201) {
                 URI location = response.getLocation();
-                System.out.println("Relationship between " + src.getId() + " and " + dst.getId() + " successfully posted at " + location);
+                System.out.println("Relationship between " + src.getId() + " and " + dst.getId() +
+                        " successfully posted at " + location);
                 relationships.add(location);
             } else {
-                System.out.println("Relationship between " + src.getId() + " and " + dst.getId() + " post failed: error " + response.getStatus());
+                System.out.println("Relationship between " + src.getId() + " and " + dst.getId() +
+                        " post failed: error " + response.getStatus());
             }
         } catch (RuntimeException e) {
-            throw new ServiceException("Error while creating a relationship between " + src.getId() +
+            throw e;
+            /*throw new ServiceException("Error while creating a relationship between " + src.getId() +
                     " and " + dst.getId() + ": " + e.getMessage(),
-                    e.getCause());
+                    e.getCause());*/
         }
     }
 
@@ -248,10 +260,12 @@ public class PathFinder implements it.polito.dp2.RNS.lab2.PathFinder {
                 System.out.println("Relationship " + relationshipURI + " successfully deleted.");
                 relationships.remove(relationshipURI);
             } else {
-                System.out.println("Relationship " + relationshipURI + " deletion error: error " + response.getStatus());
+                System.out.println("Relationship " + relationshipURI + " deletion error: error " +
+                        response.getStatus());
             }
         } catch (RuntimeException e) {
-            throw new ServiceException("Error while deleting relationship " + relationshipURI + ": " + e.getMessage(), e.getCause());
+            throw new ServiceException("Error while deleting relationship " + relationshipURI + ": " + e.getMessage(),
+                    e.getCause());
         }
     }
 
@@ -259,12 +273,9 @@ public class PathFinder implements it.polito.dp2.RNS.lab2.PathFinder {
     public Set<List<String>> findShortestPaths(String source, String destination, int maxlength)
             throws UnknownIdException, BadStateException, ServiceException {
 
-        if (maxlength < 0) {
-            throw new IllegalArgumentException(
-                    "The shortest path's maximum length must be a positive integer: " + maxlength + " instead.");
-        }
+        // Arguments checking
         if (!this.loaded) {
-            throw new BadStateException("Model is not loaded: cannot find shortest path.");
+            throw new BadStateException("Model is not loaded: cannot find shortest paths.");
         }
         if (!this.nodes.containsKey(source)) {
             throw new UnknownIdException("Unknown source node ID " + source + ".");
@@ -273,6 +284,48 @@ public class PathFinder implements it.polito.dp2.RNS.lab2.PathFinder {
             throw new UnknownIdException("Unknown destination node ID " + source + ".");
         }
 
-        return null;
+        // Forming the paths request (https://neo4j.com/docs/pdf/neo4j-manual-2.3.12.pdf paragraph 2.18)
+        ShortestPathRequestType spRequest = objectFactory.createShortestPathRequestType();
+        spRequest.setTo(nodes.get(destination).toASCIIString());
+        ShortestPathRequestType.Relationships spRelationships = objectFactory.createShortestPathRequestTypeRelationships();
+        spRequest.setRelationships(spRelationships);
+        spRequest.getRelationships().setType("ConnectedTo");
+        spRequest.getRelationships().setDirection("out");
+        if (SANITY_CHECKS) {
+            assert nodes.size() - 1 > 0;
+        }
+        spRequest.setMaxDepth(maxlength > 0 ? maxlength : nodes.size() - 1);
+        spRequest.setAlgorithm("shortestPath");
+
+        // Performing the request
+        try {
+            List<ShortestPathResponseType> shortestPaths = client.target(nodes.get(source)).path("paths")
+                    .request(MediaType.APPLICATION_JSON).post(
+                            Entity.entity(spRequest, MediaType.APPLICATION_JSON),
+                            new GenericType<List<ShortestPathResponseType>>() {
+                            });
+
+            if (shortestPaths == null) {
+                throw new ServiceException("Error while retrieving shortest paths between " + source +
+                        " and " + destination + ".");
+            }
+
+            if (shortestPaths.isEmpty()) {
+                System.out.println("There are no shortest paths between " + source + " and " + destination + ".");
+            }
+
+            Set<List<String>> result = new HashSet<>();
+            for (ShortestPathResponseType shortestPath : shortestPaths) {
+                List<String> successors = new ArrayList<>();
+                for (String nextNode : shortestPath.getNodes()) {
+                    successors.add(nodes.inverse().get(new URI(nextNode)));
+                }
+                result.add(successors);
+            }
+            return result;
+        } catch (RuntimeException | URISyntaxException e) {
+            throw new ServiceException("Error while asking for the shortest path between " + source +
+                    " and " + destination + ": " + e.getMessage(), e.getCause());
+        }
     }
 }

@@ -13,20 +13,27 @@
 
     <!-- Root type definition -->
     <xsd:complexType name="RnsType">
-        <!-- "The road system is represented by a number of connected places that can have vehicles inside" -->
-        <xsd:all>
-            <xsd:element name="nodes" minOccurs="0" type="NodesType"/>
-            <xsd:element name="relationships" minOccurs="0" type="RelationshipsType"/>
-        </xsd:all>
+        <xsd:choice>
+            <xsd:element name="nodes" minOccurs="0">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="node" maxOccurs="unbounded" type="NodeType"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="relationships" minOccurs="0">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="relation" maxOccurs="unbounded" type="RelationshipType"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="shortestPathRequest" minOccurs="0" type="ShortestPathRequestType"/>
+            <xsd:element name="shortestPathResponse" minOccurs="0" type="ShortestPathResponseType"/>
+        </xsd:choice>
     </xsd:complexType>
 
     <!-- Nodes -->
-    <xsd:complexType name="NodesType">
-        <xsd:sequence>
-            <xsd:element name="node" maxOccurs="unbounded" type="NodeType"/>
-        </xsd:sequence>
-    </xsd:complexType>
-
     <xsd:complexType name="NodeType">
         <xsd:sequence>
             <!-- This represents the place ID to which the node belongs to. -->
@@ -35,12 +42,6 @@
     </xsd:complexType>
 
     <!-- Relationships -->
-    <xsd:complexType name="RelationshipsType">
-        <xsd:sequence>
-            <xsd:element name="relation" maxOccurs="unbounded" type="RelationshipType"/>
-        </xsd:sequence>
-    </xsd:complexType>
-
     <xsd:complexType name="RelationshipType">
         <xsd:sequence>
             <xsd:element name="to" type="xsd:anyURI"/>
@@ -49,4 +50,32 @@
         </xsd:sequence>
     </xsd:complexType>
 
+    <!--    Shortest path request format, as described in
+            https://neo4j.com/docs/pdf/neo4j-manual-2.3.12.pdf ,
+            paragraph 2.18 -->
+    <xsd:complexType name="ShortestPathRequestType">
+        <xsd:sequence>
+            <xsd:element name="to" type="xsd:anyURI"/>
+            <xsd:element name="relationships">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="type" type="xsd:token"/>
+                        <xsd:element name="direction" type="xsd:token"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:sequence>
+        <xsd:attribute name="max_depth" type="xsd:unsignedShort"/>
+        <xsd:attribute name="algorithm" type="xsd:token"/>
+    </xsd:complexType>
+
+    <!--    Shortest path response format, as described in
+            https://neo4j.com/docs/pdf/neo4j-manual-2.3.12.pdf ,
+            paragraph 2.18 -->
+    <xsd:complexType name="ShortestPathResponseType">
+        <xsd:sequence>
+            <xsd:element name="nodes" type="xsd:anyURI" minOccurs="0" maxOccurs="unbounded" />
+        </xsd:sequence>
+        <xsd:attribute name="length" type="xsd:unsignedShort"/>
+    </xsd:complexType>
 </xsd:schema>
