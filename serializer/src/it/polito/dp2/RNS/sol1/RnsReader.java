@@ -1,18 +1,21 @@
 package it.polito.dp2.RNS.sol1;
 
-import it.polito.dp2.RNS.*;
 import it.polito.dp2.RNS.GateType;
 import it.polito.dp2.RNS.VehicleState;
 import it.polito.dp2.RNS.VehicleType;
+import it.polito.dp2.RNS.*;
 import it.polito.dp2.RNS.sol1.conf.Config;
 import it.polito.dp2.RNS.sol1.jaxb.*;
+import org.xml.sax.SAXException;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.XMLConstants;
+import javax.xml.bind.*;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.lang.ref.WeakReference;
@@ -66,13 +69,17 @@ public class RnsReader implements it.polito.dp2.RNS.RnsReader {
             JAXBContext jc = JAXBContext.newInstance(Config.jaxbClassesPackage);
             Unmarshaller unmarshaller = jc.createUnmarshaller();
             XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(new FileInputStream(inputFile));
+            Schema schema = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(new File(Config.schemaFile));
+            unmarshaller.setSchema(schema); // default ValidationEventHandler,
             rnsInfo = unmarshaller.unmarshal(reader, RnsType.class).getValue();
 
             // Converting data into readers that will then serve client requests
             readPlacesAndConnections();
             readVehicles();
+        } catch (SAXException e) {
+            throw new RnsReaderException(e, "Error while parsing RNS data.");
         } catch (JAXBException e) {
-            throw new RnsReaderException(e, "Error while creating a JAXB context class.");
+            throw new RnsReaderException(e, "Error while creating a JAXB context class or unmarshalling.");
         } catch (XMLStreamException | FileNotFoundException e) {
             throw new RnsReaderException(e, "Could not find the input XML file.");
         }
@@ -180,8 +187,8 @@ public class RnsReader implements it.polito.dp2.RNS.RnsReader {
     public Set<VehicleReader> getVehicles(Calendar since, Set<VehicleType> types, VehicleState state) {
         return vehicles.values().stream().filter(v ->
                 (since == null || v.getEntryTime().after(since)) &&
-                (types == null || types.contains(v.getType())) &&
-                (state == null || state == v.getState())
+                        (types == null || types.contains(v.getType())) &&
+                        (state == null || state == v.getState())
         ).collect(Collectors.toSet());
     }
 

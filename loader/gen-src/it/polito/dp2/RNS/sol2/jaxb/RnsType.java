@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -18,13 +17,13 @@ import javax.xml.bind.annotation.XmlType;
  * &lt;complexType name="RnsType">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;choice>
+ *       &lt;sequence>
  *         &lt;element name="nodes" minOccurs="0">
  *           &lt;complexType>
  *             &lt;complexContent>
  *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *                 &lt;sequence>
- *                   &lt;element name="node" type="{}NodeType" maxOccurs="unbounded"/>
+ *                   &lt;element name="node" type="{}NodeType" maxOccurs="unbounded" minOccurs="0"/>
  *                 &lt;/sequence>
  *               &lt;/restriction>
  *             &lt;/complexContent>
@@ -35,7 +34,7 @@ import javax.xml.bind.annotation.XmlType;
  *             &lt;complexContent>
  *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *                 &lt;sequence>
- *                   &lt;element name="relation" type="{}RelationshipType" maxOccurs="unbounded"/>
+ *                   &lt;element name="relation" type="{}RelationshipType" maxOccurs="unbounded" minOccurs="0"/>
  *                 &lt;/sequence>
  *               &lt;/restriction>
  *             &lt;/complexContent>
@@ -43,7 +42,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;/element>
  *         &lt;element name="shortestPathRequest" type="{}ShortestPathRequestType" minOccurs="0"/>
  *         &lt;element name="shortestPathResponse" type="{}ShortestPathResponseType" minOccurs="0"/>
- *       &lt;/choice>
+ *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -188,7 +187,7 @@ public class RnsType {
      *   &lt;complexContent>
      *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
      *       &lt;sequence>
-     *         &lt;element name="node" type="{}NodeType" maxOccurs="unbounded"/>
+     *         &lt;element name="node" type="{}NodeType" maxOccurs="unbounded" minOccurs="0"/>
      *       &lt;/sequence>
      *     &lt;/restriction>
      *   &lt;/complexContent>
@@ -203,7 +202,6 @@ public class RnsType {
     })
     public static class Nodes {
 
-        @XmlElement(required = true)
         protected List<NodeType> node;
 
         /**
@@ -256,7 +254,7 @@ public class RnsType {
      *   &lt;complexContent>
      *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
      *       &lt;sequence>
-     *         &lt;element name="relation" type="{}RelationshipType" maxOccurs="unbounded"/>
+     *         &lt;element name="relation" type="{}RelationshipType" maxOccurs="unbounded" minOccurs="0"/>
      *       &lt;/sequence>
      *     &lt;/restriction>
      *   &lt;/complexContent>
@@ -271,7 +269,6 @@ public class RnsType {
     })
     public static class Relationships {
 
-        @XmlElement(required = true)
         protected List<RelationshipType> relation;
 
         /**

@@ -13,24 +13,24 @@
 
     <!-- Root type definition -->
     <xsd:complexType name="RnsType">
-        <xsd:choice>
+        <xsd:sequence>
             <xsd:element name="nodes" minOccurs="0">
                 <xsd:complexType>
                     <xsd:sequence>
-                        <xsd:element name="node" maxOccurs="unbounded" type="NodeType"/>
+                        <xsd:element name="node" minOccurs="0" maxOccurs="unbounded" type="NodeType"/>
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>
             <xsd:element name="relationships" minOccurs="0">
                 <xsd:complexType>
                     <xsd:sequence>
-                        <xsd:element name="relation" maxOccurs="unbounded" type="RelationshipType"/>
+                        <xsd:element name="relation" minOccurs="0" maxOccurs="unbounded" type="RelationshipType"/>
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>
             <xsd:element name="shortestPathRequest" minOccurs="0" type="ShortestPathRequestType"/>
             <xsd:element name="shortestPathResponse" minOccurs="0" type="ShortestPathResponseType"/>
-        </xsd:choice>
+        </xsd:sequence>
     </xsd:complexType>
 
     <!-- Nodes -->

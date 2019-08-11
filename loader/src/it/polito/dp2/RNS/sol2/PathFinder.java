@@ -10,7 +10,11 @@ import it.polito.dp2.RNS.lab2.BadStateException;
 import it.polito.dp2.RNS.lab2.ModelException;
 import it.polito.dp2.RNS.lab2.ServiceException;
 import it.polito.dp2.RNS.lab2.UnknownIdException;
+import it.polito.dp2.RNS.sol2.conf.Config;
 import it.polito.dp2.RNS.sol2.jaxb.*;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -20,12 +24,24 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.util.JAXBSource;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
 /**
  * PathFinder is an interface that has to be implemented in DP2 Assignment 2.
@@ -45,7 +61,6 @@ import java.util.Set;
  * 2. operating state: model loaded (and graph uploaded to remote service and service ready
  * to respond to queries).
  * The current state can be checked by means of the isModelLoaded operation.
- *
  */
 public class PathFinder implements it.polito.dp2.RNS.lab2.PathFinder {
 
@@ -116,6 +131,7 @@ public class PathFinder implements it.polito.dp2.RNS.lab2.PathFinder {
 
     /**
      * Checks the current state
+     *
      * @return true if the current state is the operating state (model loaded)
      */
     @Override
@@ -127,8 +143,9 @@ public class PathFinder implements it.polito.dp2.RNS.lab2.PathFinder {
      * Loads the current version of the model so that, if the operation is successful,
      * after the operation the PathFinder is in the operating state (model loaded) and
      * it can compute shortest paths on the loaded model.
+     *
      * @throws ServiceException if the operation cannot be completed because the remote service is not available or fails
-     * @throws ModelException if the operation cannot be completed because the current model cannot be read or is wrong (the problem is not related to the remote service)
+     * @throws ModelException   if the operation cannot be completed because the current model cannot be read or is wrong (the problem is not related to the remote service)
      */
     @Override
     public void reloadModel() throws ServiceException, ModelException {
@@ -142,11 +159,47 @@ public class PathFinder implements it.polito.dp2.RNS.lab2.PathFinder {
 
         // Data retriever
         reloadReader();
-        // TODO validation?
 
         // Reloading the model
-        readPlaces();
-        readConnections();
+        RnsType rnsValidationObject = objectFactory.createRnsType();
+        readPlaces(rnsValidationObject);
+        readConnections(rnsValidationObject);
+
+        // Validating
+        try {
+            Schema schema = SchemaFactory.newInstance(W3C_XML_SCHEMA_NS_URI).newSchema(new File(Config.schemaFile));
+            Validator validator = schema.newValidator();
+            validator.setErrorHandler(new ErrorHandler() {
+
+                @Override
+                public void warning(SAXParseException e) throws SAXException {
+                    // Printing additional info in case of a warning
+                    System.out.println("Line:Col[" + e.getLineNumber() +
+                            ":" + e.getColumnNumber() +
+                            "]: " + e.getMessage());
+                }
+
+                @Override
+                public void error(SAXParseException e) throws SAXException {
+                    throw e;
+                }
+
+                @Override
+                public void fatalError(SAXParseException e) throws SAXException {
+                    throw e;
+                }
+            });
+            JAXBContext jaxbContext = JAXBContext.newInstance(Config.jaxbClassesPackage);
+            validator.validate(new JAXBSource(jaxbContext, objectFactory.createRnsInfo(rnsValidationObject)));
+        } catch (FileNotFoundException e) {
+            throw new ModelException("Could not find the input XML file: " + e.getMessage(), e.getCause());
+        } catch (SAXException | IOException e) {
+            throw new ModelException("Error while parsing RNS data: " + e.getMessage(), e.getCause());
+        } catch (JAXBException e) {
+            throw new ModelException("Error while creating a JAXB context class or unmarshalling: " + e.getMessage(), e.getCause());
+        }
+
+        // Model has been loaded correctly
         loaded = true;
     }
 
@@ -189,25 +242,31 @@ public class PathFinder implements it.polito.dp2.RNS.lab2.PathFinder {
     /**
      * Sends information about RNS places on the web services and keeps track of these object URIs.
      *
+     * @param rnsValidationObject the RNS XML object used for validation purposes.
      * @throws ServiceException in case it was not possible to upload a place to the web service.
      */
-    private void readPlaces() throws ServiceException {
+    private void readPlaces(RnsType rnsValidationObject) throws ServiceException {
 
+        rnsValidationObject.setNodes(objectFactory.createRnsTypeNodes());
         for (PlaceReader place : rnsReader.getPlaces(null)) {
-            postPlace(place);
+            NodeType newNode = postPlace(place);
+            rnsValidationObject.getNodes().getNode().add(newNode);
         }
     }
 
     /**
      * Sends information about RNS connections on the web services and keeps track of these object URIs.
      *
+     * @param rnsValidationObject the RNS XML object used for validation purposes.
      * @throws ServiceException in case it was not possible to upload a connection to the web service.
      */
-    private void readConnections() throws ServiceException {
+    private void readConnections(RnsType rnsValidationObject) throws ServiceException {
 
+        rnsValidationObject.setRelationships(objectFactory.createRnsTypeRelationships());
         for (PlaceReader place : rnsReader.getPlaces(null)) {
             for (PlaceReader nextPlace : place.getNextPlaces()) {
-                postConnection(place, nextPlace);
+                RelationshipType newRelationship = postConnection(place, nextPlace);
+                rnsValidationObject.getRelationships().getRelation().add(newRelationship);
             }
         }
     }
@@ -216,9 +275,10 @@ public class PathFinder implements it.polito.dp2.RNS.lab2.PathFinder {
      * Posts a single place object to the web service and keeps track of its URI.
      *
      * @param place the place to be stored.
+     * @return the DB node object just uploaded.
      * @throws ServiceException in case it was not possible to upload this place.
      */
-    private void postPlace(PlaceReader place) throws ServiceException {
+    private NodeType postPlace(PlaceReader place) throws ServiceException {
 
         try {
             NodeType node = objectFactory.createNodeType();
@@ -234,6 +294,7 @@ public class PathFinder implements it.polito.dp2.RNS.lab2.PathFinder {
                 System.out.println("Node " + place.getId() + " post failed: error " + response.getStatus());
             }
 
+            return node;
         } catch (RuntimeException e) {
             throw new ServiceException("Error while posting node " + place.getId() + ": " + e.getMessage(),
                     e.getCause());
@@ -267,9 +328,10 @@ public class PathFinder implements it.polito.dp2.RNS.lab2.PathFinder {
      *
      * @param src the source place from which this connection starts.
      * @param dst the destination place to which this connection ends.
+     * @return the DB relationship object just uploaded.
      * @throws ServiceException in case it was not possible to upload this connection.
      */
-    private void postConnection(PlaceReader src, PlaceReader dst) throws ServiceException {
+    private RelationshipType postConnection(PlaceReader src, PlaceReader dst) throws ServiceException {
 
         try {
             RelationshipType relationship = objectFactory.createRelationshipType();
@@ -287,6 +349,8 @@ public class PathFinder implements it.polito.dp2.RNS.lab2.PathFinder {
                 System.out.println("Relationship between " + src.getId() + " and " + dst.getId() +
                         " post failed: error " + response.getStatus());
             }
+
+            return relationship;
         } catch (RuntimeException e) {
             throw new ServiceException("Error while creating a relationship between " + src.getId() +
                     " and " + dst.getId() + ": " + e.getMessage(),
@@ -322,13 +386,14 @@ public class PathFinder implements it.polito.dp2.RNS.lab2.PathFinder {
      * Looks for the shortest paths connecting a source place to a destination place
      * Each path is returned as a list of place identifiers, where the first place in the list is the source
      * and the last place is the destination.
-     * @param source The id of the source of the paths to be found
+     *
+     * @param source      The id of the source of the paths to be found
      * @param destination The id of the destination of the paths to be found
-     * @param maxlength The maximum length of the paths to be found (0 or negative means no bound on the length)
+     * @param maxlength   The maximum length of the paths to be found (0 or negative means no bound on the length)
      * @return the set of the shortest paths connecting source to destination
      * @throws UnknownIdException if source or destination is not a known place identifier
-     * @throws BadStateException if the operation is called when in the initial state (no model loaded)
-     * @throws ServiceException if the operation cannot be completed because the remote service is not available or fails
+     * @throws BadStateException  if the operation is called when in the initial state (no model loaded)
+     * @throws ServiceException   if the operation cannot be completed because the remote service is not available or fails
      */
     @Override
     public Set<List<String>> findShortestPaths(String source, String destination, int maxlength)

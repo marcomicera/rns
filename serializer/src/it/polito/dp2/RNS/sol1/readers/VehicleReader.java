@@ -20,7 +20,9 @@ public class VehicleReader extends IdentifiedEntityReader implements it.polito.d
                          PlaceReader origin,
                          PlaceReader position,
                          PlaceReader destination) {
+
         super(vehicle.getId());
+
         type = VehicleType.fromValue(vehicle.getType().value());
         entryTime = vehicle.getEntryTime();
         this.origin = origin;

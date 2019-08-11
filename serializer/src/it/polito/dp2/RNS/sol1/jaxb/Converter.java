@@ -5,7 +5,6 @@ import it.polito.dp2.RNS.*;
 import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
-
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +38,7 @@ public class Converter {
      * @return the RNS JAXB-compatible object
      */
     public JAXBElement<RnsType> getRnsInfo() {
+
         // Retrieving places
         PlacesType places = getPlaces();
 
@@ -64,6 +64,7 @@ public class Converter {
      * @return the RNS places, including gates, parking areas and road segments.
      */
     private PlacesType getPlaces() {
+
         // Places root object
         PlacesType places = new PlacesType();
 
@@ -86,6 +87,7 @@ public class Converter {
      * @return a list of RNS gates, from which vehicles can get in, get out, or both.
      */
     private GatesType getGates() {
+
         // If the RNS reader retrieves no gate objects
         if (monitor.getGates(null).isEmpty()) {
             // Do not create the XML `gates` element
@@ -116,6 +118,7 @@ public class Converter {
      * @return a list of RNS parking areas having different services.
      */
     private ParkingAreasType getParkingAreas() {
+
         // If the RNS reader retrieves no parking area objects
         if (monitor.getParkingAreas(null).isEmpty()) {
             // Do not create the XML `parkingAreas` element
@@ -150,6 +153,7 @@ public class Converter {
      * @return a list of RNS road segments, belonging to a specific road.
      */
     private RoadSegmentsType getRoadSegments() {
+
         // If the RNS reader retrieves no road segment objects
         if (monitor.getRoadSegments(null).isEmpty()) {
             // Do not create the XML `roadSegments` element
@@ -181,6 +185,7 @@ public class Converter {
      * @return a list of RNS place connections.
      */
     private ConnectionsType getConnections() {
+
         // If the RNS reader retrieves no connection objects
         if (monitor.getConnections().isEmpty()) {
             // Do not create the XML `connections` element
@@ -216,6 +221,7 @@ public class Converter {
      * @return a list of RNS vehicles.
      */
     private VehiclesType getVehicles() {
+
         // If the RNS reader retrieves no vehicles objects
         if (monitor.getVehicles(null, null, null).isEmpty()) {
             // Do not create the XML `vehicles` element

@@ -29,5 +29,7 @@ public abstract class PlaceReader extends IdentifiedEntityReader implements it.p
         return nextPlaces;
     }
 
-    public PlaceType getPlaceType() { return placeType; }
+    public PlaceType getPlaceType() {
+        return placeType;
+    }
 }

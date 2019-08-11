@@ -40,8 +40,10 @@ public class RnsInfoSerializer {
      * @throws RnsReaderException thrown if an implementation of RnsReader cannot be created
      */
     public RnsInfoSerializer(RnsReader monitor) throws RnsReaderException {
-        if (monitor == null)
+
+        if (monitor == null) {
             throw new RnsReaderException("Invalid monitor");
+        }
 
         converter = new Converter(monitor);
     }
@@ -52,6 +54,7 @@ public class RnsInfoSerializer {
      * @param args args[0]  represents the output file name
      */
     public static void main(String[] args) {
+
         // Arguments checking
         if (args.length != 1) {
             System.err.println("Usage: java RnsInfoSerializer filename");
@@ -97,49 +100,35 @@ public class RnsInfoSerializer {
      * @param os  OutputStream used during marshalling
      */
     private void marshal(Object obj, OutputStream os) {
-        // Validation
-        SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        Schema schema = null;
-        try {
-            schema = sf.newSchema(new File(Config.schemaFile));
-        } catch (SAXException e) {
-            System.err.println("Could not read the schema file");
-            e.printStackTrace();
-        }
 
         try {
-            // JAXBContext capable of handling JAXB-compatible generated classes
-            JAXBContext jc = JAXBContext.newInstance(Config.jaxbClassesPackage);
+            // Data will be validated against this XML schema
+            Schema schema = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(new File(Config.schemaFile));
 
             // Creating a Marshaller
-            Marshaller m = jc.createMarshaller();
+            Marshaller m = JAXBContext.newInstance(Config.jaxbClassesPackage).createMarshaller();
             m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-
             m.setSchema(schema);
-            // allows unmarshalling to continue even if there are errors
-            m.setEventHandler(ve -> {
-                // ignore warnings
-                if (ve.getSeverity() != ValidationEvent.WARNING) {
+            m.setEventHandler((ValidationEvent ve) -> {
+                if (ve.getSeverity() != ValidationEvent.WARNING) { // ignoring warnings
                     ValidationEventLocator vel = ve.getLocator();
                     System.out.println("Line:Col[" + vel.getLineNumber() +
                             ":" + vel.getColumnNumber() +
-                            "]: " + ve.getMessage()
-                    );
+                            "]: " + ve.getMessage());
                 }
-                return true;
+                return true; // the JAXB Provider continues validating also in case of a [fatal] error
             });
 
             // Marshalling to the specified file
             m.marshal(obj, os == null ? System.out : os);
-            if (os != null)
-                os.close();
-        } catch (JAXBException e1) {
-            System.err.println("A JAXB exception occurred");
-            e1.printStackTrace();
-            System.exit(1);
-        } catch (IOException e) {
-            System.err.println("An I/O exception occurred");
+
+        } catch (SAXException e) {
+            System.err.println("Error while parsing RNS data.");
             e.printStackTrace();
+            System.exit(1);
+        } catch (JAXBException e1) {
+            System.err.println("Error while creating a JAXB context class or marshalling");
+            e1.printStackTrace();
             System.exit(1);
         } catch (IllegalArgumentException e) {
             if (obj == null)
@@ -148,6 +137,16 @@ public class RnsInfoSerializer {
                 System.err.println("Invalid output stream");
             e.printStackTrace();
             System.exit(1);
+        } finally {
+            if (os != null) {
+                try {
+                    os.close();
+                } catch (IOException e) {
+                    System.err.println("An I/O exception occurred");
+                    e.printStackTrace();
+                    System.exit(1);
+                }
+            }
         }
     }
 }
