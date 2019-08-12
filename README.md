@@ -6,6 +6,8 @@
   - [Assignments FAQs](https://pad.polito.it:8080/enginframe/dp2/dp2.xml?_uri=//dp2/assignment_faqs)
   - [Examples](https://pad.polito.it:8080/enginframe/dp2/dp2.xml?_uri=//dp2/material)
 - [`it.polito.dp2.RNS` package](https://pad.polito.it:8080/enginframe/dp2/assignments/lab1/doc/index.html)
+- [Swagger APIs](https://app.swaggerhub.com/apis/marcomicera/RnsSystem/1.0)
+  - [Swagger data types](https://swagger.io/docs/specification/data-models/data-types/#array)
 
 #### Software
 - `openjdk-8-jdk`
