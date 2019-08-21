@@ -85,7 +85,7 @@ definitions:
         example: 'http://...' # TODO example
       id:
         type: string
-        example: vehicle4123
+        example: vehicle123
         xml:
           attribute: true
       entryTime:
@@ -110,6 +110,52 @@ definitions:
         type: string
         format: uri
         example: 'http://...' # TODO example
+  places:
+    type: object
+    xml:
+      name: places
+      attribute: false
+    required:
+    - places
+    properties:
+      totalPages:
+        type: integer
+        minimum: 0
+        example: 5
+      page:
+        type: integer
+        minimum: 0
+        example: 2
+      next:
+        type: string
+        format: uri
+        example: 'http://...' # TODO example
+      places:
+        type: array
+        xml:
+          name: places
+          wrapped: true
+        items:
+          $ref: '#/definitions/place'
+    description: All the places in the RNS system
+  place:
+    description: A single place in the RNS system
+    type: object
+    xml:
+      name: node
+    required:
+    - id
+    properties:
+      self:
+        type: string
+        format: uri
+        example: 'http://...' # TODO example
+      id:
+        type: string
+        example: place123
+        xml:
+          attribute: true
+      # TODO complete
   
 paths:
   /vehicles:
@@ -150,6 +196,183 @@ paths:
             $ref: '#/definitions/vehicles'
         400:
           description: 'Bad request: at least one invalid parameter'
+  /vehicles/{id}:
+    get:
+      tags:
+      - vehicles
+      summary: retrieves one vehicle
+      operationId: getVehicle
+      description: Retrieves one vehicle in the RNS system
+      produces:
+      - application/xml
+      - application/json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          description: The plate id of the vehicle to get
+      responses:
+        200:
+          description: Vehicle found
+          schema:
+            $ref: '#/definitions/vehicle'
+        400:
+          description: 'Bad request: invalid vehicle ID'
+        404:
+          description: Vehicle not found
+  /vehicles/{id}/origin:
+    get:
+      tags:
+      - vehicles
+      summary: retrieves one vehicle's origin
+      operationId: getOrigin
+      description: Retrieves one vehicle's origin in the RNS system
+      produces:
+      - application/xml
+      - application/json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          description: The vehicle's plate ID of interest
+      responses:
+        200:
+          description: Vehicle's origin found
+          schema:
+            $ref: '#/definitions/place'
+        400:
+          description: 'Bad request: invalid vehicle ID'
+        404:
+          description: Vehicle not found
+  /vehicles/{id}/position:
+    get:
+      tags:
+      - vehicles
+      summary: retrieves one vehicle's position
+      operationId: getPosition
+      description: Retrieves one vehicle's position in the RNS system
+      produces:
+      - application/xml
+      - application/json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          description: The vehicle's plate ID of interest
+      responses:
+        200:
+          description: Vehicle's position found
+          schema:
+            $ref: '#/definitions/place'
+        400:
+          description: 'Bad request: invalid vehicle ID'
+        404:
+          description: Vehicle not found
+  /vehicles/{id}/destination:
+    get:
+      tags:
+      - vehicles
+      summary: retrieves one vehicle's destination
+      operationId: getDestination
+      description: Retrieves one vehicle's destination in the RNS system
+      produces:
+      - application/xml
+      - application/json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          description: The vehicle's plate ID of interest
+      responses:
+        200:
+          description: Vehicle's destination found
+          schema:
+            $ref: '#/definitions/place'
+        400:
+          description: 'Bad request: invalid vehicle ID'
+        404:
+          description: Vehicle not found
+  /vehicles/{id}/entrytime:
+    get:
+      tags:
+      - vehicles
+      summary: retrieves one vehicle's entry time
+      operationId: getEntryTime
+      description: Retrieves one vehicle's entry time in the RNS system
+      produces:
+      - application/xml
+      - application/json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          description: The vehicle's plate ID of interest
+      responses:
+        200:
+          description: Vehicle's entry time found
+          schema:
+            type: string
+            format: date-time
+            example: '2017-07-21T17:32:28Z'
+        400:
+          description: 'Bad request: invalid vehicle ID'
+        404:
+          description: Vehicle not found
+  /vehicles/{id}/state:
+    get:
+      tags:
+      - vehicles
+      summary: retrieves one vehicle's state
+      operationId: getState
+      description: Retrieves one vehicle's state in the RNS system
+      produces:
+      - application/xml
+      - application/json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          description: The vehicle's plate ID of interest
+      responses:
+        200:
+          description: Vehicle's state found
+          schema:
+            $ref: '#/definitions/vehicleStatus'
+        400:
+          description: 'Bad request: invalid vehicle ID'
+        404:
+          description: Vehicle not found
+  /vehicles/{id}/type:
+    get:
+      tags:
+      - vehicles
+      summary: retrieves one vehicle's type
+      operationId: getType
+      description: Retrieves one vehicle's type in the RNS system
+      produces:
+      - application/xml
+      - application/json
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          description: The vehicle's plate ID of interest
+      responses:
+        200:
+          description: Vehicle's type found
+          schema:
+            $ref: '#/definitions/vehicleType'
+        400:
+          description: 'Bad request: invalid vehicle ID'
+        404:
+          description: Vehicle not found
 
 # Added by API Auto Mocking Plugin
 host: virtserver.swaggerhub.com
