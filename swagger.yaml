@@ -307,7 +307,60 @@ paths:
                 $ref: '#/components/schemas/places'
         '400':
           description: 'Bad request: at least one invalid parameter'
-          
+  '/places/{id}':
+    get:
+      tags:
+        - places
+      summary: retrieves one place
+      operationId: getPlace
+      description: Retrieves one place in the RNS system
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The unique id of the place to get
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Place found
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/place'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/place'
+        '400':
+          description: 'Bad request: invalid place ID'
+        '404':
+          description: Place not found
+  '/places/{id}/capacity':
+    get:
+      tags:
+        - places
+      summary: retrieves the capacity of a place
+      operationId: getCapacity
+      description: Retrieves the capacity of one place in the RNS system
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The place ID of interest
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Place capacity found
+          content:
+            schema:
+              type: integer
+              format: int32
+        '400':
+          description: 'Bad request: invalid place ID'
+        '404':
+          description: Place not found
+  
 servers:
   - url: 'https://virtserver.swaggerhub.com/marcomicera/RnsSystem/1.0'
   
