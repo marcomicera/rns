@@ -51,6 +51,14 @@ paths:
           description: The state of vehicles to be selected
           schema:
             $ref: '#/components/schemas/vehicleStatus'
+        - name: page
+          in: query
+          required: false
+          description: The desired page result
+          schema:
+            type: integer
+            format: int32
+            default: 0
       responses:
         '200':
           description: Vehicles returned
@@ -263,6 +271,40 @@ paths:
           description: 'Bad request: invalid vehicle ID'
         '404':
           description: Vehicle not found
+  /places:
+    get:
+      tags:
+        - places
+      summary: retrieves all palces
+      operationId: getPlaces
+      description: Retrieves a set containing all places in the RNS system
+      parameters:
+        - name: idPrefix
+          in: query
+          required: false
+          description: The ID prefix for selecting places
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          description: The desired page result
+          schema:
+            type: integer
+            format: int32
+            default: 0
+      responses:
+        '200':
+          description: Places returned
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/places'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/places'
+        '400':
+          description: 'Bad request: at least one invalid parameter'
           
 servers:
   - url: 'https://virtserver.swaggerhub.com/marcomicera/RnsSystem/1.0'
@@ -408,6 +450,8 @@ components:
             - $ref: '#/components/schemas/parkingArea'
             - $ref: '#/components/schemas/roadSegment'
             - $ref: '#/components/schemas/gate'
+          example:
+            - $ref: '#/components/schemas/roadSegment'
     parkingArea:
       description: A parking area in the RNS system
       type: object
@@ -418,6 +462,7 @@ components:
           type: array
           items:
             type: string
+          example: [Restroom, Bistro, Smoking area]
     roadSegment:
       description: A road segment in the RNS system
       type: object
@@ -431,10 +476,12 @@ components:
           type: string
           xml:
             attribute: true
+          example: RS123
         road:
           type: string
           xml:
             attribute: true
+          example: White Avenue
     gate:
       description: A gate in the RNS system
       type: object
@@ -449,3 +496,4 @@ components:
             - IN
             - OUT
             - INOUT
+          example: IN
