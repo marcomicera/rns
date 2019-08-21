@@ -145,9 +145,11 @@ paths:
           description: The state of vehicles to be selected
       responses:
         200:
-          description: OK
+          description: Vehicles returned
           schema:
             $ref: '#/definitions/vehicles'
+        400:
+          description: 'Bad request: at least one invalid parameter'
 
 # Added by API Auto Mocking Plugin
 host: virtserver.swaggerhub.com
