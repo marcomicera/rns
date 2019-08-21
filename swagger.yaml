@@ -43,8 +43,10 @@ paths:
           description: The set of types of vehicles that have to be selected
           schema:
             type: array
+            uniqueItems: true
             items:
               $ref: '#/components/schemas/vehicleType'
+            minItems: 0
         - name: state
           in: query
           required: false
@@ -341,18 +343,22 @@ components:
       properties:
         totalPages:
           type: integer
-          minimum: 0
+          minimum: 1
           example: 5
+          default: 1
         page:
           type: integer
           minimum: 0
           example: 2
+          default: 0
         next:
           type: string
           format: uri
           example: 'http://...'
         vehicles:
           type: array
+          uniqueItems: true
+          minItems: 0
           xml:
             name: vehicles
             wrapped: true
@@ -365,9 +371,14 @@ components:
       xml:
         name: vehicle
       required:
+        - self
         - id
-        - functionalType
-        - links
+        - entryTime
+        - type
+        - state
+        - origin
+        - position
+        - destination
       properties:
         self:
           type: string
@@ -410,18 +421,22 @@ components:
       properties:
         totalPages:
           type: integer
-          minimum: 0
+          minimum: 1
           example: 5
+          default: 1
         page:
           type: integer
           minimum: 0
           example: 2
+          default: 0
         next:
           type: string
           format: uri
           example: 'http://...'
         places:
           type: array
+          uniqueItems: true
+          minItems: 0
           xml:
             name: places
             wrapped: true
@@ -434,7 +449,10 @@ components:
       xml:
         name: place
       required:
+        - self
         - id
+        - capacity
+        - type
       properties:
         self:
           type: string
@@ -445,13 +463,26 @@ components:
           example: place123
           xml:
             attribute: true
+        capacity:
+          type: integer
+          format: int32
+          xml:
+            attribute: true
         type:
           oneOf:
             - $ref: '#/components/schemas/parkingArea'
             - $ref: '#/components/schemas/roadSegment'
             - $ref: '#/components/schemas/gate'
-          example:
-            - $ref: '#/components/schemas/roadSegment'
+          xml:
+            attribute: false
+        nextPlaces:
+          type: array
+          uniqueItems: true
+          minItems: 0
+          items:
+            type: string
+            format: uri
+          example: ['http://...', 'http://...']
     parkingArea:
       description: A parking area in the RNS system
       type: object
@@ -460,6 +491,8 @@ components:
       properties:
         services:
           type: array
+          uniqueItems: true
+          minItems: 0
           items:
             type: string
           example: [Restroom, Bistro, Smoking area]
