@@ -155,6 +155,18 @@ definitions:
         example: place123
         xml:
           attribute: true
+      capacity:
+        type: integer
+        format: int32
+        example: 100
+        xml:
+          attribute: true
+      nextPlaces:
+        type: array
+        items:
+          type: string
+          format: uri
+      info:
       # TODO complete
   
 paths:
