@@ -1,0 +1,101 @@
+swagger: '2.0'
+info:
+  version: '1.0'
+  title: 'RNS web service'
+  description: 'Road Navigation Services'
+  termsOfService: https://smartbear.com/terms-of-use/
+  contact:
+    email: marco.micera+dp2@gmail.com
+    name: Marco Micera
+    url: https://marcomicera.github.io/
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+
+tags:
+- name: vehicles
+  description: Managing vehicles within the RNS system
+- name: places
+  description: Retrieving info about RNS places
+- name: connections
+  description: How places are connected to each other
+
+paths:
+  /vehicles:
+    get:
+      tags:
+      - vehicles
+      summary: retrieves all vehicles
+      operationId: getVehicles
+      description: Retrieves a set containing all vehicles in the RNS system
+      produces:
+      - application/xml
+      - application/json
+      parameters:
+        - name: since
+          in: query
+          required: false
+          type: string
+          format: date-time
+          description: The entrance date/time since when vehicles have to be selected or null to select vehicles with any entrance date/time
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/vehicles'
+
+definitions:
+  vehicles:
+    type: object
+    xml:
+      name: vehicles
+    required:
+    - vehicles
+    properties:
+      totalPages:
+        type: integer
+        minimum: 0
+      page:
+        type: integer
+        minimum: 0
+      next:
+        type: string
+        format: uri
+      vehicles:
+        type: array
+        xml:
+          name: vehicles
+          wrapped: true
+        items:
+          $ref: '#/definitions/vehicle'
+    description: All the vehicles in the RNS system
+  vehicle:
+    type: object
+    xml:
+      name: node
+    required:
+    - id
+    - functionalType
+    - links
+    properties:
+      id:
+        type: string
+        example: WEBSERVERt4Nffg2
+        xml:
+          attribute: true
+      functionalType:
+        type: string
+        example: DPIa
+        xml:
+          attribute: true
+      host:
+        type: string
+        example: H7
+        xml:
+          attribute: true
+    description: A single vehicle in the RNS system
+# Added by API Auto Mocking Plugin
+host: virtserver.swaggerhub.com
+basePath: /marcomicera/RnsSystem/1.0
+schemes:
+ - https
