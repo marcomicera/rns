@@ -479,9 +479,14 @@ components:
           type: array
           uniqueItems: true
           minItems: 0
+          xml:
+            wrapped: true
+            name: nextPlaces
           items:
             type: string
             format: uri
+            xml:
+              name: nextPlace
           example: ['http://...', 'http://...']
     parkingArea:
       description: A parking area in the RNS system
