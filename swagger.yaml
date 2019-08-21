@@ -1,4 +1,5 @@
 openapi: 3.0.0
+
 info:
   version: "2.0-oas3"
   title: RNS web service
@@ -11,6 +12,7 @@ info:
   license:
     name: Apache 2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+    
 tags:
   - name: vehicles
     description: Managing vehicles within the RNS system
@@ -18,6 +20,7 @@ tags:
     description: Retrieving info about RNS places
   - name: connections
     description: How places are connected to each other
+    
 paths:
   /vehicles:
     get:
@@ -260,8 +263,10 @@ paths:
           description: 'Bad request: invalid vehicle ID'
         '404':
           description: Vehicle not found
+          
 servers:
   - url: 'https://virtserver.swaggerhub.com/marcomicera/RnsSystem/1.0'
+  
 components:
   schemas:
     vehicleType:
@@ -398,3 +403,49 @@ components:
           example: place123
           xml:
             attribute: true
+        type:
+          oneOf:
+            - $ref: '#/components/schemas/parkingArea'
+            - $ref: '#/components/schemas/roadSegment'
+            - $ref: '#/components/schemas/gate'
+    parkingArea:
+      description: A parking area in the RNS system
+      type: object
+      xml:
+        name: parkingArea
+      properties:
+        services:
+          type: array
+          items:
+            type: string
+    roadSegment:
+      description: A road segment in the RNS system
+      type: object
+      xml:
+        name: roadSegment
+      required:
+      - name
+      - road
+      properties:
+        name:
+          type: string
+          xml:
+            attribute: true
+        road:
+          type: string
+          xml:
+            attribute: true
+    gate:
+      description: A gate in the RNS system
+      type: object
+      xml:
+        name: gate
+      required:
+      - type
+      properties:
+        type:
+          type: string
+          enum:
+            - IN
+            - OUT
+            - INOUT
