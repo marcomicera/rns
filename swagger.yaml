@@ -19,7 +19,98 @@ tags:
   description: Retrieving info about RNS places
 - name: connections
   description: How places are connected to each other
-
+  
+definitions:
+  vehicleType:
+    type: string
+    enum: &vehicleType
+      - CAR
+      - TRUCK
+      - SHUTTLE
+      - CARAVAN
+    example: TRUCK
+    xml:
+      name: type
+      attribute: true
+  vehicleStatus:
+    type: string
+    enum: &vehicleStatus
+      - PARKED
+      - IN_TRANSIT
+    example: PARKED
+    xml:
+      name: state
+      attribute: true
+  vehicles:
+    type: object
+    xml:
+      name: vehicles
+      attribute: false
+    required:
+    - vehicles
+    properties:
+      totalPages:
+        type: integer
+        minimum: 0
+        example: 5
+      page:
+        type: integer
+        minimum: 0
+        example: 2
+      next:
+        type: string
+        format: uri
+        example: 'http://...' # TODO example
+      vehicles:
+        type: array
+        xml:
+          name: vehicles
+          wrapped: true
+        items:
+          $ref: '#/definitions/vehicle'
+    description: All the vehicles in the RNS system
+  vehicle:
+    description: A single vehicle in the RNS system
+    type: object
+    xml:
+      name: node
+    required:
+    - id
+    - functionalType
+    - links
+    properties:
+      self:
+        type: string
+        format: uri
+        example: 'http://...' # TODO example
+      id:
+        type: string
+        example: vehicle4123
+        xml:
+          attribute: true
+      entryTime:
+        type: string
+        format: date-time
+        example: '2017-07-21T17:32:28Z'
+        xml:
+          attribute: false
+      type: 
+        $ref: '#/definitions/vehicleType'
+      state:
+        $ref: '#/definitions/vehicleStatus'
+      origin:
+        type: string
+        format: uri
+        example: 'http://...' # TODO example
+      position:
+        type: string
+        format: uri
+        example: 'http://...' # TODO example
+      destination:
+        type: string
+        format: uri
+        example: 'http://...' # TODO example
+  
 paths:
   /vehicles:
     get:
@@ -37,63 +128,27 @@ paths:
           required: false
           type: string
           format: date-time
-          description: The entrance date/time since when vehicles have to be selected or null to select vehicles with any entrance date/time
+          description: The entrance date/time since when vehicles have to be selected
+        - name: types
+          in: query
+          required: false
+          type: array
+          items:
+            type: string
+            enum: *vehicleType
+          description: The set of types of vehicles that have to be selected
+        - name: state
+          in: query
+          required: false
+          type: string
+          enum: *vehicleStatus
+          description: The state of vehicles to be selected
       responses:
         200:
           description: OK
           schema:
             $ref: '#/definitions/vehicles'
 
-definitions:
-  vehicles:
-    type: object
-    xml:
-      name: vehicles
-    required:
-    - vehicles
-    properties:
-      totalPages:
-        type: integer
-        minimum: 0
-      page:
-        type: integer
-        minimum: 0
-      next:
-        type: string
-        format: uri
-      vehicles:
-        type: array
-        xml:
-          name: vehicles
-          wrapped: true
-        items:
-          $ref: '#/definitions/vehicle'
-    description: All the vehicles in the RNS system
-  vehicle:
-    type: object
-    xml:
-      name: node
-    required:
-    - id
-    - functionalType
-    - links
-    properties:
-      id:
-        type: string
-        example: WEBSERVERt4Nffg2
-        xml:
-          attribute: true
-      functionalType:
-        type: string
-        example: DPIa
-        xml:
-          attribute: true
-      host:
-        type: string
-        example: H7
-        xml:
-          attribute: true
-    description: A single vehicle in the RNS system
 # Added by API Auto Mocking Plugin
 host: virtserver.swaggerhub.com
 basePath: /marcomicera/RnsSystem/1.0
