@@ -41,21 +41,13 @@ paths:
           schema:
             type: array
             items:
-              type: string
-              enum:
-                - CAR
-                - TRUCK
-                - SHUTTLE
-                - CARAVAN
+              $ref: '#/components/schemas/vehicleType'
         - name: state
           in: query
           required: false
           description: The state of vehicles to be selected
           schema:
-            type: string
-            enum:
-              - PARKED
-              - IN_TRANSIT
+            $ref: '#/components/schemas/vehicleStatus'
       responses:
         '200':
           description: Vehicles returned
@@ -324,7 +316,7 @@ components:
       description: A single vehicle in the RNS system
       type: object
       xml:
-        name: node
+        name: vehicle
       required:
         - id
         - functionalType
@@ -393,7 +385,7 @@ components:
       description: A single place in the RNS system
       type: object
       xml:
-        name: node
+        name: place
       required:
         - id
       properties:
