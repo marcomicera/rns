@@ -173,17 +173,10 @@ paths:
           content:
             application/xml:
               schema:
-                type: string
-                format: date-time
-                example: '2017-07-21T17:32:28Z'
-                xml:
-                  wrapped: true
-                  name: entryTime
+                $ref: '#/components/schemas/entryTime'
             application/json:
               schema:
-                type: string
-                format: date-time
-                example: '2017-07-21T17:32:28Z'
+                $ref: '#/components/schemas/entryTime'
         # '400':
         #   $ref: '#/components/responses/invalidVehicleId'
         '404':
@@ -299,15 +292,10 @@ paths:
           content:
             application/json:
               schema:
-                type: integer
-                format: int32
+                $ref: '#/components/schemas/capacity'
             application/xml:
               schema:
-                type: integer
-                format: int32
-                xml:
-                  wrapped: true
-                  name: capacity
+                $ref: '#/components/schemas/capacity'
         '400':
           description: 'Bad request: invalid place ID'
         '404':
@@ -478,6 +466,18 @@ components:
           items:
             $ref: '#/components/schemas/vehicle'
       description: All the vehicles in the RNS system
+    entryTime:
+      type: string
+      format: date-time
+      example: '2017-07-21T17:32:28Z'
+      xml:
+        wrapped: true
+        name: entryTime
+    vehicleId:
+      type: string
+      example: vehicle123
+      xml:
+        attribute: true
     vehicle:
       description: A single vehicle in the RNS system
       type: object
@@ -496,16 +496,9 @@ components:
         self:
           $ref: '#/components/schemas/vehicleUri'
         id:
-          type: string
-          example: vehicle123
-          xml:
-            attribute: true
+          $ref: '#/components/schemas/vehicleId'
         entryTime:
-          type: string
-          format: date-time
-          example: '2017-07-21T17:32:28Z'
-          xml:
-            attribute: false
+          $ref: '#/components/schemas/entryTime'
         type:
           $ref: '#/components/schemas/vehicleType'
         state:
@@ -565,6 +558,19 @@ components:
         xml:
           name: nextPlace
       example: ['http://...', 'http://...']
+    capacity:
+      type: integer
+      format: int32
+      xml:
+        wrapped: true
+        name: capacity
+      minimum: 0
+      example: 100
+    placeId:
+      type: string
+      example: place123
+      xml:
+        attribute: true
     place:
       description: A single place in the RNS system
       type: object
@@ -579,10 +585,7 @@ components:
         self:
           $ref: '#/components/schemas/placeUri'
         id:
-          type: string
-          example: place123
-          xml:
-            attribute: true
+          $ref: '#/components/schemas/placeId'
         capacity:
           type: integer
           format: int32
@@ -650,6 +653,19 @@ components:
       properties:
         type:
           $ref: '#/components/schemas/gateType'
+    connection:
+      description: A connection between two places in the RNS system
+      type: object
+      xml:
+        name: connection
+      required:
+      - from
+      - to
+      properties:
+        from:
+          $ref: '#/components/schemas/placeUri'
+        to:
+          $ref: '#/components/schemas/placeUri'
   parameters:
     pageNumber:
       name: page
@@ -666,14 +682,14 @@ components:
       required: true
       description: The vehicle's plate ID of interest
       schema:
-        type: string
+        $ref: '#/components/schemas/vehicleId'
     placeId:
       name: id
       in: path
       required: true
       description: The place ID of interest
       schema:
-        type: string
+        $ref: '#/components/schemas/placeId'
   responses:
     atLeastOneParameterWrong:
       description: 'Bad request: at least one invalid parameter'
