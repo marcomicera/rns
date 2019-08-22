@@ -72,15 +72,7 @@ paths:
       summary: add a new vehicle
       operationId: addVehicle
       requestBody:
-        description: Vehicle that needs to be added to the RNS system
-        content:
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/entrance'
-          application/json:
-            schema:
-              $ref: '#/components/schemas/entrance'
-        required: true
+        $ref: '#/components/requestBodies/entrance'
       responses:
         '201':
           description: 'New vehicle created, return suggest path'
@@ -187,6 +179,26 @@ paths:
         #   $ref: '#/components/responses/invalidVehicleId'
         '404':
           $ref: '#/components/responses/vehicleNotFound'
+    put:
+      tags:
+        - vehicles
+      summary: updates a vehicle's position
+      operationId: setPosition
+      description: Updates a vehicle's position in the RNS system
+      requestBody:
+        $ref: '#/components/requestBodies/position'
+      parameters:
+        - $ref: '#/components/parameters/vehicleId'
+      responses:
+        '200':
+          description: Vehicle's position updated. New suggested path
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/placeUri' # FIXME XML element name
+            application/json:
+              schema:
+                $ref: '#/components/schemas/placeUri'
   '/vehicles/{id}/destination':
     get:
       tags:
@@ -1096,6 +1108,27 @@ components:
       description: The connection ID of interest
       schema:
         $ref: '#/components/schemas/connectionId'
+  requestBodies:
+    entrance:
+      description: Vehicle that needs to be added to the RNS system
+      content:
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/entrance'
+        application/json:
+          schema:
+            $ref: '#/components/schemas/entrance'
+      required: true
+    position:
+      description: Position to which a vehicle in the RNS system has moved
+      content:
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/placeUri' # FIXME XML element name
+        application/json:
+          schema:
+            $ref: '#/components/schemas/placeUri'
+      required: true
   responses:
     atLeastOneParameterWrong:
       description: 'Bad request: at least one invalid parameter'
