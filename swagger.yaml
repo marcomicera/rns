@@ -208,6 +208,9 @@ paths:
                 type: string
                 format: date-time
                 example: '2017-07-21T17:32:28Z'
+                xml:
+                  wrapped: true
+                  name: entryTime
             application/json:
               schema:
                 type: string
@@ -353,9 +356,17 @@ paths:
         '200':
           description: Place capacity found
           content:
-            schema:
-              type: integer
-              format: int32
+            application/json:
+              schema:
+                type: integer
+                format: int32
+            application/xml:
+              schema:
+                type: integer
+                format: int32
+                xml:
+                  wrapped: true
+                  name: capacity
         '400':
           description: 'Bad request: invalid place ID'
         '404':
