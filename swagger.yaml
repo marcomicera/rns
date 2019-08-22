@@ -109,8 +109,11 @@ paths:
         '400':
           description: 'Bad request: the vehicle object was malformed'
           content: {}
+        '403':
+          description: 'Permission not granted'
+          content: {}
         '404':
-          description: 'At least one place has not been found'
+          description: 'At least a place has not been found'
           content: {}
         '409':
           description: 'Conflict: vehicle already existed'
@@ -119,9 +122,9 @@ paths:
     get:
       tags:
         - vehicles
-      summary: retrieves one vehicle
+      summary: retrieves a vehicle
       operationId: getVehicle
-      description: Retrieves one vehicle in the RNS system
+      description: Retrieves a vehicle in the RNS system
       parameters:
         - $ref: '#/components/parameters/vehicleId'
       responses:
@@ -142,9 +145,9 @@ paths:
     get:
       tags:
         - vehicles
-      summary: retrieves one vehicle's origin
+      summary: retrieves a vehicle's origin
       operationId: getOrigin
-      description: Retrieves one vehicle's origin in the RNS system
+      description: Retrieves a vehicle's origin in the RNS system
       parameters:
         - $ref: '#/components/parameters/vehicleId'
       responses:
@@ -165,9 +168,9 @@ paths:
     get:
       tags:
         - vehicles
-      summary: retrieves one vehicle's position
+      summary: retrieves a vehicle's position
       operationId: getPosition
-      description: Retrieves one vehicle's position in the RNS system
+      description: Retrieves a vehicle's position in the RNS system
       parameters:
         - $ref: '#/components/parameters/vehicleId'
       responses:
@@ -188,9 +191,9 @@ paths:
     get:
       tags:
         - vehicles
-      summary: retrieves one vehicle's destination
+      summary: retrieves a vehicle's destination
       operationId: getDestination
-      description: Retrieves one vehicle's destination in the RNS system
+      description: Retrieves a vehicle's destination in the RNS system
       parameters:
         - $ref: '#/components/parameters/vehicleId'
       responses:
@@ -211,9 +214,9 @@ paths:
     get:
       tags:
         - vehicles
-      summary: retrieves one vehicle's entry time
+      summary: retrieves a vehicle's entry time
       operationId: getEntryTime
-      description: Retrieves one vehicle's entry time in the RNS system
+      description: Retrieves a vehicle's entry time in the RNS system
       parameters:
         - $ref: '#/components/parameters/vehicleId'
       responses:
@@ -234,9 +237,9 @@ paths:
     get:
       tags:
         - vehicles
-      summary: retrieves one vehicle's state
+      summary: retrieves a vehicle's state
       operationId: getState
-      description: Retrieves one vehicle's state in the RNS system
+      description: Retrieves a vehicle's state in the RNS system
       parameters:
         - $ref: '#/components/parameters/vehicleId'
       responses:
@@ -257,9 +260,9 @@ paths:
     get:
       tags:
         - vehicles
-      summary: retrieves one vehicle's type
+      summary: retrieves a vehicle's type
       operationId: getVehicleType
-      description: Retrieves one vehicle's type in the RNS system
+      description: Retrieves a vehicle's type in the RNS system
       parameters:
         - $ref: '#/components/parameters/vehicleId'
       responses:
@@ -307,9 +310,9 @@ paths:
     get:
       tags:
         - places
-      summary: retrieves one place
+      summary: retrieves a place
       operationId: getPlace
-      description: Retrieves one place in the RNS system
+      description: Retrieves a place in the RNS system
       parameters:
         - $ref: '#/components/parameters/placeId'
       responses:
@@ -332,7 +335,7 @@ paths:
         - places
       summary: retrieves the capacity of a place
       operationId: getCapacity
-      description: Retrieves the capacity of one place in the RNS system
+      description: Retrieves the capacity of a place in the RNS system
       parameters:
         - $ref: '#/components/parameters/placeId'
       responses:
@@ -1030,7 +1033,7 @@ components:
               type: string
               enum: [IN, INOUT]
               xml:
-                attribute: false
+                attribute: true
         vehicle:
           type: object
           properties:
