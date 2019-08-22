@@ -92,8 +92,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/vehicle'
-        '400':
-          $ref: '#/components/responses/invalidVehicleId'
+        # '400':
+        #   $ref: '#/components/responses/invalidVehicleId'
         '404':
           $ref: '#/components/responses/vehicleNotFound'
   '/vehicles/{id}/origin':
@@ -115,8 +115,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/place'
-        '400':
-          $ref: '#/components/responses/invalidVehicleId'
+        # '400':
+        #   $ref: '#/components/responses/invalidVehicleId'
         '404':
           $ref: '#/components/responses/vehicleNotFound'
   '/vehicles/{id}/position':
@@ -138,8 +138,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/place'
-        '400':
-          $ref: '#/components/responses/invalidVehicleId'
+        # '400':
+        #   $ref: '#/components/responses/invalidVehicleId'
         '404':
           $ref: '#/components/responses/vehicleNotFound'
   '/vehicles/{id}/destination':
@@ -161,8 +161,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/place'
-        '400':
-          $ref: '#/components/responses/invalidVehicleId'
+        # '400':
+        #   $ref: '#/components/responses/invalidVehicleId'
         '404':
           $ref: '#/components/responses/vehicleNotFound'
   '/vehicles/{id}/entrytime':
@@ -191,8 +191,8 @@ paths:
                 type: string
                 format: date-time
                 example: '2017-07-21T17:32:28Z'
-        '400':
-          $ref: '#/components/responses/invalidVehicleId'
+        # '400':
+        #   $ref: '#/components/responses/invalidVehicleId'
         '404':
           $ref: '#/components/responses/vehicleNotFound'
   '/vehicles/{id}/state':
@@ -214,8 +214,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/vehicleStatus'
-        '400':
-          $ref: '#/components/responses/invalidVehicleId'
+        # '400':
+        #   $ref: '#/components/responses/invalidVehicleId'
         '404':
           $ref: '#/components/responses/vehicleNotFound'
   '/vehicles/{id}/type':
@@ -237,8 +237,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/vehicleType'
-        '400':
-          $ref: '#/components/responses/invalidVehicleId'
+        # '400':
+        #   $ref: '#/components/responses/invalidVehicleId'
         '404':
           $ref: '#/components/responses/vehicleNotFound'
   /places:
@@ -294,8 +294,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/place'
-        '400':
-          $ref: '#/components/responses/invalidPlaceId'
+        # '400':
+        #   $ref: '#/components/responses/invalidPlaceId'
         '404':
           $ref: '#/components/responses/placeNotFound'
   '/places/{id}/capacity':
@@ -326,37 +326,32 @@ paths:
           description: 'Bad request: invalid place ID'
         '404':
           description: Place not found
-  # '/places/{id}/nextPlaces':
-  #   get:
-  #     tags:
-  #       - places
-  #     summary: retrieves all places to which this place is connected
-  #     operationId: getNextPlaces
-  #     description: Retrieves the set of all places to which this place is connected
-  #     parameters:
-  #       - $ref: '#/components/parameters/placeId'
-  #     responses:
-  #       '200':
-  #         description: Next places found found
-  #         content:
-  #           application/json:
-  #             schema:
-  #               type: integer
-  #               format: int32
-  #           application/xml:
-  #             schema:
-  #               type: integer
-  #               format: int32
-  #               xml:
-  #                 wrapped: true
-  #                 name: capacity
-  #       '400':
-  #         $ref: '#/components/responses/invalidPlaceId'
-  #       '404':
-  #         $ref: '#/components/responses/placeNotFound'
+  '/places/{id}/nextPlaces':
+    get:
+      tags:
+        - places
+      summary: retrieves all places to which this place is connected
+      operationId: getNextPlaces
+      description: Retrieves the set of all places to which this place is connected
+      parameters:
+        - $ref: '#/components/parameters/placeId'
+      responses:
+        '200':
+          description: Next places found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/nextPlaces'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/nextPlaces'
+        # '400':
+        #   $ref: '#/components/responses/invalidPlaceId'
+        '404':
+          $ref: '#/components/responses/placeNotFound'
   
 servers:
-  - url: 'https://virtserver.swaggerhub.com/marcomicera/RnsSystem/1.0'
+  - url: 'https://virtserver.swaggerhub.com/marcomicera/RnsSystem/2.0-oas3'
   
 components:
   schemas:
@@ -490,6 +485,19 @@ components:
           items:
             $ref: '#/components/schemas/place'
       description: All the places in the RNS system
+    nextPlaces:
+      type: array
+      uniqueItems: true
+      minItems: 0
+      xml:
+        wrapped: true
+        name: nextPlaces
+      items:
+        type: string
+        format: uri
+        xml:
+          name: nextPlace
+      example: ['http://...', 'http://...']
     place:
       description: A single place in the RNS system
       type: object
@@ -523,18 +531,7 @@ components:
           xml:
             attribute: false
         nextPlaces:
-          type: array
-          uniqueItems: true
-          minItems: 0
-          xml:
-            wrapped: true
-            name: nextPlaces
-          items:
-            type: string
-            format: uri
-            xml:
-              name: nextPlace
-          example: ['http://...', 'http://...']
+          $ref: '#/components/schemas/nextPlaces'
     parkingArea:
       description: A parking area in the RNS system
       type: object
@@ -600,11 +597,11 @@ components:
   responses:
     atLeastOneParameterWrong:
       description: 'Bad request: at least one invalid parameter'
-    invalidVehicleId:
-      description: 'Bad request: invalid vehicle ID'
+    # invalidVehicleId:
+    #   description: 'Bad request: invalid vehicle ID'
     vehicleNotFound:
       description: 'Vehicle not found'
-    invalidPlaceId:
-      description: 'Bad request: invalid place ID'
+    # invalidPlaceId:
+    #   description: 'Bad request: invalid place ID'
     placeNotFound:
       description: 'Place not found'
