@@ -442,6 +442,10 @@ components:
       xml:
         name: state
         attribute: true
+    vehicleUri:
+      type: string
+      format: uri
+      example: 'http://.../vehicles/...' # FIXME
     vehicles:
       type: object
       xml:
@@ -463,7 +467,7 @@ components:
         next:
           type: string
           format: uri
-          example: 'http://...'
+          example: 'http://...' # FIXME
         vehicles:
           type: array
           uniqueItems: true
@@ -490,9 +494,7 @@ components:
         - destination
       properties:
         self:
-          type: string
-          format: uri
-          example: 'http://...'
+          $ref: '#/components/schemas/vehicleUri'
         id:
           type: string
           example: vehicle123
@@ -509,17 +511,15 @@ components:
         state:
           $ref: '#/components/schemas/vehicleStatus'
         origin:
-          type: string
-          format: uri
-          example: 'http://...'
+          $ref: '#/components/schemas/placeUri'
         position:
-          type: string
-          format: uri
-          example: 'http://...'
+          $ref: '#/components/schemas/placeUri'
         destination:
-          type: string
-          format: uri
-          example: 'http://...'
+          $ref: '#/components/schemas/placeUri'
+    placeUri:
+      type: string
+      format: uri
+      example: 'http://.../places/...' # FIXME
     places:
       type: object
       xml:
@@ -541,7 +541,7 @@ components:
         next:
           type: string
           format: uri
-          example: 'http://...'
+          example: 'http://...' # FIXME
         places:
           type: array
           uniqueItems: true
@@ -577,9 +577,7 @@ components:
         - type
       properties:
         self:
-          type: string
-          format: uri
-          example: 'http://...'
+          $ref: '#/components/schemas/placeUri'
         id:
           type: string
           example: place123
