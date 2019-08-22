@@ -22,7 +22,7 @@ tags:
     description: How places are connected to each other
     
 paths:
-  /vehicles:
+  '/vehicles':
     get:
       tags:
         - vehicles
@@ -53,14 +53,7 @@ paths:
           description: The state of vehicles to be selected
           schema:
             $ref: '#/components/schemas/vehicleStatus'
-        - name: page
-          in: query
-          required: false
-          description: The desired page result
-          schema:
-            type: integer
-            format: int32
-            default: 0
+        - $ref: '#/components/parameters/pageNumber'
       responses:
         '200':
           description: Vehicles returned
@@ -241,7 +234,7 @@ paths:
         #   $ref: '#/components/responses/invalidVehicleId'
         '404':
           $ref: '#/components/responses/vehicleNotFound'
-  /places:
+  '/places':
     get:
       tags:
         - places
@@ -255,14 +248,7 @@ paths:
           description: The ID prefix for selecting places
           schema:
             type: string
-        - name: page
-          in: query
-          required: false
-          description: The desired page result
-          schema:
-            type: integer
-            format: int32
-            default: 0
+        - $ref: '#/components/parameters/pageNumber'
       responses:
         '200':
           description: Places returned
@@ -349,6 +335,60 @@ paths:
         #   $ref: '#/components/responses/invalidPlaceId'
         '404':
           $ref: '#/components/responses/placeNotFound'
+  '/places/gates':
+    get:
+      tags:
+        - places
+      summary: retrieves all gates
+      operationId: getGates
+      description: Retrieves a set containing all gates in the RNS system
+      parameters:
+        - name: type
+          in: query
+          required: false
+          description: The ID prefix for selecting places
+          schema:
+            $ref: '#/components/schemas/gateType'
+        - $ref: '#/components/parameters/pageNumber'
+      responses:
+        '200':
+          description: Places returned
+          content: # TODO Can I enforce the place type?
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/places'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/places'
+        '400':
+          $ref: '#/components/responses/atLeastOneParameterWrong'
+  '/places/parkingAreas':
+    get:
+      tags:
+        - places
+      summary: retrieves all parking areas
+      operationId: getParkingAreas
+      description: Retrieves a set containing all parking areas in the RNS system
+      parameters:
+        - name: services
+          in: query
+          required: false
+          description: The set of services that parking areas must have
+          schema:
+            $ref: '#/components/schemas/services'
+        - $ref: '#/components/parameters/pageNumber'
+      responses:
+        '200':
+          description: Places returned
+          content: # TODO Can I enforce the place type?
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/places'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/places'
+        '400':
+          $ref: '#/components/responses/atLeastOneParameterWrong'
   
 servers:
   - url: 'https://virtserver.swaggerhub.com/marcomicera/RnsSystem/2.0-oas3'
@@ -524,7 +564,7 @@ components:
           xml:
             attribute: true
         type:
-          oneOf:
+          oneOf: # FIXME this is not shown in the GUI
             - $ref: '#/components/schemas/parkingArea'
             - $ref: '#/components/schemas/roadSegment'
             - $ref: '#/components/schemas/gate'
@@ -532,6 +572,13 @@ components:
             attribute: false
         nextPlaces:
           $ref: '#/components/schemas/nextPlaces'
+    services:
+      type: array
+      uniqueItems: true
+      minItems: 0
+      items:
+        type: string
+      example: [Restroom, Bistro, Smoking area]
     parkingArea:
       description: A parking area in the RNS system
       type: object
@@ -539,12 +586,7 @@ components:
         name: parkingArea
       properties:
         services:
-          type: array
-          uniqueItems: true
-          minItems: 0
-          items:
-            type: string
-          example: [Restroom, Bistro, Smoking area]
+          $ref: '#/components/schemas/services'
     roadSegment:
       description: A road segment in the RNS system
       type: object
@@ -564,6 +606,13 @@ components:
           xml:
             attribute: true
           example: White Avenue
+    gateType:
+      type: string
+      enum:
+        - IN
+        - OUT
+        - INOUT
+      example: IN
     gate:
       description: A gate in the RNS system
       type: object
@@ -573,13 +622,17 @@ components:
       - type
       properties:
         type:
-          type: string
-          enum:
-            - IN
-            - OUT
-            - INOUT
-          example: IN
+          $ref: '#/components/schemas/gateType'
   parameters:
+    pageNumber:
+      name: page
+      in: query
+      required: false
+      description: The desired page result
+      schema:
+        type: integer
+        format: int32
+        default: 0
     vehicleId:
       name: id
       in: path
