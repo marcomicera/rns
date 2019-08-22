@@ -423,6 +423,52 @@ paths:
                 $ref: '#/components/schemas/places'
         '400':
           $ref: '#/components/responses/atLeastOneParameterWrong'
+  # '/places/parkingAreas/{id}': # FIXME this is not present in the RNS-API
+  #   get:
+  #     tags:
+  #       - places
+  #     summary: retrieves one parking area
+  #     operationId: getParkingArea
+  #     description: Retrieves one parking area in the RNS system
+  #     parameters:
+  #       - $ref: '#/components/parameters/parkingAreaId'
+  #     responses:
+  #       '200':
+  #         description: Parking area found
+  #         content: # TODO Can I enforce the place type?
+  #           application/xml:
+  #             schema:
+  #               $ref: '#/components/schemas/place'
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/place'
+  #       # '400':
+  #       #   $ref: '#/components/responses/invalidPlaceId'
+  #       '404':
+  #         $ref: '#/components/responses/placeNotFound'
+  '/places/parkingAreas/{id}/services':
+    get:
+      tags:
+        - places
+      summary: retrieves one parking area's services
+      operationId: getServices
+      description: Retrieves one parking area's services in the RNS system
+      parameters:
+        - $ref: '#/components/parameters/parkingAreaId'
+      responses:
+        '200':
+          description: Parking area's services found
+          content: # TODO Can I enforce the place type?
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/services'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/services'
+        # '400':
+        #   $ref: '#/components/responses/invalidPlaceId'
+        '404':
+          $ref: '#/components/responses/placeNotFound'
   '/places/roadSegments':
     get:
       tags:
@@ -739,7 +785,17 @@ components:
       minItems: 0
       items:
         type: string
+        xml:
+          name: service
       example: [Restroom, Bistro, Smoking area]
+      xml:
+        wrapped: true
+        name: services
+    parkingAreaId:
+      type: string
+      example: pa123
+      xml:
+        attribute: true
     parkingArea:
       description: A parking area in the RNS system
       type: object
@@ -873,6 +929,13 @@ components:
       description: The connection ID of interest
       schema:
         $ref: '#/components/schemas/connectionId'
+    parkingAreaId:
+      name: id
+      in: path
+      required: true
+      description: The parking area ID of interest
+      schema:
+        $ref: '#/components/schemas/parkingAreaId'
   responses:
     atLeastOneParameterWrong:
       description: 'Bad request: at least one invalid parameter'
