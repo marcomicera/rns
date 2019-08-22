@@ -352,7 +352,7 @@ paths:
         - $ref: '#/components/parameters/pageNumber'
       responses:
         '200':
-          description: Places returned
+          description: Gates returned
           content: # TODO Can I enforce the place type?
             application/xml:
               schema:
@@ -379,7 +379,34 @@ paths:
         - $ref: '#/components/parameters/pageNumber'
       responses:
         '200':
-          description: Places returned
+          description: Parking areas returned
+          content: # TODO Can I enforce the place type?
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/places'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/places'
+        '400':
+          $ref: '#/components/responses/atLeastOneParameterWrong'
+  '/places/roadSegments':
+    get:
+      tags:
+        - places
+      summary: retrieves all road segments
+      operationId: getRoadSegments
+      description: Retrieves a set containing all road segments in the RNS system
+      parameters:
+        - name: roadName
+          in: query
+          required: false
+          description: The name of the road to which the segment must belong to
+          schema:
+            $ref: '#/components/schemas/roadName'
+        - $ref: '#/components/parameters/pageNumber'
+      responses:
+        '200':
+          description: Road segments returned
           content: # TODO Can I enforce the place type?
             application/xml:
               schema:
@@ -587,6 +614,11 @@ components:
       properties:
         services:
           $ref: '#/components/schemas/services'
+    roadName:
+      type: string
+      xml:
+        attribute: true
+      example: White Avenue
     roadSegment:
       description: A road segment in the RNS system
       type: object
@@ -602,10 +634,7 @@ components:
             attribute: true
           example: RS123
         road:
-          type: string
-          xml:
-            attribute: true
-          example: White Avenue
+          $ref: '#/components/schemas/roadName'
     gateType:
       type: string
       enum:
