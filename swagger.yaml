@@ -404,12 +404,41 @@ paths:
                 $ref: '#/components/schemas/places'
         '400':
           $ref: '#/components/responses/atLeastOneParameterWrong'
+  '/connections':
+    get:
+      tags:
+        - connections
+      summary: retrieves all connections
+      operationId: getConnections
+      description: Retrieves a set containing all connections in the RNS system
+      parameters:
+        - $ref: '#/components/parameters/pageNumber'
+      responses:
+        '200':
+          description: Connections returned
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/connections'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/connections'
   
 servers:
   - url: 'https://virtserver.swaggerhub.com/marcomicera/RnsSystem/2.0-oas3'
   
 components:
   schemas:
+    totalPages:
+      type: integer
+      minimum: 1
+      example: 5
+      default: 1
+    page:
+      type: integer
+      minimum: 0
+      example: 2
+      default: 0
     vehicleType:
       type: string
       enum:
@@ -434,6 +463,10 @@ components:
       type: string
       format: uri
       example: 'http://.../vehicles/...' # FIXME
+    nextVehiclesPage:
+      type: string
+      format: uri
+      example: 'http://.../vehicles/...' # FIXME
     vehicles:
       type: object
       xml:
@@ -443,19 +476,11 @@ components:
         - vehicles
       properties:
         totalPages:
-          type: integer
-          minimum: 1
-          example: 5
-          default: 1
+          $ref: '#/components/schemas/totalPages'
         page:
-          type: integer
-          minimum: 0
-          example: 2
-          default: 0
+          $ref: '#/components/schemas/page'
         next:
-          type: string
-          format: uri
-          example: 'http://...' # FIXME
+          $ref: '#/components/schemas/nextVehiclesPage'
         vehicles:
           type: array
           uniqueItems: true
@@ -513,6 +538,10 @@ components:
       type: string
       format: uri
       example: 'http://.../places/...' # FIXME
+    nextPlacesPage:
+      type: string
+      format: uri
+      example: 'http://.../places/...' # FIXME
     places:
       type: object
       xml:
@@ -522,19 +551,11 @@ components:
         - places
       properties:
         totalPages:
-          type: integer
-          minimum: 1
-          example: 5
-          default: 1
+          $ref: '#/components/schemas/totalPages'
         page:
-          type: integer
-          minimum: 0
-          example: 2
-          default: 0
+          $ref: '#/components/schemas/page'
         next:
-          type: string
-          format: uri
-          example: 'http://...' # FIXME
+          $ref: '#/components/schemas/nextPlacesPage'
         places:
           type: array
           uniqueItems: true
@@ -587,10 +608,7 @@ components:
         id:
           $ref: '#/components/schemas/placeId'
         capacity:
-          type: integer
-          format: int32
-          xml:
-            attribute: true
+          $ref: '#/components/schemas/capacity'
         type:
           oneOf: # FIXME this is not shown in the GUI
             - $ref: '#/components/schemas/parkingArea'
@@ -620,6 +638,11 @@ components:
       xml:
         attribute: true
       example: White Avenue
+    roadSegmentName:
+      type: string
+      xml:
+        attribute: true
+      example: RS123
     roadSegment:
       description: A road segment in the RNS system
       type: object
@@ -630,10 +653,7 @@ components:
       - road
       properties:
         name:
-          type: string
-          xml:
-            attribute: true
-          example: RS123
+          $ref: '#/components/schemas/roadSegmentName'
         road:
           $ref: '#/components/schemas/roadName'
     gateType:
@@ -653,6 +673,38 @@ components:
       properties:
         type:
           $ref: '#/components/schemas/gateType'
+    connectionUri:
+      type: string
+      format: uri
+      example: 'http://.../connections/...' # FIXME
+    nextConnectionsPage:
+      type: string
+      format: uri
+      example: 'http://.../connections/...' # FIXME
+    connections:
+      type: object
+      xml:
+        name: connections
+        attribute: false
+      required:
+        - connections
+      properties:
+        totalPages:
+          $ref: '#/components/schemas/totalPages'
+        page:
+          $ref: '#/components/schemas/page'
+        next:
+          $ref: '#/components/schemas/nextConnectionsPage'
+        connections:
+          type: array
+          uniqueItems: true
+          minItems: 0
+          xml:
+            name: connections
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/connection'
+      description: All the connections in the RNS system
     connection:
       description: A connection between two places in the RNS system
       type: object
