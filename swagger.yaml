@@ -454,7 +454,7 @@ paths:
       operationId: getServices
       description: Retrieves one parking area's services in the RNS system
       parameters:
-        - $ref: '#/components/parameters/parkingAreaId'
+        - $ref: '#/components/parameters/placeId'
       responses:
         '200':
           description: Parking area's services found
@@ -496,6 +496,75 @@ paths:
                 $ref: '#/components/schemas/places'
         '400':
           $ref: '#/components/responses/atLeastOneParameterWrong'
+  # '/places/roadSegments/{id}': # FIXME this is not present in the RNS-API
+  #   get:
+  #     tags:
+  #       - places
+  #     summary: retrieves one road segment
+  #     operationId: getRoadSegment
+  #     description: Retrieves one road segment in the RNS system
+  #     parameters:
+  #       - $ref: '#/components/parameters/placeId'
+  #     responses:
+  #       '200':
+  #         description: Road segment found
+  #         content: # TODO Can I enforce the place type?
+  #           application/xml:
+  #             schema:
+  #               $ref: '#/components/schemas/place'
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/place'
+  #       # '400':
+  #       #   $ref: '#/components/responses/invalidPlaceId'
+  #       '404':
+  #         $ref: '#/components/responses/placeNotFound'
+  '/places/roadSegments/{id}/name':
+    get:
+      tags:
+        - places
+      summary: retrieves one road segment's name
+      operationId: getRoadSegmentName
+      description: Retrieves one road segment's name in the RNS system
+      parameters:
+        - $ref: '#/components/parameters/placeId'
+      responses:
+        '200':
+          description: Road segment's name found
+          content: # TODO Can I enforce the place type?
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/roadSegmentName'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/roadSegmentName'
+        # '400':
+        #   $ref: '#/components/responses/invalidPlaceId'
+        '404':
+          $ref: '#/components/responses/placeNotFound'
+  '/places/roadSegments/{id}/road':
+    get:
+      tags:
+        - places
+      summary: retrieves one road segment's road name
+      operationId: getRoadSegmentRoadName
+      description: Retrieves one road segment's road name in the RNS system
+      parameters:
+        - $ref: '#/components/parameters/placeId'
+      responses:
+        '200':
+          description: Road segment's road name found
+          content: # TODO Can I enforce the place type?
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/roadName'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/roadName'
+        # '400':
+        #   $ref: '#/components/responses/invalidPlaceId'
+        '404':
+          $ref: '#/components/responses/placeNotFound'
   '/connections':
     get:
       tags:
@@ -791,11 +860,6 @@ components:
       xml:
         wrapped: true
         name: services
-    parkingAreaId:
-      type: string
-      example: pa123
-      xml:
-        attribute: true
     parkingArea:
       description: A parking area in the RNS system
       type: object
@@ -929,13 +993,6 @@ components:
       description: The connection ID of interest
       schema:
         $ref: '#/components/schemas/connectionId'
-    parkingAreaId:
-      name: id
-      in: path
-      required: true
-      description: The parking area ID of interest
-      schema:
-        $ref: '#/components/schemas/parkingAreaId'
   responses:
     atLeastOneParameterWrong:
       description: 'Bad request: at least one invalid parameter'
