@@ -66,6 +66,55 @@ paths:
                 $ref: '#/components/schemas/vehicles'
         '400':
           $ref: '#/components/responses/atLeastOneParameterWrong'
+    post:
+      tags:
+        - vehicles
+      summary: add a new vehicle
+      operationId: addVehicle
+      requestBody:
+        description: Vehicle that needs to be added to the RNS system
+        content:
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/entrance'
+          application/json:
+            schema:
+              $ref: '#/components/schemas/entrance'
+        required: true
+      responses:
+        '201':
+          description: 'New vehicle created, return suggest path'
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/newVehicle'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/newVehicle'
+          links:
+            getVehicleById:
+              operationId: getVehicle
+              parameters:
+                id: '$response.body#/id'
+              description: >
+                The `id` value returned in the response can be used as
+                the vehicle `id` parameter for all `GET /vehicle/{id}[/...]` methods.
+            getVehicleByHATEOAS:
+              operationId: getVehicle
+              parameters:
+                id: '$response.body#/self'
+              description: >
+                The `self` URI returned in the response can be used to directly
+                access a vehicle for all `GET /vehicle/{id}[/...]` methods.
+        '400':
+          description: 'Bad request: the vehicle object was malformed'
+          content: {}
+        '404':
+          description: 'At least one place has not been found'
+          content: {}
+        '409':
+          description: 'Conflict: vehicle already existed'
+          content: {}
   '/vehicles/{id}':
     get:
       tags:
@@ -692,7 +741,7 @@ components:
     vehicleUri:
       type: string
       format: uri
-      example: 'http://.../vehicles/...' # FIXME
+      example: 'http://.../vehicles/vehicle123' # FIXME
     nextVehiclesPage:
       type: string
       format: uri
@@ -733,6 +782,7 @@ components:
       example: vehicle123
       xml:
         attribute: true
+        name: id
     vehicle:
       description: A single vehicle in the RNS system
       type: object
@@ -767,7 +817,7 @@ components:
     placeUri:
       type: string
       format: uri
-      example: 'http://.../places/...' # FIXME
+      example: 'http://.../places/place123' # FIXME
     nextPlacesPage:
       type: string
       format: uri
@@ -962,6 +1012,56 @@ components:
           $ref: '#/components/schemas/placeUri'
         to:
           $ref: '#/components/schemas/placeUri'
+    entrance:
+      description: A vehicle entrance request in the RNS system
+      type: object
+      xml:
+        name: entrance
+      required:
+      - gateType
+      - destination
+      - vehicleId
+      - vehicleType
+      properties:
+        gate:
+          type: object
+          properties:
+            type: 
+              type: string
+              enum: [IN, INOUT]
+              xml:
+                attribute: false
+        vehicle:
+          type: object
+          properties:
+            vehicleId:
+              $ref: '#/components/schemas/vehicleId'
+            vehicleType:
+              $ref: '#/components/schemas/vehicleType'    
+        destination:
+          $ref: '#/components/schemas/placeUri'
+    suggestedPath:
+      description: Path of places suggested to the user upon vehicle entrance
+      type: array
+      uniqueItems: true
+      minItems: 1
+      xml:
+        name: suggestedPath
+        wrapped: true
+      items:
+        $ref: '#/components/schemas/placeUri'
+    newVehicle:
+      description: A freshly-insterted vehicle in the RNS system
+      type: object
+      xml:
+        name: newVehicle
+      properties: 
+        self:
+          $ref: '#/components/schemas/vehicleUri'
+        id:
+          $ref: '#/components/schemas/vehicleId'
+        suggestedPath:
+          $ref: '#/components/schemas/suggestedPath'
   parameters:
     pageNumber:
       name: page
