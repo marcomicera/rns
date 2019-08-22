@@ -72,7 +72,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/vehicles'
         '400':
-          description: 'Bad request: at least one invalid parameter'
+          $ref: '#/components/responses/atLeastOneParameterWrong'
   '/vehicles/{id}':
     get:
       tags:
@@ -81,12 +81,7 @@ paths:
       operationId: getVehicle
       description: Retrieves one vehicle in the RNS system
       parameters:
-        - name: id
-          in: path
-          required: true
-          description: The plate id of the vehicle to get
-          schema:
-            type: string
+        - $ref: '#/components/parameters/vehicleId'
       responses:
         '200':
           description: Vehicle found
@@ -98,9 +93,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/vehicle'
         '400':
-          description: 'Bad request: invalid vehicle ID'
+          $ref: '#/components/responses/invalidVehicleId'
         '404':
-          description: Vehicle not found
+          $ref: '#/components/responses/vehicleNotFound'
   '/vehicles/{id}/origin':
     get:
       tags:
@@ -109,12 +104,7 @@ paths:
       operationId: getOrigin
       description: Retrieves one vehicle's origin in the RNS system
       parameters:
-        - name: id
-          in: path
-          required: true
-          description: The vehicle's plate ID of interest
-          schema:
-            type: string
+        - $ref: '#/components/parameters/vehicleId'
       responses:
         '200':
           description: Vehicle's origin found
@@ -126,9 +116,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/place'
         '400':
-          description: 'Bad request: invalid vehicle ID'
+          $ref: '#/components/responses/invalidVehicleId'
         '404':
-          description: Vehicle not found
+          $ref: '#/components/responses/vehicleNotFound'
   '/vehicles/{id}/position':
     get:
       tags:
@@ -137,12 +127,7 @@ paths:
       operationId: getPosition
       description: Retrieves one vehicle's position in the RNS system
       parameters:
-        - name: id
-          in: path
-          required: true
-          description: The vehicle's plate ID of interest
-          schema:
-            type: string
+        - $ref: '#/components/parameters/vehicleId'
       responses:
         '200':
           description: Vehicle's position found
@@ -154,9 +139,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/place'
         '400':
-          description: 'Bad request: invalid vehicle ID'
+          $ref: '#/components/responses/invalidVehicleId'
         '404':
-          description: Vehicle not found
+          $ref: '#/components/responses/vehicleNotFound'
   '/vehicles/{id}/destination':
     get:
       tags:
@@ -165,12 +150,7 @@ paths:
       operationId: getDestination
       description: Retrieves one vehicle's destination in the RNS system
       parameters:
-        - name: id
-          in: path
-          required: true
-          description: The vehicle's plate ID of interest
-          schema:
-            type: string
+        - $ref: '#/components/parameters/vehicleId'
       responses:
         '200':
           description: Vehicle's destination found
@@ -182,9 +162,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/place'
         '400':
-          description: 'Bad request: invalid vehicle ID'
+          $ref: '#/components/responses/invalidVehicleId'
         '404':
-          description: Vehicle not found
+          $ref: '#/components/responses/vehicleNotFound'
   '/vehicles/{id}/entrytime':
     get:
       tags:
@@ -193,12 +173,7 @@ paths:
       operationId: getEntryTime
       description: Retrieves one vehicle's entry time in the RNS system
       parameters:
-        - name: id
-          in: path
-          required: true
-          description: The vehicle's plate ID of interest
-          schema:
-            type: string
+        - $ref: '#/components/parameters/vehicleId'
       responses:
         '200':
           description: Vehicle's entry time found
@@ -217,9 +192,9 @@ paths:
                 format: date-time
                 example: '2017-07-21T17:32:28Z'
         '400':
-          description: 'Bad request: invalid vehicle ID'
+          $ref: '#/components/responses/invalidVehicleId'
         '404':
-          description: Vehicle not found
+          $ref: '#/components/responses/vehicleNotFound'
   '/vehicles/{id}/state':
     get:
       tags:
@@ -228,12 +203,7 @@ paths:
       operationId: getState
       description: Retrieves one vehicle's state in the RNS system
       parameters:
-        - name: id
-          in: path
-          required: true
-          description: The vehicle's plate ID of interest
-          schema:
-            type: string
+        - $ref: '#/components/parameters/vehicleId'
       responses:
         '200':
           description: Vehicle's state found
@@ -245,9 +215,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/vehicleStatus'
         '400':
-          description: 'Bad request: invalid vehicle ID'
+          $ref: '#/components/responses/invalidVehicleId'
         '404':
-          description: Vehicle not found
+          $ref: '#/components/responses/vehicleNotFound'
   '/vehicles/{id}/type':
     get:
       tags:
@@ -256,12 +226,7 @@ paths:
       operationId: getType
       description: Retrieves one vehicle's type in the RNS system
       parameters:
-        - name: id
-          in: path
-          required: true
-          description: The vehicle's plate ID of interest
-          schema:
-            type: string
+        - $ref: '#/components/parameters/vehicleId'
       responses:
         '200':
           description: Vehicle's type found
@@ -273,9 +238,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/vehicleType'
         '400':
-          description: 'Bad request: invalid vehicle ID'
+          $ref: '#/components/responses/invalidVehicleId'
         '404':
-          description: Vehicle not found
+          $ref: '#/components/responses/vehicleNotFound'
   /places:
     get:
       tags:
@@ -309,7 +274,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/places'
         '400':
-          description: 'Bad request: at least one invalid parameter'
+          $ref: '#/components/responses/atLeastOneParameterWrong'
   '/places/{id}':
     get:
       tags:
@@ -318,12 +283,7 @@ paths:
       operationId: getPlace
       description: Retrieves one place in the RNS system
       parameters:
-        - name: id
-          in: path
-          required: true
-          description: The unique id of the place to get
-          schema:
-            type: string
+        - $ref: '#/components/parameters/placeId'
       responses:
         '200':
           description: Place found
@@ -335,9 +295,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/place'
         '400':
-          description: 'Bad request: invalid place ID'
+          $ref: '#/components/responses/invalidPlaceId'
         '404':
-          description: Place not found
+          $ref: '#/components/responses/placeNotFound'
   '/places/{id}/capacity':
     get:
       tags:
@@ -346,12 +306,7 @@ paths:
       operationId: getCapacity
       description: Retrieves the capacity of one place in the RNS system
       parameters:
-        - name: id
-          in: path
-          required: true
-          description: The place ID of interest
-          schema:
-            type: string
+        - $ref: '#/components/parameters/placeId'
       responses:
         '200':
           description: Place capacity found
@@ -371,6 +326,34 @@ paths:
           description: 'Bad request: invalid place ID'
         '404':
           description: Place not found
+  # '/places/{id}/nextPlaces':
+  #   get:
+  #     tags:
+  #       - places
+  #     summary: retrieves all places to which this place is connected
+  #     operationId: getNextPlaces
+  #     description: Retrieves the set of all places to which this place is connected
+  #     parameters:
+  #       - $ref: '#/components/parameters/placeId'
+  #     responses:
+  #       '200':
+  #         description: Next places found found
+  #         content:
+  #           application/json:
+  #             schema:
+  #               type: integer
+  #               format: int32
+  #           application/xml:
+  #             schema:
+  #               type: integer
+  #               format: int32
+  #               xml:
+  #                 wrapped: true
+  #                 name: capacity
+  #       '400':
+  #         $ref: '#/components/responses/invalidPlaceId'
+  #       '404':
+  #         $ref: '#/components/responses/placeNotFound'
   
 servers:
   - url: 'https://virtserver.swaggerhub.com/marcomicera/RnsSystem/1.0'
@@ -599,3 +582,29 @@ components:
             - OUT
             - INOUT
           example: IN
+  parameters:
+    vehicleId:
+      name: id
+      in: path
+      required: true
+      description: The vehicle's plate ID of interest
+      schema:
+        type: string
+    placeId:
+      name: id
+      in: path
+      required: true
+      description: The place ID of interest
+      schema:
+        type: string
+  responses:
+    atLeastOneParameterWrong:
+      description: 'Bad request: at least one invalid parameter'
+    invalidVehicleId:
+      description: 'Bad request: invalid vehicle ID'
+    vehicleNotFound:
+      description: 'Vehicle not found'
+    invalidPlaceId:
+      description: 'Bad request: invalid place ID'
+    placeNotFound:
+      description: 'Place not found'
