@@ -209,7 +209,7 @@ paths:
       tags:
         - vehicles
       summary: retrieves one vehicle's type
-      operationId: getType
+      operationId: getVehicleType
       description: Retrieves one vehicle's type in the RNS system
       parameters:
         - $ref: '#/components/parameters/vehicleId'
@@ -350,6 +350,52 @@ paths:
                 $ref: '#/components/schemas/places'
         '400':
           $ref: '#/components/responses/atLeastOneParameterWrong'
+  # '/gates/{id}': # FIXME this is not present in the RNS-API
+  #   get:
+  #     tags:
+  #       - places
+  #     summary: retrieves one gate
+  #     operationId: getGate
+  #     description: Retrieves one gate in the RNS system
+  #     parameters:
+  #       - $ref: '#/components/parameters/placeId'
+  #     responses:
+  #       '200':
+  #         description: Gate found
+  #         content: # TODO Can I enforce the place type?
+  #           application/xml:
+  #             schema:
+  #               $ref: '#/components/schemas/place'
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/place'
+  #       # '400':
+  #       #   $ref: '#/components/responses/invalidConnectionId'
+  #       '404':
+  #         $ref: '#/components/responses/placeNotFound'
+  '/gates/{id}/type':
+    get:
+      tags:
+        - places
+      summary: retrieves one gate's type
+      operationId: getGateType
+      description: Retrieves one gate in the RNS system
+      parameters:
+        - $ref: '#/components/parameters/placeId'
+      responses:
+        '200':
+          description: Gate's type found
+          content: # TODO Can I enforce the place type?
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/gateType'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/gateType'
+        # '400':
+        #   $ref: '#/components/responses/invalidConnectionId'
+        '404':
+          $ref: '#/components/responses/placeNotFound'
   '/places/parkingAreas':
     get:
       tags:
@@ -423,6 +469,75 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/connections'
+  # '/connections/{id}': # FIXME this is not present in the RNS-API
+  #   get:
+  #     tags:
+  #       - connections
+  #     summary: retrieves one connection
+  #     operationId: getConnection
+  #     description: Retrieves one connection in the RNS system
+  #     parameters:
+  #       - $ref: '#/components/parameters/connectionId'
+  #     responses:
+  #       '200':
+  #         description: Connection found
+  #         content:
+  #           application/xml:
+  #             schema:
+  #               $ref: '#/components/schemas/connection'
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/connection'
+  #       # '400':
+  #       #   $ref: '#/components/responses/invalidConnectionId'
+  #       '404':
+  #         $ref: '#/components/responses/connectionNotFound'
+  '/connections/{id}/from':
+    get:
+      tags:
+        - connections
+      summary: retrieves one connection's origin
+      operationId: getFrom
+      description: Retrieves one connection's origin in the RNS system
+      parameters:
+        - $ref: '#/components/parameters/connectionId'
+      responses:
+        '200':
+          description: Connection's origin found
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/place'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/place'
+        # '400':
+        #   $ref: '#/components/responses/invalidConnectionId'
+        '404':
+          $ref: '#/components/responses/connectionNotFound'
+  '/connections/{id}/to':
+    get:
+      tags:
+        - connections
+      summary: retrieves one connection's endpoint
+      operationId: getto
+      description: Retrieves one connection's endpoint in the RNS system
+      parameters:
+        - $ref: '#/components/parameters/connectionId'
+      responses:
+        '200':
+          description: Connection's endpoint found
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/place'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/place'
+        # '400':
+        #   $ref: '#/components/responses/invalidConnectionId'
+        '404':
+          $ref: '#/components/responses/connectionNotFound'
   
 servers:
   - url: 'https://virtserver.swaggerhub.com/marcomicera/RnsSystem/2.0-oas3'
@@ -705,6 +820,11 @@ components:
           items:
             $ref: '#/components/schemas/connection'
       description: All the connections in the RNS system
+    connectionId:
+      type: string
+      example: connection123
+      xml:
+        attribute: true
     connection:
       description: A connection between two places in the RNS system
       type: object
@@ -714,6 +834,10 @@ components:
       - from
       - to
       properties:
+        self:
+          $ref: '#/components/schemas/connectionUri'
+        id:
+          $ref: '#/components/schemas/connectionId'
         from:
           $ref: '#/components/schemas/placeUri'
         to:
@@ -742,6 +866,13 @@ components:
       description: The place ID of interest
       schema:
         $ref: '#/components/schemas/placeId'
+    connectionId:
+      name: id
+      in: path
+      required: true
+      description: The connection ID of interest
+      schema:
+        $ref: '#/components/schemas/connectionId'
   responses:
     atLeastOneParameterWrong:
       description: 'Bad request: at least one invalid parameter'
@@ -753,3 +884,7 @@ components:
     #   description: 'Bad request: invalid place ID'
     placeNotFound:
       description: 'Place not found'
+    connectionNotFound:
+      description: 'Connection not found'
+    # invalidConnectionId:
+    #   description: 'Bad request: invalid connection ID'
