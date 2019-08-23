@@ -996,6 +996,7 @@ components:
       xml:
         attribute: false
     services:
+      description: List of provided services of a parking area
       type: array
       uniqueItems: true
       minItems: 0
@@ -1030,11 +1031,13 @@ components:
             services:
               $ref: '#/components/schemas/services'
     roadName:
+      description: A road name to which a road segment can belong to
       type: string
       xml:
         attribute: true
       example: White Avenue
     roadSegmentName:
+      description: Name of a road segment
       type: string
       xml:
         attribute: true
@@ -1067,6 +1070,7 @@ components:
             road:
               $ref: '#/components/schemas/roadName'
     gateType:
+      description: All possible types of gates in the RNS system
       type: string
       enum:
         - IN
@@ -1096,14 +1100,17 @@ components:
             type:
               $ref: '#/components/schemas/gateType'
     connectionUri:
+      description: An RNS connection URI (so it can have its proper example)
       type: string
       format: uri
       example: 'http://localhost:8080/RnsSystem/rest/connections/...'
     nextConnectionsPage:
+      description: The next page in a multi-paged connection list response (so it can have its proper example)
       type: string
       format: uri
       example: 'http://localhost:8080/RnsSystem/rest/connections/...'
     connections:
+      description: A list of connections between place pairs in the RNS system
       type: object
       xml:
         name: connections
@@ -1126,8 +1133,8 @@ components:
             wrapped: true
           items:
             $ref: '#/components/schemas/connection'
-      description: All the connections in the RNS system
     connectionId:
+      description: How a connection between two places is identified
       type: string
       example: connection123
       xml:
@@ -1178,7 +1185,7 @@ components:
         destination:
           $ref: '#/components/schemas/placeUri'
     suggestedPath:
-      description: Path of places suggested to the user upon vehicle entrance
+      description: Path of places suggested to the user upon vehicle entrance and movement
       type: array
       uniqueItems: true
       minItems: 1
