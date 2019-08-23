@@ -23,6 +23,516 @@ tags:
   - name: connections (admin)
     description: How places are connected to each other
     
+components:
+  schemas:
+    totalPages:
+      description: Indicates the total number of pages in a multi-paged response
+      type: integer
+      minimum: 1
+      example: 5
+      default: 1
+    page:
+      description: Indicates the page number of a multi-paged response
+      type: integer
+      minimum: 0
+      example: 2
+      default: 0
+    vehicleType:
+      description: The type of a vehicle in the RNS system
+      type: string
+      enum:
+        - CAR
+        - TRUCK
+        - SHUTTLE
+        - CARAVAN
+      example: TRUCK
+      xml:
+        name: type
+        attribute: true
+    vehicleStatus:
+      description: The state a of vehicle in the RNS system
+      type: string
+      enum:
+        - PARKED
+        - IN_TRANSIT
+      example: PARKED
+      xml:
+        name: state
+        attribute: true
+    vehicleUri:
+      description: An RNS vehicle URI (so it can have its proper example)
+      type: string
+      format: uri
+      example: 'http://localhost:8080/RnsSystem/rest/vehicles/vehicle123'
+    nextVehiclesPage:
+      description: The next page in a multi-paged vehicles list response (so it can have its proper example)
+      type: string
+      format: uri
+      example: 'http://localhost:8080/RnsSystem/rest/vehicles/...'
+    vehicles:
+      description: A list of vehicles in the RNS system
+      type: object
+      xml:
+        name: vehicles
+        attribute: false
+      required:
+        - vehicles
+      properties:
+        totalPages:
+          $ref: '#/components/schemas/totalPages'
+        page:
+          $ref: '#/components/schemas/page'
+        next:
+          $ref: '#/components/schemas/nextVehiclesPage'
+        vehicles:
+          type: array
+          uniqueItems: true
+          minItems: 0
+          xml:
+            name: vehicles
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/vehicle'
+    entryTime:
+      description: The entry time in which a vehicle has entered the RNS sytem
+      type: string
+      format: date-time
+      example: '2017-07-21T17:32:28Z'
+      xml:
+        wrapped: true
+        name: entryTime
+    vehicleId:
+      description: A vehicle plate ID (so it can have its proper example)
+      type: string
+      example: vehicle123
+      xml:
+        attribute: true
+        name: id
+    vehicle:
+      description: A single vehicle in the RNS system
+      type: object
+      xml:
+        name: vehicle
+      required:
+        - self
+        - id
+        - entryTime
+        - type
+        - state
+        - origin
+        - position
+        - destination
+      properties:
+        self:
+          $ref: '#/components/schemas/vehicleUri'
+        id:
+          $ref: '#/components/schemas/vehicleId'
+        entryTime:
+          $ref: '#/components/schemas/entryTime'
+        type:
+          $ref: '#/components/schemas/vehicleType'
+        state:
+          $ref: '#/components/schemas/vehicleStatus'
+        origin:
+          $ref: '#/components/schemas/placeUri'
+        position:
+          $ref: '#/components/schemas/placeUri'
+        destination:
+          $ref: '#/components/schemas/placeUri'
+    placeUri:
+      description: An RNS generic place URI (so it can have its proper example)
+      type: string
+      format: uri
+      example: 'http://localhost:8080/RnsSystem/rest/places/place123'
+    nextPlaceUri:
+      description: An RNS reachable generic place URI (so it can have its proper example)
+      type: string
+      format: uri
+      xml:
+        name: nextPlace
+      example: 'http://localhost:8080/RnsSystem/rest/places/nextPlace123'
+    positionUri:
+      description: An RNS generic position URI (so it can have its proper example)
+      type: string
+      format: uri
+      xml:
+        name: position
+      example: 'http://localhost:8080/RnsSystem/rest/places/position123'
+    suggestedPlaceUri:
+      description: An RNS suggested generic place URI (so it can have its proper example)
+      type: string
+      format: uri
+      xml:
+        name: place
+      example: 'http://localhost:8080/RnsSystem/rest/places/suggestedPlace123'
+    nextPlacesPage:
+      description: The next page in a multi-paged generic places list response (so it can have its proper example)
+      type: string
+      format: uri
+      example: 'http://localhost:8080/RnsSystem/rest/places/...'
+    basePlaces:
+      description: Basic structure for lists of places in the RNS system (not instantiable, for inheritance purposes)
+      type: object
+      xml:
+        name: places
+        attribute: false
+      required:
+        - places
+      properties:
+        totalPages:
+          $ref: '#/components/schemas/totalPages'
+        page:
+          $ref: '#/components/schemas/page'
+        next:
+          $ref: '#/components/schemas/nextPlacesPage'
+    genericPlaces:
+      description: A list of generic places in the RNS system
+      oneOf:
+        - $ref: '#/components/schemas/parkingAreas'
+        - $ref: '#/components/schemas/roadSegments'
+        - $ref: '#/components/schemas/gates'
+    nextPlaces:
+      description: A list of reachable generic place URIs (so it can have its proper example)
+      type: array
+      uniqueItems: true
+      minItems: 0
+      xml:
+        wrapped: true
+        name: nextPlaces
+      items:
+        $ref: '#/components/schemas/nextPlaceUri'
+      example: 
+        - 'http://localhost:8080/RnsSystem/rest/places/place1'
+        - 'http://localhost:8080/RnsSystem/rest/places/place2'
+        - 'http://localhost:8080/RnsSystem/rest/places/place3'
+    capacity:
+      description: The capacity of a place in terms of supported vehicles
+      type: integer
+      format: int32
+      xml:
+        wrapped: true
+        name: capacity
+      minimum: 0
+      example: 100
+    placeId:
+      description: The ID of a place in the RNS system
+      type: string
+      example: place123
+      xml:
+        attribute: true
+    basePlace:
+      description: Basic place data structure (not instantiable, for inheritance purposes)
+      type: object
+      xml:
+        name: place
+      required:
+        - self
+        - id
+        - capacity
+      properties:
+        self:
+          $ref: '#/components/schemas/placeUri'
+        id:
+          $ref: '#/components/schemas/placeId'
+        capacity:
+          $ref: '#/components/schemas/capacity'
+        nextPlaces:
+          $ref: '#/components/schemas/nextPlaces'
+    genericPlace:
+      description: Generic place in the RNS system
+      oneOf:
+        - $ref: '#/components/schemas/parkingArea'
+        - $ref: '#/components/schemas/roadSegment'
+        - $ref: '#/components/schemas/gate'
+      xml:
+        attribute: false
+    services:
+      description: List of provided services of a parking area
+      type: array
+      uniqueItems: true
+      minItems: 0
+      items:
+        type: string
+        xml:
+          name: service
+      example: [Restroom, Bistro, Smoking area]
+      xml:
+        wrapped: true
+        name: services
+    parkingAreas:
+      description: List of parking areas in the RNS system
+      allOf:
+        - $ref: '#/components/schemas/basePlaces'
+        - type: array
+          uniqueItems: true
+          minItems: 0
+          xml:
+            name: parkingAreas
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/parkingArea'
+    parkingArea:
+      description: A parking area in the RNS system
+      allOf:
+        - $ref: '#/components/schemas/basePlace'
+        - type: object
+          xml:
+            name: parkingArea
+          properties:
+            services:
+              $ref: '#/components/schemas/services'
+    roadName:
+      description: A road name to which a road segment can belong to
+      type: string
+      xml:
+        attribute: true
+      example: White Avenue
+    roadSegmentName:
+      description: Name of a road segment
+      type: string
+      xml:
+        attribute: true
+      example: RS123
+    roadSegments:
+      description: List of road segments in the RNS system
+      allOf:
+        - $ref: '#/components/schemas/basePlaces'
+        - type: array
+          uniqueItems: true
+          minItems: 0
+          xml:
+            name: roadSegments
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/roadSegment'
+    roadSegment:
+      description: A road segment in the RNS system
+      allOf:
+        - $ref: '#/components/schemas/basePlace'
+        - type: object
+          xml:
+            name: roadSegment
+          required:
+          - name
+          - road
+          properties:
+            name:
+              $ref: '#/components/schemas/roadSegmentName'
+            road:
+              $ref: '#/components/schemas/roadName'
+    gateType:
+      description: All possible types of gates in the RNS system
+      type: string
+      enum:
+        - IN
+        - OUT
+        - INOUT
+      example: IN
+    gates:
+      description: List of gates in the RNS system
+      allOf:
+        - $ref: '#/components/schemas/basePlaces'
+        - type: array
+          uniqueItems: true
+          minItems: 0
+          xml:
+            name: gates
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/gate'
+    gate:
+      description: A gate in the RNS system
+      allOf:
+        - $ref: '#/components/schemas/basePlace'
+        - type: object
+          required:
+          - type
+          properties:
+            type:
+              $ref: '#/components/schemas/gateType'
+    connectionUri:
+      description: An RNS connection URI (so it can have its proper example)
+      type: string
+      format: uri
+      example: 'http://localhost:8080/RnsSystem/rest/connections/...'
+    nextConnectionsPage:
+      description: The next page in a multi-paged connection list response (so it can have its proper example)
+      type: string
+      format: uri
+      example: 'http://localhost:8080/RnsSystem/rest/connections/...'
+    connections:
+      description: A list of connections between place pairs in the RNS system
+      type: object
+      xml:
+        name: connections
+        attribute: false
+      required:
+        - connections (admin)
+      properties:
+        totalPages:
+          $ref: '#/components/schemas/totalPages'
+        page:
+          $ref: '#/components/schemas/page'
+        next:
+          $ref: '#/components/schemas/nextConnectionsPage'
+        connections:
+          type: array
+          uniqueItems: true
+          minItems: 0
+          xml:
+            name: connections
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/connection'
+    connectionId:
+      description: How a connection between two places is identified
+      type: string
+      example: connection123
+      xml:
+        attribute: true
+    connection:
+      description: A connection between two places in the RNS system
+      type: object
+      xml:
+        name: connection
+      required:
+      - from
+      - to
+      properties:
+        self:
+          $ref: '#/components/schemas/connectionUri'
+        id:
+          $ref: '#/components/schemas/connectionId'
+        from:
+          $ref: '#/components/schemas/placeUri'
+        to:
+          $ref: '#/components/schemas/placeUri'
+    entrance:
+      description: A vehicle entrance request in the RNS system
+      type: object
+      xml:
+        name: entrance
+      required:
+      - gateType
+      - destination
+      - vehicleId
+      - vehicleType
+      properties:
+        gate:
+          type: object
+          properties:
+            type: 
+              type: string
+              enum: [IN, INOUT]
+              xml:
+                attribute: true
+        vehicle:
+          type: object
+          properties:
+            vehicleId:
+              $ref: '#/components/schemas/vehicleId'
+            vehicleType:
+              $ref: '#/components/schemas/vehicleType'    
+        destination:
+          $ref: '#/components/schemas/placeUri'
+    suggestedPath:
+      description: Path of places suggested to the user upon vehicle entrance and movement
+      type: array
+      uniqueItems: true
+      minItems: 1
+      xml:
+        name: suggestedPath
+        wrapped: true
+      items:
+        $ref: '#/components/schemas/suggestedPlaceUri'
+      example:
+        - 'http://localhost:8080/RnsSystem/rest/places/suggestedPlace1'
+        - 'http://localhost:8080/RnsSystem/rest/places/suggestedPlace2'
+        - 'http://localhost:8080/RnsSystem/rest/places/suggestedPlace3'
+    newVehicle:
+      description: A freshly-insterted vehicle in the RNS system
+      type: object
+      xml:
+        name: newVehicle
+      properties: 
+        self:
+          $ref: '#/components/schemas/vehicleUri'
+        id:
+          $ref: '#/components/schemas/vehicleId'
+        suggestedPath:
+          $ref: '#/components/schemas/suggestedPath'
+  parameters:
+    pageNumber:
+      name: page
+      in: query
+      required: false
+      description: The desired page result
+      schema:
+        type: integer
+        format: int32
+        default: 0
+    vehicleId:
+      name: id
+      in: path
+      required: true
+      description: The vehicle's plate ID of interest
+      schema:
+        $ref: '#/components/schemas/vehicleId'
+    placeId:
+      name: id
+      in: path
+      required: true
+      description: The place ID of interest
+      schema:
+        $ref: '#/components/schemas/placeId'
+    connectionId:
+      name: id
+      in: path
+      required: true
+      description: The connection ID of interest
+      schema:
+        $ref: '#/components/schemas/connectionId'
+  requestBodies:
+    entrance:
+      description: Vehicle that needs to be added to the RNS system
+      content:
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/entrance'
+        application/json:
+          schema:
+            $ref: '#/components/schemas/entrance'
+      required: true
+    position:
+      description: Position to which a vehicle in the RNS system has moved
+      content:
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/positionUri'
+        application/json:
+          schema:
+            $ref: '#/components/schemas/positionUri'
+      required: true
+    state:
+      description: New status of a vehicle in the RNS system
+      content:
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/vehicleStatus'
+        application/json:
+          schema:
+            $ref: '#/components/schemas/vehicleStatus'
+      required: true
+  responses:
+    atLeastOneParameterWrong:
+      description: 'Bad request: at least one invalid parameter'
+    vehicleNotFound:
+      description: 'Vehicle not found'
+    placeNotFound:
+      description: 'Place not found'
+    connectionNotFound:
+      description: 'Connection not found'
+    
 paths:
   '/vehicles':
     get:
@@ -771,513 +1281,3 @@ paths:
 servers:
   - url: 'https://virtserver.swaggerhub.com/marcomicera/RnsSystem/2.0-oas3'
   - url: 'http://localhost:8080/RnsSystem/rest'
-  
-components:
-  schemas:
-    totalPages:
-      description: Indicates the total number of pages in a multi-paged response
-      type: integer
-      minimum: 1
-      example: 5
-      default: 1
-    page:
-      description: Indicates the page number of a multi-paged response
-      type: integer
-      minimum: 0
-      example: 2
-      default: 0
-    vehicleType:
-      description: The type of a vehicle in the RNS system
-      type: string
-      enum:
-        - CAR
-        - TRUCK
-        - SHUTTLE
-        - CARAVAN
-      example: TRUCK
-      xml:
-        name: type
-        attribute: true
-    vehicleStatus:
-      description: The state a of vehicle in the RNS system
-      type: string
-      enum:
-        - PARKED
-        - IN_TRANSIT
-      example: PARKED
-      xml:
-        name: state
-        attribute: true
-    vehicleUri:
-      description: An RNS vehicle URI (so it can have its proper example)
-      type: string
-      format: uri
-      example: 'http://localhost:8080/RnsSystem/rest/vehicles/vehicle123'
-    nextVehiclesPage:
-      description: The next page in a multi-paged vehicles list response (so it can have its proper example)
-      type: string
-      format: uri
-      example: 'http://localhost:8080/RnsSystem/rest/vehicles/...'
-    vehicles:
-      description: A list of vehicles in the RNS system
-      type: object
-      xml:
-        name: vehicles
-        attribute: false
-      required:
-        - vehicles
-      properties:
-        totalPages:
-          $ref: '#/components/schemas/totalPages'
-        page:
-          $ref: '#/components/schemas/page'
-        next:
-          $ref: '#/components/schemas/nextVehiclesPage'
-        vehicles:
-          type: array
-          uniqueItems: true
-          minItems: 0
-          xml:
-            name: vehicles
-            wrapped: true
-          items:
-            $ref: '#/components/schemas/vehicle'
-    entryTime:
-      description: The entry time in which a vehicle has entered the RNS sytem
-      type: string
-      format: date-time
-      example: '2017-07-21T17:32:28Z'
-      xml:
-        wrapped: true
-        name: entryTime
-    vehicleId:
-      description: A vehicle plate ID (so it can have its proper example)
-      type: string
-      example: vehicle123
-      xml:
-        attribute: true
-        name: id
-    vehicle:
-      description: A single vehicle in the RNS system
-      type: object
-      xml:
-        name: vehicle
-      required:
-        - self
-        - id
-        - entryTime
-        - type
-        - state
-        - origin
-        - position
-        - destination
-      properties:
-        self:
-          $ref: '#/components/schemas/vehicleUri'
-        id:
-          $ref: '#/components/schemas/vehicleId'
-        entryTime:
-          $ref: '#/components/schemas/entryTime'
-        type:
-          $ref: '#/components/schemas/vehicleType'
-        state:
-          $ref: '#/components/schemas/vehicleStatus'
-        origin:
-          $ref: '#/components/schemas/placeUri'
-        position:
-          $ref: '#/components/schemas/placeUri'
-        destination:
-          $ref: '#/components/schemas/placeUri'
-    placeUri:
-      description: An RNS generic place URI (so it can have its proper example)
-      type: string
-      format: uri
-      example: 'http://localhost:8080/RnsSystem/rest/places/place123'
-    nextPlaceUri:
-      description: An RNS reachable generic place URI (so it can have its proper example)
-      type: string
-      format: uri
-      xml:
-        name: nextPlace
-      example: 'http://localhost:8080/RnsSystem/rest/places/nextPlace123'
-    positionUri:
-      description: An RNS generic position URI (so it can have its proper example)
-      type: string
-      format: uri
-      xml:
-        name: position
-      example: 'http://localhost:8080/RnsSystem/rest/places/position123'
-    suggestedPlaceUri:
-      description: An RNS suggested generic place URI (so it can have its proper example)
-      type: string
-      format: uri
-      xml:
-        name: place
-      example: 'http://localhost:8080/RnsSystem/rest/places/suggestedPlace123'
-    nextPlacesPage:
-      description: The next page in a multi-paged generic places list response (so it can have its proper example)
-      type: string
-      format: uri
-      example: 'http://localhost:8080/RnsSystem/rest/places/...'
-    basePlaces:
-      description: Basic structure for lists of places in the RNS system (not instantiable, for inheritance purposes)
-      type: object
-      xml:
-        name: places
-        attribute: false
-      required:
-        - places
-      properties:
-        totalPages:
-          $ref: '#/components/schemas/totalPages'
-        page:
-          $ref: '#/components/schemas/page'
-        next:
-          $ref: '#/components/schemas/nextPlacesPage'
-    genericPlaces:
-      description: A list of generic places in the RNS system
-      oneOf:
-        - $ref: '#/components/schemas/parkingAreas'
-        - $ref: '#/components/schemas/roadSegments'
-        - $ref: '#/components/schemas/gates'
-    nextPlaces:
-      description: A list of reachable generic place URIs (so it can have its proper example)
-      type: array
-      uniqueItems: true
-      minItems: 0
-      xml:
-        wrapped: true
-        name: nextPlaces
-      items:
-        $ref: '#/components/schemas/nextPlaceUri'
-      example: 
-        - 'http://localhost:8080/RnsSystem/rest/places/place1'
-        - 'http://localhost:8080/RnsSystem/rest/places/place2'
-        - 'http://localhost:8080/RnsSystem/rest/places/place3'
-    capacity:
-      description: The capacity of a place in terms of supported vehicles
-      type: integer
-      format: int32
-      xml:
-        wrapped: true
-        name: capacity
-      minimum: 0
-      example: 100
-    placeId:
-      description: The ID of a place in the RNS system
-      type: string
-      example: place123
-      xml:
-        attribute: true
-    basePlace:
-      description: Basic place data structure (not instantiable, for inheritance purposes)
-      type: object
-      xml:
-        name: place
-      required:
-        - self
-        - id
-        - capacity
-      properties:
-        self:
-          $ref: '#/components/schemas/placeUri'
-        id:
-          $ref: '#/components/schemas/placeId'
-        capacity:
-          $ref: '#/components/schemas/capacity'
-        nextPlaces:
-          $ref: '#/components/schemas/nextPlaces'
-    genericPlace:
-      description: Generic place in the RNS system
-      oneOf:
-        - $ref: '#/components/schemas/parkingArea'
-        - $ref: '#/components/schemas/roadSegment'
-        - $ref: '#/components/schemas/gate'
-      xml:
-        attribute: false
-    services:
-      description: List of provided services of a parking area
-      type: array
-      uniqueItems: true
-      minItems: 0
-      items:
-        type: string
-        xml:
-          name: service
-      example: [Restroom, Bistro, Smoking area]
-      xml:
-        wrapped: true
-        name: services
-    parkingAreas:
-      description: List of parking areas in the RNS system
-      allOf:
-        - $ref: '#/components/schemas/basePlaces'
-        - type: array
-          uniqueItems: true
-          minItems: 0
-          xml:
-            name: parkingAreas
-            wrapped: true
-          items:
-            $ref: '#/components/schemas/parkingArea'
-    parkingArea:
-      description: A parking area in the RNS system
-      allOf:
-        - $ref: '#/components/schemas/basePlace'
-        - type: object
-          xml:
-            name: parkingArea
-          properties:
-            services:
-              $ref: '#/components/schemas/services'
-    roadName:
-      description: A road name to which a road segment can belong to
-      type: string
-      xml:
-        attribute: true
-      example: White Avenue
-    roadSegmentName:
-      description: Name of a road segment
-      type: string
-      xml:
-        attribute: true
-      example: RS123
-    roadSegments:
-      description: List of road segments in the RNS system
-      allOf:
-        - $ref: '#/components/schemas/basePlaces'
-        - type: array
-          uniqueItems: true
-          minItems: 0
-          xml:
-            name: roadSegments
-            wrapped: true
-          items:
-            $ref: '#/components/schemas/roadSegment'
-    roadSegment:
-      description: A road segment in the RNS system
-      allOf:
-        - $ref: '#/components/schemas/basePlace'
-        - type: object
-          xml:
-            name: roadSegment
-          required:
-          - name
-          - road
-          properties:
-            name:
-              $ref: '#/components/schemas/roadSegmentName'
-            road:
-              $ref: '#/components/schemas/roadName'
-    gateType:
-      description: All possible types of gates in the RNS system
-      type: string
-      enum:
-        - IN
-        - OUT
-        - INOUT
-      example: IN
-    gates:
-      description: List of gates in the RNS system
-      allOf:
-        - $ref: '#/components/schemas/basePlaces'
-        - type: array
-          uniqueItems: true
-          minItems: 0
-          xml:
-            name: gates
-            wrapped: true
-          items:
-            $ref: '#/components/schemas/gate'
-    gate:
-      description: A gate in the RNS system
-      allOf:
-        - $ref: '#/components/schemas/basePlace'
-        - type: object
-          required:
-          - type
-          properties:
-            type:
-              $ref: '#/components/schemas/gateType'
-    connectionUri:
-      description: An RNS connection URI (so it can have its proper example)
-      type: string
-      format: uri
-      example: 'http://localhost:8080/RnsSystem/rest/connections/...'
-    nextConnectionsPage:
-      description: The next page in a multi-paged connection list response (so it can have its proper example)
-      type: string
-      format: uri
-      example: 'http://localhost:8080/RnsSystem/rest/connections/...'
-    connections:
-      description: A list of connections between place pairs in the RNS system
-      type: object
-      xml:
-        name: connections
-        attribute: false
-      required:
-        - connections (admin)
-      properties:
-        totalPages:
-          $ref: '#/components/schemas/totalPages'
-        page:
-          $ref: '#/components/schemas/page'
-        next:
-          $ref: '#/components/schemas/nextConnectionsPage'
-        connections:
-          type: array
-          uniqueItems: true
-          minItems: 0
-          xml:
-            name: connections
-            wrapped: true
-          items:
-            $ref: '#/components/schemas/connection'
-    connectionId:
-      description: How a connection between two places is identified
-      type: string
-      example: connection123
-      xml:
-        attribute: true
-    connection:
-      description: A connection between two places in the RNS system
-      type: object
-      xml:
-        name: connection
-      required:
-      - from
-      - to
-      properties:
-        self:
-          $ref: '#/components/schemas/connectionUri'
-        id:
-          $ref: '#/components/schemas/connectionId'
-        from:
-          $ref: '#/components/schemas/placeUri'
-        to:
-          $ref: '#/components/schemas/placeUri'
-    entrance:
-      description: A vehicle entrance request in the RNS system
-      type: object
-      xml:
-        name: entrance
-      required:
-      - gateType
-      - destination
-      - vehicleId
-      - vehicleType
-      properties:
-        gate:
-          type: object
-          properties:
-            type: 
-              type: string
-              enum: [IN, INOUT]
-              xml:
-                attribute: true
-        vehicle:
-          type: object
-          properties:
-            vehicleId:
-              $ref: '#/components/schemas/vehicleId'
-            vehicleType:
-              $ref: '#/components/schemas/vehicleType'    
-        destination:
-          $ref: '#/components/schemas/placeUri'
-    suggestedPath:
-      description: Path of places suggested to the user upon vehicle entrance and movement
-      type: array
-      uniqueItems: true
-      minItems: 1
-      xml:
-        name: suggestedPath
-        wrapped: true
-      items:
-        $ref: '#/components/schemas/suggestedPlaceUri'
-      example:
-        - 'http://localhost:8080/RnsSystem/rest/places/suggestedPlace1'
-        - 'http://localhost:8080/RnsSystem/rest/places/suggestedPlace2'
-        - 'http://localhost:8080/RnsSystem/rest/places/suggestedPlace3'
-    newVehicle:
-      description: A freshly-insterted vehicle in the RNS system
-      type: object
-      xml:
-        name: newVehicle
-      properties: 
-        self:
-          $ref: '#/components/schemas/vehicleUri'
-        id:
-          $ref: '#/components/schemas/vehicleId'
-        suggestedPath:
-          $ref: '#/components/schemas/suggestedPath'
-  parameters:
-    pageNumber:
-      name: page
-      in: query
-      required: false
-      description: The desired page result
-      schema:
-        type: integer
-        format: int32
-        default: 0
-    vehicleId:
-      name: id
-      in: path
-      required: true
-      description: The vehicle's plate ID of interest
-      schema:
-        $ref: '#/components/schemas/vehicleId'
-    placeId:
-      name: id
-      in: path
-      required: true
-      description: The place ID of interest
-      schema:
-        $ref: '#/components/schemas/placeId'
-    connectionId:
-      name: id
-      in: path
-      required: true
-      description: The connection ID of interest
-      schema:
-        $ref: '#/components/schemas/connectionId'
-  requestBodies:
-    entrance:
-      description: Vehicle that needs to be added to the RNS system
-      content:
-        application/xml:
-          schema:
-            $ref: '#/components/schemas/entrance'
-        application/json:
-          schema:
-            $ref: '#/components/schemas/entrance'
-      required: true
-    position:
-      description: Position to which a vehicle in the RNS system has moved
-      content:
-        application/xml:
-          schema:
-            $ref: '#/components/schemas/positionUri'
-        application/json:
-          schema:
-            $ref: '#/components/schemas/positionUri'
-      required: true
-    state:
-      description: New status of a vehicle in the RNS system
-      content:
-        application/xml:
-          schema:
-            $ref: '#/components/schemas/vehicleStatus'
-        application/json:
-          schema:
-            $ref: '#/components/schemas/vehicleStatus'
-      required: true
-  responses:
-    atLeastOneParameterWrong:
-      description: 'Bad request: at least one invalid parameter'
-    vehicleNotFound:
-      description: 'Vehicle not found'
-    placeNotFound:
-      description: 'Place not found'
-    connectionNotFound:
-      description: 'Connection not found'
