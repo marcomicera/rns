@@ -136,8 +136,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/vehicle'
-        # '400':
-        #   $ref: '#/components/responses/invalidVehicleId'
         '404':
           $ref: '#/components/responses/vehicleNotFound'
     delete:
@@ -174,8 +172,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/place'
-        # '400':
-        #   $ref: '#/components/responses/invalidVehicleId'
         '404':
           $ref: '#/components/responses/vehicleNotFound'
   '/vehicles/{id}/position':
@@ -197,8 +193,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/place'
-        # '400':
-        #   $ref: '#/components/responses/invalidVehicleId'
         '404':
           $ref: '#/components/responses/vehicleNotFound'
     put:
@@ -246,8 +240,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/place'
-        # '400':
-        #   $ref: '#/components/responses/invalidVehicleId'
         '404':
           $ref: '#/components/responses/vehicleNotFound'
   '/vehicles/{id}/entrytime':
@@ -269,8 +261,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/entryTime'
-        # '400':
-        #   $ref: '#/components/responses/invalidVehicleId'
         '404':
           $ref: '#/components/responses/vehicleNotFound'
   '/vehicles/{id}/state':
@@ -292,8 +282,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/vehicleStatus'
-        # '400':
-        #   $ref: '#/components/responses/invalidVehicleId'
         '404':
           $ref: '#/components/responses/vehicleNotFound'
     put:
@@ -332,33 +320,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/vehicleType'
-        # '400':
-        #   $ref: '#/components/responses/invalidVehicleId'
         '404':
           $ref: '#/components/responses/vehicleNotFound'
-  # '/vehicles/{id}/path':
-  #   get:
-  #     tags:
-  #       - vehicles
-  #     summary: retrieves a vehicle's type
-  #     operationId: getVehicleType
-  #     description: Retrieves a vehicle's type in the RNS system
-  #     parameters:
-  #       - $ref: '#/components/parameters/vehicleId'
-  #     responses:
-  #       '200':
-  #         description: Vehicle's type found
-  #         content:
-  #           application/xml:
-  #             schema:
-  #               $ref: '#/components/schemas/vehicleType'
-  #           application/json:
-  #             schema:
-  #               $ref: '#/components/schemas/vehicleType'
-  #       # '400':
-  #       #   $ref: '#/components/responses/invalidVehicleId'
-  #       '404':
-  #         $ref: '#/components/responses/vehicleNotFound'
+  '/vehicles/{id}/path':
+    get:
+      tags:
+        - vehicles
+      summary: retrieves a vehicle's type
+      operationId: getPath
+      description: Retrieves a vehicle's suggested path in the RNS system
+      parameters:
+        - $ref: '#/components/parameters/vehicleId'
+      responses:
+        '200':
+          description: Vehicle's suggested path found
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/suggestedPath'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/suggestedPath'
+        '404':
+          $ref: '#/components/responses/vehicleNotFound'
   '/places':
     get:
       tags:
@@ -405,8 +389,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/place'
-        # '400':
-        #   $ref: '#/components/responses/invalidPlaceId'
         '404':
           $ref: '#/components/responses/placeNotFound'
   '/places/{id}/capacity':
@@ -451,8 +433,6 @@ paths:
             application/xml:
               schema:
                 $ref: '#/components/schemas/nextPlaces'
-        # '400':
-        #   $ref: '#/components/responses/invalidPlaceId'
         '404':
           $ref: '#/components/responses/placeNotFound'
   '/places/gates':
@@ -501,8 +481,6 @@ paths:
   #           application/json:
   #             schema:
   #               $ref: '#/components/schemas/place'
-  #       # '400':
-  #       #   $ref: '#/components/responses/invalidConnectionId'
   #       '404':
   #         $ref: '#/components/responses/placeNotFound'
   '/gates/{id}/type':
@@ -524,8 +502,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/gateType'
-        # '400':
-        #   $ref: '#/components/responses/invalidConnectionId'
         '404':
           $ref: '#/components/responses/placeNotFound'
   '/places/parkingAreas':
@@ -574,8 +550,6 @@ paths:
   #           application/json:
   #             schema:
   #               $ref: '#/components/schemas/place'
-  #       # '400':
-  #       #   $ref: '#/components/responses/invalidPlaceId'
   #       '404':
   #         $ref: '#/components/responses/placeNotFound'
   '/places/parkingAreas/{id}/services':
@@ -597,8 +571,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/services'
-        # '400':
-        #   $ref: '#/components/responses/invalidPlaceId'
         '404':
           $ref: '#/components/responses/placeNotFound'
   '/places/roadSegments':
@@ -647,8 +619,6 @@ paths:
   #           application/json:
   #             schema:
   #               $ref: '#/components/schemas/place'
-  #       # '400':
-  #       #   $ref: '#/components/responses/invalidPlaceId'
   #       '404':
   #         $ref: '#/components/responses/placeNotFound'
   '/places/roadSegments/{id}/name':
@@ -670,8 +640,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/roadSegmentName'
-        # '400':
-        #   $ref: '#/components/responses/invalidPlaceId'
         '404':
           $ref: '#/components/responses/placeNotFound'
   '/places/roadSegments/{id}/road':
@@ -693,8 +661,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/roadName'
-        # '400':
-        #   $ref: '#/components/responses/invalidPlaceId'
         '404':
           $ref: '#/components/responses/placeNotFound'
   '/connections':
@@ -735,8 +701,6 @@ paths:
   #           application/json:
   #             schema:
   #               $ref: '#/components/schemas/connection'
-  #       # '400':
-  #       #   $ref: '#/components/responses/invalidConnectionId'
   #       '404':
   #         $ref: '#/components/responses/connectionNotFound'
   '/connections/{id}/from':
@@ -758,8 +722,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/place'
-        # '400':
-        #   $ref: '#/components/responses/invalidConnectionId'
         '404':
           $ref: '#/components/responses/connectionNotFound'
   '/connections/{id}/to':
@@ -781,8 +743,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/place'
-        # '400':
-        #   $ref: '#/components/responses/invalidConnectionId'
         '404':
           $ref: '#/components/responses/connectionNotFound'
   
@@ -1210,15 +1170,9 @@ components:
   responses:
     atLeastOneParameterWrong:
       description: 'Bad request: at least one invalid parameter'
-    # invalidVehicleId:
-    #   description: 'Bad request: invalid vehicle ID'
     vehicleNotFound:
       description: 'Vehicle not found'
-    # invalidPlaceId:
-    #   description: 'Bad request: invalid place ID'
     placeNotFound:
       description: 'Place not found'
     connectionNotFound:
       description: 'Connection not found'
-    # invalidConnectionId:
-    #   description: 'Bad request: invalid connection ID'
