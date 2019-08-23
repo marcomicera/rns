@@ -89,7 +89,7 @@ paths:
             getVehicleById:
               operationId: getVehicle
               parameters:
-                vehicleId: '$response.body#/id'
+                id: '$response.body#/id'
               description: >
                 The `id` value returned in the response can be used as
                 the vehicle `id` parameter for all `GET /vehicle/{id}[/...]` methods.
