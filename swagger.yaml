@@ -100,16 +100,23 @@ paths:
                 access a vehicle for all `GET /vehicle/{id}[/...]` methods.
         '400':
           description: 'Bad request: the vehicle object was malformed'
-          content: {}
         '403':
-          description: 'Permission not granted'
-          content: {}
+          description: 'Permission not granted: reason in response body'
+          content:
+            application/xml:
+              schema:
+                type: string
+                xml:
+                  name: reason
+                example: Destination is unreachable
+            application/json:
+              schema:
+                type: string
+                example: Destination is unreachable
         '404':
           description: 'At least a place has not been found'
-          content: {}
         '409':
           description: 'Conflict: vehicle already existed'
-          content: {}
   '/vehicles/{id}':
     get:
       tags:
@@ -131,6 +138,21 @@ paths:
                 $ref: '#/components/schemas/vehicle'
         # '400':
         #   $ref: '#/components/responses/invalidVehicleId'
+        '404':
+          $ref: '#/components/responses/vehicleNotFound'
+    delete:
+      tags:
+        - vehicles
+      summary: deletes a vehicle
+      operationId: deleteVehicle
+      description: Deletes a vehicle from the RNS system
+      parameters:
+        - $ref: '#/components/parameters/vehicleId'
+      responses:
+        '204':
+          description: Vehicle successfully deleted
+        '403':
+          description: 'Forbidden: vehicle is currently not in an OUT or INOUT gate'
         '404':
           $ref: '#/components/responses/vehicleNotFound'
   '/vehicles/{id}/origin':
@@ -185,37 +207,26 @@ paths:
       summary: updates a vehicle's position
       operationId: setPosition
       description: Updates a vehicle's position in the RNS system
-      requestBody:
-        $ref: '#/components/requestBodies/position'
       parameters:
         - $ref: '#/components/parameters/vehicleId'
+      requestBody:
+        $ref: '#/components/requestBodies/position'
       responses:
         '200':
-          description: Vehicle's position updated. Replying with suggested path
+          description: Vehicle's position updated. Replying with suggested path towards destination
           content:
             application/xml:
               schema:
-                $ref: '#/components/schemas/placeUri' # FIXME XML element name
+                $ref: '#/components/schemas/suggestedPath'
             application/json:
               schema:
-                $ref: '#/components/schemas/placeUri'
+                $ref: '#/components/schemas/suggestedPath'
+        '204':
+          description: Vehicle's position updated. Destination is not reachable anymore
         '400':
-          description: 'Bad request: new place not reachable from current position'
-        '403':
-          description: 'Permission not granted: reason in response body'
-          content:
-            application/xml:
-              schema:
-                type: string
-                xml:
-                  name: reason
-                example: Congestion
-            application/json:
-              schema:
-                type: string
-                example: Congestion
+          description: 'Bad request: destination is unknown or not reachable from the previous position'
         '404':
-          description: Place not found
+          $ref: '#/components/responses/vehicleNotFound'
   '/vehicles/{id}/destination':
     get:
       tags:
@@ -285,6 +296,23 @@ paths:
         #   $ref: '#/components/responses/invalidVehicleId'
         '404':
           $ref: '#/components/responses/vehicleNotFound'
+    put:
+      tags:
+        - vehicles
+      summary: updates a vehicle's state
+      operationId: setState
+      description: Updates a vehicle's state in the RNS system
+      requestBody:
+        $ref: '#/components/requestBodies/state'
+      parameters:
+        - $ref: '#/components/parameters/vehicleId'
+      responses:
+        '204':
+          description: Vehicle's state updated
+        '400':
+          description: New state is invalid
+        '404':
+          $ref: '#/components/responses/vehicleNotFound'
   '/vehicles/{id}/type':
     get:
       tags:
@@ -308,6 +336,29 @@ paths:
         #   $ref: '#/components/responses/invalidVehicleId'
         '404':
           $ref: '#/components/responses/vehicleNotFound'
+  # '/vehicles/{id}/path':
+  #   get:
+  #     tags:
+  #       - vehicles
+  #     summary: retrieves a vehicle's type
+  #     operationId: getVehicleType
+  #     description: Retrieves a vehicle's type in the RNS system
+  #     parameters:
+  #       - $ref: '#/components/parameters/vehicleId'
+  #     responses:
+  #       '200':
+  #         description: Vehicle's type found
+  #         content:
+  #           application/xml:
+  #             schema:
+  #               $ref: '#/components/schemas/vehicleType'
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/vehicleType'
+  #       # '400':
+  #       #   $ref: '#/components/responses/invalidVehicleId'
+  #       '404':
+  #         $ref: '#/components/responses/vehicleNotFound'
   '/places':
     get:
       tags:
@@ -1071,7 +1122,7 @@ components:
             vehicleType:
               $ref: '#/components/schemas/vehicleType'    
         destination:
-          $ref: '#/components/schemas/placeUri'
+          $ref: '#/components/schemas/placeUri' # should be place name
     suggestedPath:
       description: Path of places suggested to the user upon vehicle entrance
       type: array
@@ -1145,6 +1196,16 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/placeUri'
+      required: true
+    state:
+      description: New status of a vehicle in the RNS system
+      content:
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/vehicleStatus'
+        application/json:
+          schema:
+            $ref: '#/components/schemas/vehicleStatus'
       required: true
   responses:
     atLeastOneParameterWrong:
