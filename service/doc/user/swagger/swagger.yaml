@@ -404,16 +404,14 @@ paths:
         '200':
           description: Place capacity found
           content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/capacity'
             application/xml:
               schema:
                 $ref: '#/components/schemas/capacity'
-        '400':
-          description: 'Bad request: invalid place ID'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/capacity'
         '404':
-          description: Place not found
+          $ref: '#/components/responses/placeNotFound'
   '/places/{id}/nextPlaces':
     get:
       tags:
@@ -427,12 +425,33 @@ paths:
         '200':
           description: Next places found
           content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/nextPlaces'
             application/xml:
               schema:
                 $ref: '#/components/schemas/nextPlaces'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/nextPlaces'
+        '404':
+          $ref: '#/components/responses/placeNotFound'
+  '/places/{id}/vehicles':
+    get:
+      tags:
+        - places
+      summary: retrieves all vehicles in a place
+      operationId: getVehiclesInPlace
+      description: Retrieves the vehicles in a place of the RNS system
+      parameters:
+        - $ref: '#/components/parameters/placeId'
+      responses:
+        '200':
+          description: Vehicles found
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/vehicles'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/vehicles'
         '404':
           $ref: '#/components/responses/placeNotFound'
   '/places/gates':
