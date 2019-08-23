@@ -6,8 +6,10 @@
   - [Assignments FAQs](https://pad.polito.it:8080/enginframe/dp2/dp2.xml?_uri=//dp2/assignment_faqs)
   - [Examples](https://pad.polito.it:8080/enginframe/dp2/dp2.xml?_uri=//dp2/material)
 - [`it.polito.dp2.RNS` package](https://pad.polito.it:8080/enginframe/dp2/assignments/lab1/doc/index.html)
-- [Swagger APIs](https://app.swaggerhub.com/apis/marcomicera/RnsSystem/1.0)
-  - [Swagger data types](https://swagger.io/docs/specification/data-models/data-types/#array)
+- [Swagger APIs](https://app.swaggerhub.com/apis/marcomicera/RnsSystem/2.0-oas3)
+  - [OpenAPI Specification](https://swagger.io/docs/specification/about/)
+- [List of HTTP status codes](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes)
+- [PUT vs. POST in REST](https://stackoverflow.com/questions/630453/put-vs-post-in-rest)
 
 #### Software
 - `openjdk-8-jdk`
