@@ -772,20 +772,22 @@ servers:
   - url: 'https://virtserver.swaggerhub.com/marcomicera/RnsSystem/2.0-oas3'
   - url: 'http://localhost:8080/RnsSystem/rest'
   
-# TODO add 'not instantiable' in descriptions
 components:
   schemas:
     totalPages:
+      description: Indicates the total number of pages in a multi-paged response
       type: integer
       minimum: 1
       example: 5
       default: 1
     page:
+      description: Indicates the page number of a multi-paged response
       type: integer
       minimum: 0
       example: 2
       default: 0
     vehicleType:
+      description: The type of a vehicle in the RNS system
       type: string
       enum:
         - CAR
@@ -797,6 +799,7 @@ components:
         name: type
         attribute: true
     vehicleStatus:
+      description: The state a of vehicle in the RNS system
       type: string
       enum:
         - PARKED
@@ -806,14 +809,17 @@ components:
         name: state
         attribute: true
     vehicleUri:
+      description: An RNS vehicle URI (so it can have its proper example)
       type: string
       format: uri
       example: 'http://localhost:8080/RnsSystem/rest/vehicles/vehicle123'
     nextVehiclesPage:
+      description: The next page in a multi-paged vehicles list response (so it can have its proper example)
       type: string
       format: uri
       example: 'http://localhost:8080/RnsSystem/rest/vehicles/...'
     vehicles:
+      description: A list of vehicles in the RNS system
       type: object
       xml:
         name: vehicles
@@ -836,8 +842,8 @@ components:
             wrapped: true
           items:
             $ref: '#/components/schemas/vehicle'
-      description: All the vehicles in the RNS system
     entryTime:
+      description: The entry time in which a vehicle has entered the RNS sytem
       type: string
       format: date-time
       example: '2017-07-21T17:32:28Z'
@@ -845,6 +851,7 @@ components:
         wrapped: true
         name: entryTime
     vehicleId:
+      description: A vehicle plate ID (so it can have its proper example)
       type: string
       example: vehicle123
       xml:
@@ -882,33 +889,38 @@ components:
         destination:
           $ref: '#/components/schemas/placeUri'
     placeUri:
+      description: An RNS generic place URI (so it can have its proper example)
       type: string
       format: uri
       example: 'http://localhost:8080/RnsSystem/rest/places/place123'
     nextPlaceUri:
+      description: An RNS reachable generic place URI (so it can have its proper example)
       type: string
       format: uri
       xml:
         name: nextPlace
       example: 'http://localhost:8080/RnsSystem/rest/places/nextPlace123'
     positionUri:
+      description: An RNS generic position URI (so it can have its proper example)
       type: string
       format: uri
       xml:
         name: position
       example: 'http://localhost:8080/RnsSystem/rest/places/position123'
     suggestedPlaceUri:
+      description: An RNS suggested generic place URI (so it can have its proper example)
       type: string
       format: uri
       xml:
         name: place
       example: 'http://localhost:8080/RnsSystem/rest/places/suggestedPlace123'
     nextPlacesPage:
+      description: The next page in a multi-paged generic places list response (so it can have its proper example)
       type: string
       format: uri
       example: 'http://localhost:8080/RnsSystem/rest/places/...'
     basePlaces:
-      description: Basic list of places in the RNS system, not instantiable
+      description: Basic structure for lists of places in the RNS system (not instantiable, for inheritance purposes)
       type: object
       xml:
         name: places
@@ -923,12 +935,13 @@ components:
         next:
           $ref: '#/components/schemas/nextPlacesPage'
     genericPlaces:
-      description: List of generic places in the RNS system
-      oneOf: # FIXME this is not shown in the GUI
+      description: A list of generic places in the RNS system
+      oneOf:
         - $ref: '#/components/schemas/parkingAreas'
         - $ref: '#/components/schemas/roadSegments'
         - $ref: '#/components/schemas/gates'
     nextPlaces:
+      description: A list of reachable generic place URIs (so it can have its proper example)
       type: array
       uniqueItems: true
       minItems: 0
@@ -942,6 +955,7 @@ components:
         - 'http://localhost:8080/RnsSystem/rest/places/place2'
         - 'http://localhost:8080/RnsSystem/rest/places/place3'
     capacity:
+      description: The capacity of a place in terms of supported vehicles
       type: integer
       format: int32
       xml:
@@ -950,12 +964,13 @@ components:
       minimum: 0
       example: 100
     placeId:
+      description: The ID of a place in the RNS system
       type: string
       example: place123
       xml:
         attribute: true
     basePlace:
-      description: Basic place data structure, not instantiable
+      description: Basic place data structure (not instantiable, for inheritance purposes)
       type: object
       xml:
         name: place
@@ -974,7 +989,7 @@ components:
           $ref: '#/components/schemas/nextPlaces'
     genericPlace:
       description: Generic place in the RNS system
-      oneOf: # FIXME this is not shown in the GUI
+      oneOf:
         - $ref: '#/components/schemas/parkingArea'
         - $ref: '#/components/schemas/roadSegment'
         - $ref: '#/components/schemas/gate'
