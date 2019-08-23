@@ -143,6 +143,7 @@ paths:
     delete:
       tags:
         - vehicles (user)
+        - vehicles (admin)
       summary: deletes a vehicle
       operationId: deleteVehicle
       description: Deletes a vehicle from the RNS system
