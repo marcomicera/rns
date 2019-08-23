@@ -1,0 +1,1224 @@
+openapi: 3.0.0
+
+info:
+  version: "2.0-oas3"
+  title: RNS web service
+  description: Road Navigation Services
+  termsOfService: 'https://smartbear.com/terms-of-use/'
+  contact:
+    email: marco.micera+dp2@gmail.com
+    name: Marco Micera
+    url: 'https://marcomicera.github.io/'
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+    
+tags:
+  - name: vehicles
+    description: Managing vehicles within the RNS system
+  - name: places
+    description: Retrieving info about RNS places
+  - name: connections
+    description: How places are connected to each other
+    
+paths:
+  '/vehicles':
+    get:
+      tags:
+        - vehicles
+      summary: retrieves all vehicles
+      operationId: getVehicles
+      description: Retrieves a set containing all vehicles in the RNS system
+      parameters:
+        - name: since
+          in: query
+          required: false
+          description: The entrance date/time since when vehicles have to be selected
+          schema:
+            type: string
+            format: date-time
+        - name: types
+          in: query
+          required: false
+          description: The set of types of vehicles that have to be selected
+          schema:
+            type: array
+            uniqueItems: true
+            items:
+              $ref: '#/components/schemas/vehicleType'
+            minItems: 0
+        - name: state
+          in: query
+          required: false
+          description: The state of vehicles to be selected
+          schema:
+            $ref: '#/components/schemas/vehicleStatus'
+        - $ref: '#/components/parameters/pageNumber'
+      responses:
+        '200':
+          description: Vehicles returned
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/vehicles'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/vehicles'
+        '400':
+          $ref: '#/components/responses/atLeastOneParameterWrong'
+    post:
+      tags:
+        - vehicles
+      summary: add a new vehicle
+      operationId: addVehicle
+      requestBody:
+        $ref: '#/components/requestBodies/entrance'
+      responses:
+        '201':
+          description: 'New vehicle created, return suggest path'
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/newVehicle'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/newVehicle'
+          links:
+            getVehicleById:
+              operationId: getVehicle
+              parameters:
+                id: '$response.body#/id'
+              description: >
+                The `id` value returned in the response can be used as
+                the vehicle `id` parameter for all `GET /vehicle/{id}[/...]` methods.
+            getVehicleByHATEOAS:
+              operationId: getVehicle
+              parameters:
+                id: '$response.body#/self'
+              description: >
+                The `self` URI returned in the response can be used to directly
+                access a vehicle for all `GET /vehicle/{id}[/...]` methods.
+        '400':
+          description: 'Bad request: the vehicle object was malformed'
+        '403':
+          description: 'Permission not granted: reason in response body'
+          content:
+            application/xml:
+              schema:
+                type: string
+                xml:
+                  name: reason
+                example: Destination is unreachable
+            application/json:
+              schema:
+                type: string
+                example: Destination is unreachable
+        '404':
+          description: 'At least a place has not been found'
+        '409':
+          description: 'Conflict: vehicle already existed'
+  '/vehicles/{id}':
+    get:
+      tags:
+        - vehicles
+      summary: retrieves a vehicle
+      operationId: getVehicle
+      description: Retrieves a vehicle in the RNS system
+      parameters:
+        - $ref: '#/components/parameters/vehicleId'
+      responses:
+        '200':
+          description: Vehicle found
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/vehicle'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/vehicle'
+        # '400':
+        #   $ref: '#/components/responses/invalidVehicleId'
+        '404':
+          $ref: '#/components/responses/vehicleNotFound'
+    delete:
+      tags:
+        - vehicles
+      summary: deletes a vehicle
+      operationId: deleteVehicle
+      description: Deletes a vehicle from the RNS system
+      parameters:
+        - $ref: '#/components/parameters/vehicleId'
+      responses:
+        '204':
+          description: Vehicle successfully deleted
+        '403':
+          description: 'Forbidden: vehicle is currently not in an OUT or INOUT gate'
+        '404':
+          $ref: '#/components/responses/vehicleNotFound'
+  '/vehicles/{id}/origin':
+    get:
+      tags:
+        - vehicles
+      summary: retrieves a vehicle's origin
+      operationId: getOrigin
+      description: Retrieves a vehicle's origin in the RNS system
+      parameters:
+        - $ref: '#/components/parameters/vehicleId'
+      responses:
+        '200':
+          description: Vehicle's origin found
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/place'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/place'
+        # '400':
+        #   $ref: '#/components/responses/invalidVehicleId'
+        '404':
+          $ref: '#/components/responses/vehicleNotFound'
+  '/vehicles/{id}/position':
+    get:
+      tags:
+        - vehicles
+      summary: retrieves a vehicle's position
+      operationId: getPosition
+      description: Retrieves a vehicle's position in the RNS system
+      parameters:
+        - $ref: '#/components/parameters/vehicleId'
+      responses:
+        '200':
+          description: Vehicle's position found
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/place'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/place'
+        # '400':
+        #   $ref: '#/components/responses/invalidVehicleId'
+        '404':
+          $ref: '#/components/responses/vehicleNotFound'
+    put:
+      tags:
+        - vehicles
+      summary: updates a vehicle's position
+      operationId: setPosition
+      description: Updates a vehicle's position in the RNS system
+      parameters:
+        - $ref: '#/components/parameters/vehicleId'
+      requestBody:
+        $ref: '#/components/requestBodies/position'
+      responses:
+        '200':
+          description: Vehicle's position updated. Replying with suggested path towards destination
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/suggestedPath'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/suggestedPath'
+        '204':
+          description: Vehicle's position updated. Destination is not reachable anymore
+        '400':
+          description: 'Bad request: destination is unknown or not reachable from the previous position'
+        '404':
+          $ref: '#/components/responses/vehicleNotFound'
+  '/vehicles/{id}/destination':
+    get:
+      tags:
+        - vehicles
+      summary: retrieves a vehicle's destination
+      operationId: getDestination
+      description: Retrieves a vehicle's destination in the RNS system
+      parameters:
+        - $ref: '#/components/parameters/vehicleId'
+      responses:
+        '200':
+          description: Vehicle's destination found
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/place'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/place'
+        # '400':
+        #   $ref: '#/components/responses/invalidVehicleId'
+        '404':
+          $ref: '#/components/responses/vehicleNotFound'
+  '/vehicles/{id}/entrytime':
+    get:
+      tags:
+        - vehicles
+      summary: retrieves a vehicle's entry time
+      operationId: getEntryTime
+      description: Retrieves a vehicle's entry time in the RNS system
+      parameters:
+        - $ref: '#/components/parameters/vehicleId'
+      responses:
+        '200':
+          description: Vehicle's entry time found
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/entryTime'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/entryTime'
+        # '400':
+        #   $ref: '#/components/responses/invalidVehicleId'
+        '404':
+          $ref: '#/components/responses/vehicleNotFound'
+  '/vehicles/{id}/state':
+    get:
+      tags:
+        - vehicles
+      summary: retrieves a vehicle's state
+      operationId: getState
+      description: Retrieves a vehicle's state in the RNS system
+      parameters:
+        - $ref: '#/components/parameters/vehicleId'
+      responses:
+        '200':
+          description: Vehicle's state found
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/vehicleStatus'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/vehicleStatus'
+        # '400':
+        #   $ref: '#/components/responses/invalidVehicleId'
+        '404':
+          $ref: '#/components/responses/vehicleNotFound'
+    put:
+      tags:
+        - vehicles
+      summary: updates a vehicle's state
+      operationId: setState
+      description: Updates a vehicle's state in the RNS system
+      requestBody:
+        $ref: '#/components/requestBodies/state'
+      parameters:
+        - $ref: '#/components/parameters/vehicleId'
+      responses:
+        '204':
+          description: Vehicle's state updated
+        '400':
+          description: New state is invalid
+        '404':
+          $ref: '#/components/responses/vehicleNotFound'
+  '/vehicles/{id}/type':
+    get:
+      tags:
+        - vehicles
+      summary: retrieves a vehicle's type
+      operationId: getVehicleType
+      description: Retrieves a vehicle's type in the RNS system
+      parameters:
+        - $ref: '#/components/parameters/vehicleId'
+      responses:
+        '200':
+          description: Vehicle's type found
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/vehicleType'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/vehicleType'
+        # '400':
+        #   $ref: '#/components/responses/invalidVehicleId'
+        '404':
+          $ref: '#/components/responses/vehicleNotFound'
+  # '/vehicles/{id}/path':
+  #   get:
+  #     tags:
+  #       - vehicles
+  #     summary: retrieves a vehicle's type
+  #     operationId: getVehicleType
+  #     description: Retrieves a vehicle's type in the RNS system
+  #     parameters:
+  #       - $ref: '#/components/parameters/vehicleId'
+  #     responses:
+  #       '200':
+  #         description: Vehicle's type found
+  #         content:
+  #           application/xml:
+  #             schema:
+  #               $ref: '#/components/schemas/vehicleType'
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/vehicleType'
+  #       # '400':
+  #       #   $ref: '#/components/responses/invalidVehicleId'
+  #       '404':
+  #         $ref: '#/components/responses/vehicleNotFound'
+  '/places':
+    get:
+      tags:
+        - places
+      summary: retrieves all palces
+      operationId: getPlaces
+      description: Retrieves a set containing all places in the RNS system
+      parameters:
+        - name: idPrefix
+          in: query
+          required: false
+          description: The ID prefix for selecting places
+          schema:
+            type: string
+        - $ref: '#/components/parameters/pageNumber'
+      responses:
+        '200':
+          description: Places returned
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/places'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/places'
+        '400':
+          $ref: '#/components/responses/atLeastOneParameterWrong'
+  '/places/{id}':
+    get:
+      tags:
+        - places
+      summary: retrieves a place
+      operationId: getPlace
+      description: Retrieves a place in the RNS system
+      parameters:
+        - $ref: '#/components/parameters/placeId'
+      responses:
+        '200':
+          description: Place found
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/place'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/place'
+        # '400':
+        #   $ref: '#/components/responses/invalidPlaceId'
+        '404':
+          $ref: '#/components/responses/placeNotFound'
+  '/places/{id}/capacity':
+    get:
+      tags:
+        - places
+      summary: retrieves the capacity of a place
+      operationId: getCapacity
+      description: Retrieves the capacity of a place in the RNS system
+      parameters:
+        - $ref: '#/components/parameters/placeId'
+      responses:
+        '200':
+          description: Place capacity found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/capacity'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/capacity'
+        '400':
+          description: 'Bad request: invalid place ID'
+        '404':
+          description: Place not found
+  '/places/{id}/nextPlaces':
+    get:
+      tags:
+        - places
+      summary: retrieves all places to which this place is connected
+      operationId: getNextPlaces
+      description: Retrieves the set of all places to which this place is connected
+      parameters:
+        - $ref: '#/components/parameters/placeId'
+      responses:
+        '200':
+          description: Next places found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/nextPlaces'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/nextPlaces'
+        # '400':
+        #   $ref: '#/components/responses/invalidPlaceId'
+        '404':
+          $ref: '#/components/responses/placeNotFound'
+  '/places/gates':
+    get:
+      tags:
+        - places
+      summary: retrieves all gates
+      operationId: getGates
+      description: Retrieves a set containing all gates in the RNS system
+      parameters:
+        - name: type
+          in: query
+          required: false
+          description: The ID prefix for selecting places
+          schema:
+            $ref: '#/components/schemas/gateType'
+        - $ref: '#/components/parameters/pageNumber'
+      responses:
+        '200':
+          description: Gates returned
+          content: # TODO Can I enforce the place type?
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/places'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/places'
+        '400':
+          $ref: '#/components/responses/atLeastOneParameterWrong'
+  # '/gates/{id}': # FIXME this is not present in the RNS-API
+  #   get:
+  #     tags:
+  #       - places
+  #     summary: retrieves one gate
+  #     operationId: getGate
+  #     description: Retrieves one gate in the RNS system
+  #     parameters:
+  #       - $ref: '#/components/parameters/placeId'
+  #     responses:
+  #       '200':
+  #         description: Gate found
+  #         content: # TODO Can I enforce the place type?
+  #           application/xml:
+  #             schema:
+  #               $ref: '#/components/schemas/place'
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/place'
+  #       # '400':
+  #       #   $ref: '#/components/responses/invalidConnectionId'
+  #       '404':
+  #         $ref: '#/components/responses/placeNotFound'
+  '/gates/{id}/type':
+    get:
+      tags:
+        - places
+      summary: retrieves one gate's type
+      operationId: getGateType
+      description: Retrieves one gate in the RNS system
+      parameters:
+        - $ref: '#/components/parameters/placeId'
+      responses:
+        '200':
+          description: Gate's type found
+          content: # TODO Can I enforce the place type?
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/gateType'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/gateType'
+        # '400':
+        #   $ref: '#/components/responses/invalidConnectionId'
+        '404':
+          $ref: '#/components/responses/placeNotFound'
+  '/places/parkingAreas':
+    get:
+      tags:
+        - places
+      summary: retrieves all parking areas
+      operationId: getParkingAreas
+      description: Retrieves a set containing all parking areas in the RNS system
+      parameters:
+        - name: services
+          in: query
+          required: false
+          description: The set of services that parking areas must have
+          schema:
+            $ref: '#/components/schemas/services'
+        - $ref: '#/components/parameters/pageNumber'
+      responses:
+        '200':
+          description: Parking areas returned
+          content: # TODO Can I enforce the place type?
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/places'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/places'
+        '400':
+          $ref: '#/components/responses/atLeastOneParameterWrong'
+  # '/places/parkingAreas/{id}': # FIXME this is not present in the RNS-API
+  #   get:
+  #     tags:
+  #       - places
+  #     summary: retrieves one parking area
+  #     operationId: getParkingArea
+  #     description: Retrieves one parking area in the RNS system
+  #     parameters:
+  #       - $ref: '#/components/parameters/parkingAreaId'
+  #     responses:
+  #       '200':
+  #         description: Parking area found
+  #         content: # TODO Can I enforce the place type?
+  #           application/xml:
+  #             schema:
+  #               $ref: '#/components/schemas/place'
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/place'
+  #       # '400':
+  #       #   $ref: '#/components/responses/invalidPlaceId'
+  #       '404':
+  #         $ref: '#/components/responses/placeNotFound'
+  '/places/parkingAreas/{id}/services':
+    get:
+      tags:
+        - places
+      summary: retrieves one parking area's services
+      operationId: getServices
+      description: Retrieves one parking area's services in the RNS system
+      parameters:
+        - $ref: '#/components/parameters/placeId'
+      responses:
+        '200':
+          description: Parking area's services found
+          content: # TODO Can I enforce the place type?
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/services'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/services'
+        # '400':
+        #   $ref: '#/components/responses/invalidPlaceId'
+        '404':
+          $ref: '#/components/responses/placeNotFound'
+  '/places/roadSegments':
+    get:
+      tags:
+        - places
+      summary: retrieves all road segments
+      operationId: getRoadSegments
+      description: Retrieves a set containing all road segments in the RNS system
+      parameters:
+        - name: roadName
+          in: query
+          required: false
+          description: The name of the road to which the segment must belong to
+          schema:
+            $ref: '#/components/schemas/roadName'
+        - $ref: '#/components/parameters/pageNumber'
+      responses:
+        '200':
+          description: Road segments returned
+          content: # TODO Can I enforce the place type?
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/places'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/places'
+        '400':
+          $ref: '#/components/responses/atLeastOneParameterWrong'
+  # '/places/roadSegments/{id}': # FIXME this is not present in the RNS-API
+  #   get:
+  #     tags:
+  #       - places
+  #     summary: retrieves one road segment
+  #     operationId: getRoadSegment
+  #     description: Retrieves one road segment in the RNS system
+  #     parameters:
+  #       - $ref: '#/components/parameters/placeId'
+  #     responses:
+  #       '200':
+  #         description: Road segment found
+  #         content: # TODO Can I enforce the place type?
+  #           application/xml:
+  #             schema:
+  #               $ref: '#/components/schemas/place'
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/place'
+  #       # '400':
+  #       #   $ref: '#/components/responses/invalidPlaceId'
+  #       '404':
+  #         $ref: '#/components/responses/placeNotFound'
+  '/places/roadSegments/{id}/name':
+    get:
+      tags:
+        - places
+      summary: retrieves one road segment's name
+      operationId: getRoadSegmentName
+      description: Retrieves one road segment's name in the RNS system
+      parameters:
+        - $ref: '#/components/parameters/placeId'
+      responses:
+        '200':
+          description: Road segment's name found
+          content: # TODO Can I enforce the place type?
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/roadSegmentName'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/roadSegmentName'
+        # '400':
+        #   $ref: '#/components/responses/invalidPlaceId'
+        '404':
+          $ref: '#/components/responses/placeNotFound'
+  '/places/roadSegments/{id}/road':
+    get:
+      tags:
+        - places
+      summary: retrieves one road segment's road name
+      operationId: getRoadSegmentRoadName
+      description: Retrieves one road segment's road name in the RNS system
+      parameters:
+        - $ref: '#/components/parameters/placeId'
+      responses:
+        '200':
+          description: Road segment's road name found
+          content: # TODO Can I enforce the place type?
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/roadName'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/roadName'
+        # '400':
+        #   $ref: '#/components/responses/invalidPlaceId'
+        '404':
+          $ref: '#/components/responses/placeNotFound'
+  '/connections':
+    get:
+      tags:
+        - connections
+      summary: retrieves all connections
+      operationId: getConnections
+      description: Retrieves a set containing all connections in the RNS system
+      parameters:
+        - $ref: '#/components/parameters/pageNumber'
+      responses:
+        '200':
+          description: Connections returned
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/connections'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/connections'
+  # '/connections/{id}': # FIXME this is not present in the RNS-API
+  #   get:
+  #     tags:
+  #       - connections
+  #     summary: retrieves one connection
+  #     operationId: getConnection
+  #     description: Retrieves one connection in the RNS system
+  #     parameters:
+  #       - $ref: '#/components/parameters/connectionId'
+  #     responses:
+  #       '200':
+  #         description: Connection found
+  #         content:
+  #           application/xml:
+  #             schema:
+  #               $ref: '#/components/schemas/connection'
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/connection'
+  #       # '400':
+  #       #   $ref: '#/components/responses/invalidConnectionId'
+  #       '404':
+  #         $ref: '#/components/responses/connectionNotFound'
+  '/connections/{id}/from':
+    get:
+      tags:
+        - connections
+      summary: retrieves one connection's origin
+      operationId: getFrom
+      description: Retrieves one connection's origin in the RNS system
+      parameters:
+        - $ref: '#/components/parameters/connectionId'
+      responses:
+        '200':
+          description: Connection's origin found
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/place'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/place'
+        # '400':
+        #   $ref: '#/components/responses/invalidConnectionId'
+        '404':
+          $ref: '#/components/responses/connectionNotFound'
+  '/connections/{id}/to':
+    get:
+      tags:
+        - connections
+      summary: retrieves one connection's endpoint
+      operationId: getto
+      description: Retrieves one connection's endpoint in the RNS system
+      parameters:
+        - $ref: '#/components/parameters/connectionId'
+      responses:
+        '200':
+          description: Connection's endpoint found
+          content:
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/place'
+            application/json:
+              schema:
+                $ref: '#/components/schemas/place'
+        # '400':
+        #   $ref: '#/components/responses/invalidConnectionId'
+        '404':
+          $ref: '#/components/responses/connectionNotFound'
+  
+servers:
+  - url: 'https://virtserver.swaggerhub.com/marcomicera/RnsSystem/2.0-oas3'
+  
+components:
+  schemas:
+    totalPages:
+      type: integer
+      minimum: 1
+      example: 5
+      default: 1
+    page:
+      type: integer
+      minimum: 0
+      example: 2
+      default: 0
+    vehicleType:
+      type: string
+      enum:
+        - CAR
+        - TRUCK
+        - SHUTTLE
+        - CARAVAN
+      example: TRUCK
+      xml:
+        name: type
+        attribute: true
+    vehicleStatus:
+      type: string
+      enum:
+        - PARKED
+        - IN_TRANSIT
+      example: PARKED
+      xml:
+        name: state
+        attribute: true
+    vehicleUri:
+      type: string
+      format: uri
+      example: 'http://.../vehicles/vehicle123' # FIXME
+    nextVehiclesPage:
+      type: string
+      format: uri
+      example: 'http://.../vehicles/...' # FIXME
+    vehicles:
+      type: object
+      xml:
+        name: vehicles
+        attribute: false
+      required:
+        - vehicles
+      properties:
+        totalPages:
+          $ref: '#/components/schemas/totalPages'
+        page:
+          $ref: '#/components/schemas/page'
+        next:
+          $ref: '#/components/schemas/nextVehiclesPage'
+        vehicles:
+          type: array
+          uniqueItems: true
+          minItems: 0
+          xml:
+            name: vehicles
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/vehicle'
+      description: All the vehicles in the RNS system
+    entryTime:
+      type: string
+      format: date-time
+      example: '2017-07-21T17:32:28Z'
+      xml:
+        wrapped: true
+        name: entryTime
+    vehicleId:
+      type: string
+      example: vehicle123
+      xml:
+        attribute: true
+        name: id
+    vehicle:
+      description: A single vehicle in the RNS system
+      type: object
+      xml:
+        name: vehicle
+      required:
+        - self
+        - id
+        - entryTime
+        - type
+        - state
+        - origin
+        - position
+        - destination
+      properties:
+        self:
+          $ref: '#/components/schemas/vehicleUri'
+        id:
+          $ref: '#/components/schemas/vehicleId'
+        entryTime:
+          $ref: '#/components/schemas/entryTime'
+        type:
+          $ref: '#/components/schemas/vehicleType'
+        state:
+          $ref: '#/components/schemas/vehicleStatus'
+        origin:
+          $ref: '#/components/schemas/placeUri'
+        position:
+          $ref: '#/components/schemas/placeUri'
+        destination:
+          $ref: '#/components/schemas/placeUri'
+    placeUri:
+      type: string
+      format: uri
+      example: 'http://.../places/place123' # FIXME
+    nextPlacesPage:
+      type: string
+      format: uri
+      example: 'http://.../places/...' # FIXME
+    places:
+      type: object
+      xml:
+        name: places
+        attribute: false
+      required:
+        - places
+      properties:
+        totalPages:
+          $ref: '#/components/schemas/totalPages'
+        page:
+          $ref: '#/components/schemas/page'
+        next:
+          $ref: '#/components/schemas/nextPlacesPage'
+        places:
+          type: array
+          uniqueItems: true
+          minItems: 0
+          xml:
+            name: places
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/place'
+      description: All the places in the RNS system
+    nextPlaces:
+      type: array
+      uniqueItems: true
+      minItems: 0
+      xml:
+        wrapped: true
+        name: nextPlaces
+      items:
+        type: string
+        format: uri
+        xml:
+          name: nextPlace
+      example: ['http://...', 'http://...']
+    capacity:
+      type: integer
+      format: int32
+      xml:
+        wrapped: true
+        name: capacity
+      minimum: 0
+      example: 100
+    placeId:
+      type: string
+      example: place123
+      xml:
+        attribute: true
+    place:
+      description: A single place in the RNS system
+      type: object
+      xml:
+        name: place
+      required:
+        - self
+        - id
+        - capacity
+        - type
+      properties:
+        self:
+          $ref: '#/components/schemas/placeUri'
+        id:
+          $ref: '#/components/schemas/placeId'
+        capacity:
+          $ref: '#/components/schemas/capacity'
+        type:
+          oneOf: # FIXME this is not shown in the GUI
+            - $ref: '#/components/schemas/parkingArea'
+            - $ref: '#/components/schemas/roadSegment'
+            - $ref: '#/components/schemas/gate'
+          xml:
+            attribute: false
+        nextPlaces:
+          $ref: '#/components/schemas/nextPlaces'
+    services:
+      type: array
+      uniqueItems: true
+      minItems: 0
+      items:
+        type: string
+        xml:
+          name: service
+      example: [Restroom, Bistro, Smoking area]
+      xml:
+        wrapped: true
+        name: services
+    parkingArea:
+      description: A parking area in the RNS system
+      type: object
+      xml:
+        name: parkingArea
+      properties:
+        services:
+          $ref: '#/components/schemas/services'
+    roadName:
+      type: string
+      xml:
+        attribute: true
+      example: White Avenue
+    roadSegmentName:
+      type: string
+      xml:
+        attribute: true
+      example: RS123
+    roadSegment:
+      description: A road segment in the RNS system
+      type: object
+      xml:
+        name: roadSegment
+      required:
+      - name
+      - road
+      properties:
+        name:
+          $ref: '#/components/schemas/roadSegmentName'
+        road:
+          $ref: '#/components/schemas/roadName'
+    gateType:
+      type: string
+      enum:
+        - IN
+        - OUT
+        - INOUT
+      example: IN
+    gate:
+      description: A gate in the RNS system
+      type: object
+      xml:
+        name: gate
+      required:
+      - type
+      properties:
+        type:
+          $ref: '#/components/schemas/gateType'
+    connectionUri:
+      type: string
+      format: uri
+      example: 'http://.../connections/...' # FIXME
+    nextConnectionsPage:
+      type: string
+      format: uri
+      example: 'http://.../connections/...' # FIXME
+    connections:
+      type: object
+      xml:
+        name: connections
+        attribute: false
+      required:
+        - connections
+      properties:
+        totalPages:
+          $ref: '#/components/schemas/totalPages'
+        page:
+          $ref: '#/components/schemas/page'
+        next:
+          $ref: '#/components/schemas/nextConnectionsPage'
+        connections:
+          type: array
+          uniqueItems: true
+          minItems: 0
+          xml:
+            name: connections
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/connection'
+      description: All the connections in the RNS system
+    connectionId:
+      type: string
+      example: connection123
+      xml:
+        attribute: true
+    connection:
+      description: A connection between two places in the RNS system
+      type: object
+      xml:
+        name: connection
+      required:
+      - from
+      - to
+      properties:
+        self:
+          $ref: '#/components/schemas/connectionUri'
+        id:
+          $ref: '#/components/schemas/connectionId'
+        from:
+          $ref: '#/components/schemas/placeUri'
+        to:
+          $ref: '#/components/schemas/placeUri'
+    entrance:
+      description: A vehicle entrance request in the RNS system
+      type: object
+      xml:
+        name: entrance
+      required:
+      - gateType
+      - destination
+      - vehicleId
+      - vehicleType
+      properties:
+        gate:
+          type: object
+          properties:
+            type: 
+              type: string
+              enum: [IN, INOUT]
+              xml:
+                attribute: true
+        vehicle:
+          type: object
+          properties:
+            vehicleId:
+              $ref: '#/components/schemas/vehicleId'
+            vehicleType:
+              $ref: '#/components/schemas/vehicleType'    
+        destination:
+          $ref: '#/components/schemas/placeUri' # should be place name
+    suggestedPath:
+      description: Path of places suggested to the user upon vehicle entrance
+      type: array
+      uniqueItems: true
+      minItems: 1
+      xml:
+        name: suggestedPath
+        wrapped: true
+      items:
+        $ref: '#/components/schemas/placeUri'
+    newVehicle:
+      description: A freshly-insterted vehicle in the RNS system
+      type: object
+      xml:
+        name: newVehicle
+      properties: 
+        self:
+          $ref: '#/components/schemas/vehicleUri'
+        id:
+          $ref: '#/components/schemas/vehicleId'
+        suggestedPath:
+          $ref: '#/components/schemas/suggestedPath'
+  parameters:
+    pageNumber:
+      name: page
+      in: query
+      required: false
+      description: The desired page result
+      schema:
+        type: integer
+        format: int32
+        default: 0
+    vehicleId:
+      name: id
+      in: path
+      required: true
+      description: The vehicle's plate ID of interest
+      schema:
+        $ref: '#/components/schemas/vehicleId'
+    placeId:
+      name: id
+      in: path
+      required: true
+      description: The place ID of interest
+      schema:
+        $ref: '#/components/schemas/placeId'
+    connectionId:
+      name: id
+      in: path
+      required: true
+      description: The connection ID of interest
+      schema:
+        $ref: '#/components/schemas/connectionId'
+  requestBodies:
+    entrance:
+      description: Vehicle that needs to be added to the RNS system
+      content:
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/entrance'
+        application/json:
+          schema:
+            $ref: '#/components/schemas/entrance'
+      required: true
+    position:
+      description: Position to which a vehicle in the RNS system has moved
+      content:
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/placeUri' # FIXME XML element name
+        application/json:
+          schema:
+            $ref: '#/components/schemas/placeUri'
+      required: true
+    state:
+      description: New status of a vehicle in the RNS system
+      content:
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/vehicleStatus'
+        application/json:
+          schema:
+            $ref: '#/components/schemas/vehicleStatus'
+      required: true
+  responses:
+    atLeastOneParameterWrong:
+      description: 'Bad request: at least one invalid parameter'
+    # invalidVehicleId:
+    #   description: 'Bad request: invalid vehicle ID'
+    vehicleNotFound:
+      description: 'Vehicle not found'
+    # invalidPlaceId:
+    #   description: 'Bad request: invalid place ID'
+    placeNotFound:
+      description: 'Place not found'
+    connectionNotFound:
+      description: 'Connection not found'
+    # invalidConnectionId:
+    #   description: 'Bad request: invalid connection ID'
