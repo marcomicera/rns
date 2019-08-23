@@ -767,6 +767,7 @@ paths:
   
 servers:
   - url: 'https://virtserver.swaggerhub.com/marcomicera/RnsSystem/2.0-oas3'
+  - url: 'http://localhost:8080/RnsSystem/rest'
   
 components:
   schemas:
@@ -803,11 +804,11 @@ components:
     vehicleUri:
       type: string
       format: uri
-      example: 'http://.../vehicles/vehicle123' # FIXME
+      example: 'http://localhost:8080/RnsSystem/rest/vehicles/vehicle123'
     nextVehiclesPage:
       type: string
       format: uri
-      example: 'http://.../vehicles/...' # FIXME
+      example: 'http://localhost:8080/RnsSystem/rest/vehicles/...'
     vehicles:
       type: object
       xml:
@@ -879,11 +880,29 @@ components:
     placeUri:
       type: string
       format: uri
-      example: 'http://.../places/place123' # FIXME
+      example: 'http://localhost:8080/RnsSystem/rest/places/place123'
+    nextPlaceUri:
+      type: string
+      format: uri
+      xml:
+        name: nextPlace
+      example: 'http://localhost:8080/RnsSystem/rest/places/nextPlace123'
+    positionUri:
+      type: string
+      format: uri
+      xml:
+        name: position
+      example: 'http://localhost:8080/RnsSystem/rest/places/position123'
+    suggestedPlaceUri:
+      type: string
+      format: uri
+      xml:
+        name: place
+      example: 'http://localhost:8080/RnsSystem/rest/places/suggestedPlace123'
     nextPlacesPage:
       type: string
       format: uri
-      example: 'http://.../places/...' # FIXME
+      example: 'http://localhost:8080/RnsSystem/rest/places/...'
     places:
       type: object
       xml:
@@ -916,11 +935,11 @@ components:
         wrapped: true
         name: nextPlaces
       items:
-        type: string
-        format: uri
-        xml:
-          name: nextPlace
-      example: ['http://...', 'http://...']
+        $ref: '#/components/schemas/nextPlaceUri'
+      example: 
+        - 'http://localhost:8080/RnsSystem/rest/places/place1'
+        - 'http://localhost:8080/RnsSystem/rest/places/place2'
+        - 'http://localhost:8080/RnsSystem/rest/places/place3'
     capacity:
       type: integer
       format: int32
@@ -1023,11 +1042,11 @@ components:
     connectionUri:
       type: string
       format: uri
-      example: 'http://.../connections/...' # FIXME
+      example: 'http://localhost:8080/RnsSystem/rest/connections/...'
     nextConnectionsPage:
       type: string
       format: uri
-      example: 'http://.../connections/...' # FIXME
+      example: 'http://localhost:8080/RnsSystem/rest/connections/...'
     connections:
       type: object
       xml:
@@ -1101,7 +1120,7 @@ components:
             vehicleType:
               $ref: '#/components/schemas/vehicleType'    
         destination:
-          $ref: '#/components/schemas/placeUri' # should be place name
+          $ref: '#/components/schemas/placeUri'
     suggestedPath:
       description: Path of places suggested to the user upon vehicle entrance
       type: array
@@ -1111,7 +1130,11 @@ components:
         name: suggestedPath
         wrapped: true
       items:
-        $ref: '#/components/schemas/placeUri'
+        $ref: '#/components/schemas/suggestedPlaceUri'
+      example:
+        - 'http://localhost:8080/RnsSystem/rest/places/suggestedPlace1'
+        - 'http://localhost:8080/RnsSystem/rest/places/suggestedPlace2'
+        - 'http://localhost:8080/RnsSystem/rest/places/suggestedPlace3'
     newVehicle:
       description: A freshly-insterted vehicle in the RNS system
       type: object
@@ -1171,10 +1194,10 @@ components:
       content:
         application/xml:
           schema:
-            $ref: '#/components/schemas/placeUri' # FIXME XML element name
+            $ref: '#/components/schemas/positionUri'
         application/json:
           schema:
-            $ref: '#/components/schemas/placeUri'
+            $ref: '#/components/schemas/positionUri'
       required: true
     state:
       description: New status of a vehicle in the RNS system
