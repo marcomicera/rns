@@ -171,10 +171,10 @@ paths:
           content:
             application/xml:
               schema:
-                $ref: '#/components/schemas/place'
+                $ref: '#/components/schemas/genericPlace'
             application/json:
               schema:
-                $ref: '#/components/schemas/place'
+                $ref: '#/components/schemas/genericPlace'
         '404':
           $ref: '#/components/responses/vehicleNotFound'
   '/vehicles/{id}/position':
@@ -192,10 +192,10 @@ paths:
           content:
             application/xml:
               schema:
-                $ref: '#/components/schemas/place'
+                $ref: '#/components/schemas/genericPlace'
             application/json:
               schema:
-                $ref: '#/components/schemas/place'
+                $ref: '#/components/schemas/genericPlace'
         '404':
           $ref: '#/components/responses/vehicleNotFound'
     put:
@@ -239,10 +239,10 @@ paths:
           content:
             application/xml:
               schema:
-                $ref: '#/components/schemas/place'
+                $ref: '#/components/schemas/genericPlace'
             application/json:
               schema:
-                $ref: '#/components/schemas/place'
+                $ref: '#/components/schemas/genericPlace'
         '404':
           $ref: '#/components/responses/vehicleNotFound'
   '/vehicles/{id}/entrytime':
@@ -367,10 +367,10 @@ paths:
           content:
             application/xml:
               schema:
-                $ref: '#/components/schemas/places'
+                $ref: '#/components/schemas/genericPlaces'
             application/json:
               schema:
-                $ref: '#/components/schemas/places'
+                $ref: '#/components/schemas/genericPlaces'
         '400':
           $ref: '#/components/responses/atLeastOneParameterWrong'
   '/places/{id}':
@@ -388,10 +388,10 @@ paths:
           content:
             application/xml:
               schema:
-                $ref: '#/components/schemas/place'
+                $ref: '#/components/schemas/genericPlace'
             application/json:
               schema:
-                $ref: '#/components/schemas/place'
+                $ref: '#/components/schemas/genericPlace'
         '404':
           $ref: '#/components/responses/placeNotFound'
   '/places/{id}/capacity':
@@ -475,13 +475,13 @@ paths:
       responses:
         '200':
           description: Gates returned
-          content: # TODO Can I enforce the place type?
+          content:
             application/xml:
               schema:
-                $ref: '#/components/schemas/places'
+                $ref: '#/components/schemas/gates'
             application/json:
               schema:
-                $ref: '#/components/schemas/places'
+                $ref: '#/components/schemas/gates'
         '400':
           $ref: '#/components/responses/atLeastOneParameterWrong'
   # '/gates/{id}': # FIXME this is not present in the RNS-API
@@ -496,13 +496,13 @@ paths:
   #     responses:
   #       '200':
   #         description: Gate found
-  #         content: # TODO Can I enforce the place type?
+  #         content:
   #           application/xml:
   #             schema:
-  #               $ref: '#/components/schemas/place'
+  #               $ref: '#/components/schemas/gate'
   #           application/json:
   #             schema:
-  #               $ref: '#/components/schemas/place'
+  #               $ref: '#/components/schemas/gate'
   #       '404':
   #         $ref: '#/components/responses/placeNotFound'
   '/gates/{id}/type':
@@ -517,7 +517,7 @@ paths:
       responses:
         '200':
           description: Gate's type found
-          content: # TODO Can I enforce the place type?
+          content:
             application/xml:
               schema:
                 $ref: '#/components/schemas/gateType'
@@ -544,13 +544,13 @@ paths:
       responses:
         '200':
           description: Parking areas returned
-          content: # TODO Can I enforce the place type?
+          content:
             application/xml:
               schema:
-                $ref: '#/components/schemas/places'
+                $ref: '#/components/schemas/parkingAreas'
             application/json:
               schema:
-                $ref: '#/components/schemas/places'
+                $ref: '#/components/schemas/parkingAreas'
         '400':
           $ref: '#/components/responses/atLeastOneParameterWrong'
   # '/places/parkingAreas/{id}': # FIXME this is not present in the RNS-API
@@ -561,17 +561,17 @@ paths:
   #     operationId: getParkingArea
   #     description: Retrieves one parking area in the RNS system
   #     parameters:
-  #       - $ref: '#/components/parameters/parkingAreaId'
+  #       - $ref: '#/components/parameters/placeId'
   #     responses:
   #       '200':
   #         description: Parking area found
-  #         content: # TODO Can I enforce the place type?
+  #         content:
   #           application/xml:
   #             schema:
-  #               $ref: '#/components/schemas/place'
+  #               $ref: '#/components/schemas/parkingArea'
   #           application/json:
   #             schema:
-  #               $ref: '#/components/schemas/place'
+  #               $ref: '#/components/schemas/parkingArea'
   #       '404':
   #         $ref: '#/components/responses/placeNotFound'
   '/places/parkingAreas/{id}/services':
@@ -586,7 +586,7 @@ paths:
       responses:
         '200':
           description: Parking area's services found
-          content: # TODO Can I enforce the place type?
+          content:
             application/xml:
               schema:
                 $ref: '#/components/schemas/services'
@@ -613,13 +613,13 @@ paths:
       responses:
         '200':
           description: Road segments returned
-          content: # TODO Can I enforce the place type?
+          content:
             application/xml:
               schema:
-                $ref: '#/components/schemas/places'
+                $ref: '#/components/schemas/roadSegments'
             application/json:
               schema:
-                $ref: '#/components/schemas/places'
+                $ref: '#/components/schemas/roadSegments'
         '400':
           $ref: '#/components/responses/atLeastOneParameterWrong'
   # '/places/roadSegments/{id}': # FIXME this is not present in the RNS-API
@@ -634,13 +634,13 @@ paths:
   #     responses:
   #       '200':
   #         description: Road segment found
-  #         content: # TODO Can I enforce the place type?
+  #         content:
   #           application/xml:
   #             schema:
-  #               $ref: '#/components/schemas/place'
+  #               $ref: '#/components/schemas/roadSegment'
   #           application/json:
   #             schema:
-  #               $ref: '#/components/schemas/place'
+  #               $ref: '#/components/schemas/roadSegment'
   #       '404':
   #         $ref: '#/components/responses/placeNotFound'
   '/places/roadSegments/{id}/name':
@@ -655,7 +655,7 @@ paths:
       responses:
         '200':
           description: Road segment's name found
-          content: # TODO Can I enforce the place type?
+          content:
             application/xml:
               schema:
                 $ref: '#/components/schemas/roadSegmentName'
@@ -676,7 +676,7 @@ paths:
       responses:
         '200':
           description: Road segment's road name found
-          content: # TODO Can I enforce the place type?
+          content:
             application/xml:
               schema:
                 $ref: '#/components/schemas/roadName'
@@ -740,10 +740,10 @@ paths:
           content:
             application/xml:
               schema:
-                $ref: '#/components/schemas/place'
+                $ref: '#/components/schemas/genericPlace'
             application/json:
               schema:
-                $ref: '#/components/schemas/place'
+                $ref: '#/components/schemas/genericPlace'
         '404':
           $ref: '#/components/responses/connectionNotFound'
   '/connections/{id}/to':
@@ -761,10 +761,10 @@ paths:
           content:
             application/xml:
               schema:
-                $ref: '#/components/schemas/place'
+                $ref: '#/components/schemas/genericPlace'
             application/json:
               schema:
-                $ref: '#/components/schemas/place'
+                $ref: '#/components/schemas/genericPlace'
         '404':
           $ref: '#/components/responses/connectionNotFound'
   
@@ -772,6 +772,7 @@ servers:
   - url: 'https://virtserver.swaggerhub.com/marcomicera/RnsSystem/2.0-oas3'
   - url: 'http://localhost:8080/RnsSystem/rest'
   
+# TODO add 'not instantiable' in descriptions
 components:
   schemas:
     totalPages:
@@ -818,7 +819,7 @@ components:
         name: vehicles
         attribute: false
       required:
-        - vehicles (admin)
+        - vehicles
       properties:
         totalPages:
           $ref: '#/components/schemas/totalPages'
@@ -906,13 +907,14 @@ components:
       type: string
       format: uri
       example: 'http://localhost:8080/RnsSystem/rest/places/...'
-    places:
+    basePlaces:
+      description: Basic list of places in the RNS system, not instantiable
       type: object
       xml:
         name: places
         attribute: false
       required:
-        - places (admin)
+        - places
       properties:
         totalPages:
           $ref: '#/components/schemas/totalPages'
@@ -920,16 +922,12 @@ components:
           $ref: '#/components/schemas/page'
         next:
           $ref: '#/components/schemas/nextPlacesPage'
-        places:
-          type: array
-          uniqueItems: true
-          minItems: 0
-          xml:
-            name: places
-            wrapped: true
-          items:
-            $ref: '#/components/schemas/place'
-      description: All the places in the RNS system
+    genericPlaces:
+      description: List of generic places in the RNS system
+      oneOf: # FIXME this is not shown in the GUI
+        - $ref: '#/components/schemas/parkingAreas'
+        - $ref: '#/components/schemas/roadSegments'
+        - $ref: '#/components/schemas/gates'
     nextPlaces:
       type: array
       uniqueItems: true
@@ -956,8 +954,8 @@ components:
       example: place123
       xml:
         attribute: true
-    place:
-      description: A single place in the RNS system
+    basePlace:
+      description: Basic place data structure, not instantiable
       type: object
       xml:
         name: place
@@ -965,7 +963,6 @@ components:
         - self
         - id
         - capacity
-        - type
       properties:
         self:
           $ref: '#/components/schemas/placeUri'
@@ -973,15 +970,16 @@ components:
           $ref: '#/components/schemas/placeId'
         capacity:
           $ref: '#/components/schemas/capacity'
-        type:
-          oneOf: # FIXME this is not shown in the GUI
-            - $ref: '#/components/schemas/parkingArea'
-            - $ref: '#/components/schemas/roadSegment'
-            - $ref: '#/components/schemas/gate'
-          xml:
-            attribute: false
         nextPlaces:
           $ref: '#/components/schemas/nextPlaces'
+    genericPlace:
+      description: Generic place in the RNS system
+      oneOf: # FIXME this is not shown in the GUI
+        - $ref: '#/components/schemas/parkingArea'
+        - $ref: '#/components/schemas/roadSegment'
+        - $ref: '#/components/schemas/gate'
+      xml:
+        attribute: false
     services:
       type: array
       uniqueItems: true
@@ -994,14 +992,28 @@ components:
       xml:
         wrapped: true
         name: services
+    parkingAreas:
+      description: List of parking areas in the RNS system
+      allOf:
+        - $ref: '#/components/schemas/basePlaces'
+        - type: array
+          uniqueItems: true
+          minItems: 0
+          xml:
+            name: parkingAreas
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/parkingArea'
     parkingArea:
       description: A parking area in the RNS system
-      type: object
-      xml:
-        name: parkingArea
-      properties:
-        services:
-          $ref: '#/components/schemas/services'
+      allOf:
+        - $ref: '#/components/schemas/basePlace'
+        - type: object
+          xml:
+            name: parkingArea
+          properties:
+            services:
+              $ref: '#/components/schemas/services'
     roadName:
       type: string
       xml:
@@ -1012,19 +1024,33 @@ components:
       xml:
         attribute: true
       example: RS123
+    roadSegments:
+      description: List of road segments in the RNS system
+      allOf:
+        - $ref: '#/components/schemas/basePlaces'
+        - type: array
+          uniqueItems: true
+          minItems: 0
+          xml:
+            name: roadSegments
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/roadSegment'
     roadSegment:
       description: A road segment in the RNS system
-      type: object
-      xml:
-        name: roadSegment
-      required:
-      - name
-      - road
-      properties:
-        name:
-          $ref: '#/components/schemas/roadSegmentName'
-        road:
-          $ref: '#/components/schemas/roadName'
+      allOf:
+        - $ref: '#/components/schemas/basePlace'
+        - type: object
+          xml:
+            name: roadSegment
+          required:
+          - name
+          - road
+          properties:
+            name:
+              $ref: '#/components/schemas/roadSegmentName'
+            road:
+              $ref: '#/components/schemas/roadName'
     gateType:
       type: string
       enum:
@@ -1032,16 +1058,28 @@ components:
         - OUT
         - INOUT
       example: IN
+    gates:
+      description: List of gates in the RNS system
+      allOf:
+        - $ref: '#/components/schemas/basePlaces'
+        - type: array
+          uniqueItems: true
+          minItems: 0
+          xml:
+            name: gates
+            wrapped: true
+          items:
+            $ref: '#/components/schemas/gate'
     gate:
       description: A gate in the RNS system
-      type: object
-      xml:
-        name: gate
-      required:
-      - type
-      properties:
-        type:
-          $ref: '#/components/schemas/gateType'
+      allOf:
+        - $ref: '#/components/schemas/basePlace'
+        - type: object
+          required:
+          - type
+          properties:
+            type:
+              $ref: '#/components/schemas/gateType'
     connectionUri:
       type: string
       format: uri
