@@ -191,7 +191,7 @@ paths:
         - $ref: '#/components/parameters/vehicleId'
       responses:
         '200':
-          description: Vehicle's position updated. New suggested path
+          description: Vehicle's position updated. Replying with suggested path
           content:
             application/xml:
               schema:
@@ -199,6 +199,23 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/placeUri'
+        '400':
+          description: 'Bad request: new place not reachable from current position'
+        '403':
+          description: 'Permission not granted: reason in response body'
+          content:
+            application/xml:
+              schema:
+                type: string
+                xml:
+                  name: reason
+                example: Congestion
+            application/json:
+              schema:
+                type: string
+                example: Congestion
+        '404':
+          description: Place not found
   '/vehicles/{id}/destination':
     get:
       tags:
