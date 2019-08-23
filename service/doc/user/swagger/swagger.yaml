@@ -89,17 +89,17 @@ paths:
             getVehicleById:
               operationId: getVehicle
               parameters:
-                id: '$response.body#/id'
+                vehicleId: '$response.body#/id'
               description: >
                 The `id` value returned in the response can be used as
                 the vehicle `id` parameter for all `GET /vehicle/{id}[/...]` methods.
-            getVehicleByHATEOAS:
-              operationId: getVehicle
-              parameters:
-                id: '$response.body#/self'
-              description: >
-                The `self` URI returned in the response can be used to directly
-                access a vehicle for all `GET /vehicle/{id}[/...]` methods.
+            # getVehicleByHATEOAS:
+            #   operationId: getVehicle
+            #   parameters:
+            #     id: '$response.body#/self'
+            #   description: >
+            #     The `self` URI returned in the response can be used to directly
+            #     access a vehicle for all `GET /vehicle/{id}[/...]` methods.
         '400':
           description: 'Bad request: the vehicle object was malformed'
         '403':
