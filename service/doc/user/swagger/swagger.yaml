@@ -14,18 +14,20 @@ info:
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
     
 tags:
-  - name: vehicles
-    description: Managing vehicles within the RNS system
-  - name: places
+  - name: vehicles (user)
+    description: Users API for vehicles management within the RNS system
+  - name: vehicles (admin)
+    description: Retrieving all info about vehicles within the RNS system
+  - name: places (admin)
     description: Retrieving info about RNS places
-  - name: connections
+  - name: connections (admin)
     description: How places are connected to each other
     
 paths:
   '/vehicles':
     get:
       tags:
-        - vehicles
+        - vehicles (admin)
       summary: retrieves all vehicles
       operationId: getVehicles
       description: Retrieves a set containing all vehicles in the RNS system
@@ -68,7 +70,7 @@ paths:
           $ref: '#/components/responses/atLeastOneParameterWrong'
     post:
       tags:
-        - vehicles
+        - vehicles (user)
       summary: add a new vehicle
       operationId: addVehicle
       requestBody:
@@ -120,7 +122,7 @@ paths:
   '/vehicles/{id}':
     get:
       tags:
-        - vehicles
+        - vehicles (admin)
       summary: retrieves a vehicle
       operationId: getVehicle
       description: Retrieves a vehicle in the RNS system
@@ -140,7 +142,7 @@ paths:
           $ref: '#/components/responses/vehicleNotFound'
     delete:
       tags:
-        - vehicles
+        - vehicles (user)
       summary: deletes a vehicle
       operationId: deleteVehicle
       description: Deletes a vehicle from the RNS system
@@ -156,7 +158,7 @@ paths:
   '/vehicles/{id}/origin':
     get:
       tags:
-        - vehicles
+        - vehicles (admin)
       summary: retrieves a vehicle's origin
       operationId: getOrigin
       description: Retrieves a vehicle's origin in the RNS system
@@ -177,7 +179,7 @@ paths:
   '/vehicles/{id}/position':
     get:
       tags:
-        - vehicles
+        - vehicles (admin)
       summary: retrieves a vehicle's position
       operationId: getPosition
       description: Retrieves a vehicle's position in the RNS system
@@ -197,7 +199,7 @@ paths:
           $ref: '#/components/responses/vehicleNotFound'
     put:
       tags:
-        - vehicles
+        - vehicles (user)
       summary: updates a vehicle's position
       operationId: setPosition
       description: Updates a vehicle's position in the RNS system
@@ -224,7 +226,7 @@ paths:
   '/vehicles/{id}/destination':
     get:
       tags:
-        - vehicles
+        - vehicles (admin)
       summary: retrieves a vehicle's destination
       operationId: getDestination
       description: Retrieves a vehicle's destination in the RNS system
@@ -245,7 +247,7 @@ paths:
   '/vehicles/{id}/entrytime':
     get:
       tags:
-        - vehicles
+        - vehicles (admin)
       summary: retrieves a vehicle's entry time
       operationId: getEntryTime
       description: Retrieves a vehicle's entry time in the RNS system
@@ -266,7 +268,7 @@ paths:
   '/vehicles/{id}/state':
     get:
       tags:
-        - vehicles
+        - vehicles (admin)
       summary: retrieves a vehicle's state
       operationId: getState
       description: Retrieves a vehicle's state in the RNS system
@@ -286,7 +288,7 @@ paths:
           $ref: '#/components/responses/vehicleNotFound'
     put:
       tags:
-        - vehicles
+        - vehicles (user)
       summary: updates a vehicle's state
       operationId: setState
       description: Updates a vehicle's state in the RNS system
@@ -304,7 +306,7 @@ paths:
   '/vehicles/{id}/type':
     get:
       tags:
-        - vehicles
+        - vehicles (admin)
       summary: retrieves a vehicle's type
       operationId: getVehicleType
       description: Retrieves a vehicle's type in the RNS system
@@ -325,7 +327,7 @@ paths:
   '/vehicles/{id}/path':
     get:
       tags:
-        - vehicles
+        - vehicles (admin)
       summary: retrieves a vehicle's type
       operationId: getPath
       description: Retrieves a vehicle's suggested path in the RNS system
@@ -346,7 +348,7 @@ paths:
   '/places':
     get:
       tags:
-        - places
+        - places (admin)
       summary: retrieves all palces
       operationId: getPlaces
       description: Retrieves a set containing all places in the RNS system
@@ -373,7 +375,7 @@ paths:
   '/places/{id}':
     get:
       tags:
-        - places
+        - places (admin)
       summary: retrieves a place
       operationId: getPlace
       description: Retrieves a place in the RNS system
@@ -394,7 +396,7 @@ paths:
   '/places/{id}/capacity':
     get:
       tags:
-        - places
+        - places (admin)
       summary: retrieves the capacity of a place
       operationId: getCapacity
       description: Retrieves the capacity of a place in the RNS system
@@ -415,7 +417,7 @@ paths:
   '/places/{id}/nextPlaces':
     get:
       tags:
-        - places
+        - places (admin)
       summary: retrieves all places to which this place is connected
       operationId: getNextPlaces
       description: Retrieves the set of all places to which this place is connected
@@ -436,7 +438,7 @@ paths:
   '/places/{id}/vehicles':
     get:
       tags:
-        - places
+        - places (admin)
       summary: retrieves all vehicles in a place
       operationId: getVehiclesInPlace
       description: Retrieves the vehicles in a place of the RNS system
@@ -457,7 +459,7 @@ paths:
   '/places/gates':
     get:
       tags:
-        - places
+        - places (admin)
       summary: retrieves all gates
       operationId: getGates
       description: Retrieves a set containing all gates in the RNS system
@@ -484,7 +486,7 @@ paths:
   # '/gates/{id}': # FIXME this is not present in the RNS-API
   #   get:
   #     tags:
-  #       - places
+  #       - places (admin)
   #     summary: retrieves one gate
   #     operationId: getGate
   #     description: Retrieves one gate in the RNS system
@@ -505,7 +507,7 @@ paths:
   '/gates/{id}/type':
     get:
       tags:
-        - places
+        - places (admin)
       summary: retrieves one gate's type
       operationId: getGateType
       description: Retrieves one gate in the RNS system
@@ -526,7 +528,7 @@ paths:
   '/places/parkingAreas':
     get:
       tags:
-        - places
+        - places (admin)
       summary: retrieves all parking areas
       operationId: getParkingAreas
       description: Retrieves a set containing all parking areas in the RNS system
@@ -553,7 +555,7 @@ paths:
   # '/places/parkingAreas/{id}': # FIXME this is not present in the RNS-API
   #   get:
   #     tags:
-  #       - places
+  #       - places (admin)
   #     summary: retrieves one parking area
   #     operationId: getParkingArea
   #     description: Retrieves one parking area in the RNS system
@@ -574,7 +576,7 @@ paths:
   '/places/parkingAreas/{id}/services':
     get:
       tags:
-        - places
+        - places (admin)
       summary: retrieves one parking area's services
       operationId: getServices
       description: Retrieves one parking area's services in the RNS system
@@ -595,7 +597,7 @@ paths:
   '/places/roadSegments':
     get:
       tags:
-        - places
+        - places (admin)
       summary: retrieves all road segments
       operationId: getRoadSegments
       description: Retrieves a set containing all road segments in the RNS system
@@ -622,7 +624,7 @@ paths:
   # '/places/roadSegments/{id}': # FIXME this is not present in the RNS-API
   #   get:
   #     tags:
-  #       - places
+  #       - places (admin)
   #     summary: retrieves one road segment
   #     operationId: getRoadSegment
   #     description: Retrieves one road segment in the RNS system
@@ -643,7 +645,7 @@ paths:
   '/places/roadSegments/{id}/name':
     get:
       tags:
-        - places
+        - places (admin)
       summary: retrieves one road segment's name
       operationId: getRoadSegmentName
       description: Retrieves one road segment's name in the RNS system
@@ -664,7 +666,7 @@ paths:
   '/places/roadSegments/{id}/road':
     get:
       tags:
-        - places
+        - places (admin)
       summary: retrieves one road segment's road name
       operationId: getRoadSegmentRoadName
       description: Retrieves one road segment's road name in the RNS system
@@ -685,7 +687,7 @@ paths:
   '/connections':
     get:
       tags:
-        - connections
+        - connections (admin)
       summary: retrieves all connections
       operationId: getConnections
       description: Retrieves a set containing all connections in the RNS system
@@ -704,7 +706,7 @@ paths:
   # '/connections/{id}': # FIXME this is not present in the RNS-API
   #   get:
   #     tags:
-  #       - connections
+  #       - connections (admin)
   #     summary: retrieves one connection
   #     operationId: getConnection
   #     description: Retrieves one connection in the RNS system
@@ -725,7 +727,7 @@ paths:
   '/connections/{id}/from':
     get:
       tags:
-        - connections
+        - connections (admin)
       summary: retrieves one connection's origin
       operationId: getFrom
       description: Retrieves one connection's origin in the RNS system
@@ -746,7 +748,7 @@ paths:
   '/connections/{id}/to':
     get:
       tags:
-        - connections
+        - connections (admin)
       summary: retrieves one connection's endpoint
       operationId: getto
       description: Retrieves one connection's endpoint in the RNS system
@@ -815,7 +817,7 @@ components:
         name: vehicles
         attribute: false
       required:
-        - vehicles
+        - vehicles (admin)
       properties:
         totalPages:
           $ref: '#/components/schemas/totalPages'
@@ -909,7 +911,7 @@ components:
         name: places
         attribute: false
       required:
-        - places
+        - places (admin)
       properties:
         totalPages:
           $ref: '#/components/schemas/totalPages'
@@ -1053,7 +1055,7 @@ components:
         name: connections
         attribute: false
       required:
-        - connections
+        - connections (admin)
       properties:
         totalPages:
           $ref: '#/components/schemas/totalPages'
