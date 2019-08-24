@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project basedir="." name="RNS-SOL3">
+    <description>
+        Script for RNS Assignment 3 solution
+    </description>
+
+    <!-- Project directories -->
+    <property name="basedir" location="."/>
+    <property name="custom.dir" location="${basedir}/custom"/>
+    <property name="src.dir" location="${basedir}/src"/>
+    <property name="RNS.dir" location="${src.dir}/it/polito/dp2/RNS"/>
+    <property name="lab1.dir" location="${RNS.dir}/lab1"/>
+    <property name="lab3.dir" location="${RNS.dir}/lab3"/>
+    <property name="sol3.dir" location="${RNS.dir}/sol3"/>
+    <property name="service.dir" location="${sol3.dir}/service"/>
+    <property name="admClient.dir" location="${sol3.dir}/admClient"/>
+    <property name="vehClient.dir" location="${sol3.dir}/vehClient"/>
+
+    <!-- Service to which this Ant file refers to -->
+    <property name="serviceName" value="RnsSystem"/>
+
+    <path id="service.classpath">
+        <pathelement location="${build.dir}" />
+        <fileset dir="${lib.dir}">
+            <include name="*.jar" />
+        </fileset>
+        <fileset dir="${ext.lib.dir}">
+            <include name="*.jar" />
+            <exclude name="ant-*.jar"/>
+        </fileset>
+        <fileset dir="${ext.lib.dir}">
+            <include name="*.jar" />
+            <exclude name="ant-*.jar"/>
+        </fileset>
+        <!-- Swagger 3 annotations -->
+        <pathelement location="${custom.dir}/swagger-annotations-2.0.8.jar"/>
+    </path>
+
+    <!-- Service builder target -->
+    <target name="build-service">
+        <echo message="Building ${serviceName}..."/>
+        <javac destdir="${build.dir}" debug="${debug}" debuglevel="${debuglevel}" source="${source}" target="${target}"
+               includeantruntime="false">
+            <src path="${lab1.dir}"/>
+            <src path="${lab3.dir}"/>
+            <src path="${service.dir}"/>
+            <classpath>
+                <path refid="service.classpath"/>
+            </classpath>
+        </javac>
+        <echo message="${serviceName} built."/>
+    </target>
+
+</project>
