@@ -8,6 +8,7 @@
     <!-- Project directories -->
     <property name="basedir" location="."/>
     <property name="custom.dir" location="${basedir}/custom"/>
+    <property name="custom.lib" location="${custom.dir}/lib"/>
     <property name="src.dir" location="${basedir}/src"/>
     <property name="RNS.dir" location="${src.dir}/it/polito/dp2/RNS"/>
     <property name="lab1.dir" location="${RNS.dir}/lab1"/>
@@ -21,20 +22,19 @@
     <property name="serviceName" value="RnsSystem"/>
 
     <path id="service.classpath">
-        <pathelement location="${build.dir}" />
+        <pathelement location="${build.dir}"/>
         <fileset dir="${lib.dir}">
-            <include name="*.jar" />
+            <include name="*.jar"/>
         </fileset>
         <fileset dir="${ext.lib.dir}">
-            <include name="*.jar" />
+            <include name="*.jar"/>
             <exclude name="ant-*.jar"/>
         </fileset>
-        <fileset dir="${ext.lib.dir}">
-            <include name="*.jar" />
-            <exclude name="ant-*.jar"/>
+
+        <!-- Custom library -->
+        <fileset dir="${custom.lib}">
+            <include name="*.jar"/>
         </fileset>
-        <!-- Swagger 3 annotations -->
-        <pathelement location="${custom.dir}/swagger-annotations-2.0.8.jar"/>
     </path>
 
     <!-- Service builder target -->
