@@ -65,7 +65,7 @@ import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 public class PathFinder implements it.polito.dp2.RNS.lab2.PathFinder {
 
     /**
-     * When set to true, sanity checks will be enabled.
+     * When set to true, sanity checks are enabled.
      */
     private static final boolean SANITY_CHECKS = false;
 

@@ -30,7 +30,7 @@ import java.util.stream.Stream;
 public class RnsReader implements it.polito.dp2.RNS.RnsReader {
 
     /**
-     * When set to true, sanity checks will be enabled.
+     * When set to true, sanity checks are enabled.
      */
     private static final boolean SANITY_CHECKS = true;
 
