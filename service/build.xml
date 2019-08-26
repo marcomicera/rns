@@ -148,7 +148,7 @@
 	</target>
 	
 	<!-- The target for packaging the service -->
-	<target name="package-service" depends="build-service,prepare-environment">
+	<target name="package-service" depends="clean,build-service,prepare-environment">
 		<!-- copy web module resource files to temporary destination folder -->
     	<copy toDir="${gen.tomcat.service.dir}" overwrite="true">
         	<fileset dir="${webContent.dir}">
