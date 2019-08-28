@@ -1012,14 +1012,17 @@ components:
       description: List of parking areas in the RNS system
       allOf:
         - $ref: '#/components/schemas/basePlaces'
-        - type: array
-          uniqueItems: true
-          minItems: 0
-          xml:
-            name: parkingAreas
-            wrapped: true
-          items:
-            $ref: '#/components/schemas/parkingArea'
+        - type: object
+          properties:
+            list:
+              type: array
+              uniqueItems: true
+              minItems: 0
+              xml:
+                name: parkingAreas
+                wrapped: true
+              items:
+                $ref: '#/components/schemas/parkingArea'
     parkingArea:
       description: A parking area in the RNS system
       allOf:
@@ -1046,14 +1049,17 @@ components:
       description: List of road segments in the RNS system
       allOf:
         - $ref: '#/components/schemas/basePlaces'
-        - type: array
-          uniqueItems: true
-          minItems: 0
-          xml:
-            name: roadSegments
-            wrapped: true
-          items:
-            $ref: '#/components/schemas/roadSegment'
+        - type: object
+          properties:
+            list:
+              type: array
+              uniqueItems: true
+              minItems: 0
+              xml:
+                name: roadSegments
+                wrapped: true
+              items:
+                $ref: '#/components/schemas/roadSegment'
     roadSegment:
       description: A road segment in the RNS system
       allOf:
@@ -1081,14 +1087,17 @@ components:
       description: List of gates in the RNS system
       allOf:
         - $ref: '#/components/schemas/basePlaces'
-        - type: array
-          uniqueItems: true
-          minItems: 0
-          xml:
-            name: gates
-            wrapped: true
-          items:
-            $ref: '#/components/schemas/gate'
+        - type: object
+          properties:
+            list:
+              type: array
+              uniqueItems: true
+              minItems: 0
+              xml:
+                name: gates
+                wrapped: true
+              items:
+                $ref: '#/components/schemas/gate'
     gate:
       description: A gate in the RNS system
       allOf:
