@@ -6,6 +6,7 @@ out1.xml
 testout.xml
 temp*/
 serializer/src/it/polito/dp2/RNS/sol1/fiddles
+service/doc/user/swagger/generation/openapi-generator-cli.jar
 
 #
 # Maven
