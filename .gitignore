@@ -7,6 +7,9 @@ testout.xml
 temp*/
 serializer/src/it/polito/dp2/RNS/sol1/fiddles
 service/doc/user/generation/openapi-generator-cli.jar
+serializer/lab1.zip
+loader/lab2.zip
+service/lab3.zip
 
 #
 # Maven
