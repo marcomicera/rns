@@ -780,12 +780,16 @@ components:
       minimum: 1
       example: 5
       default: 1
+      xml:
+        attribute: true
     page:
       description: Indicates the page number of a multi-paged response
       type: integer
       minimum: 0
       example: 2
       default: 0
+      xml:
+        attribute: true
     vehicleType:
       description: The type of a vehicle in the RNS system
       type: string
@@ -796,7 +800,6 @@ components:
         - CARAVAN
       example: TRUCK
       xml:
-        name: type
         attribute: true
     vehicleStatus:
       description: The state a of vehicle in the RNS system
@@ -833,7 +836,7 @@ components:
           $ref: '#/components/schemas/page'
         next:
           $ref: '#/components/schemas/nextVehiclesPage'
-        vehicles:
+        list:
           type: array
           uniqueItems: true
           minItems: 0
@@ -856,7 +859,6 @@ components:
       example: vehicle123
       xml:
         attribute: true
-        name: id
     vehicle:
       description: A single vehicle in the RNS system
       type: object
@@ -1172,25 +1174,19 @@ components:
         name: entrance
       required:
       - gateType
-      - destination
       - vehicleId
       - vehicleType
+      - destination
       properties:
-        gate:
-          type: object
-          properties:
-            type: 
-              type: string
-              enum: [IN, INOUT]
-              xml:
-                attribute: true
-        vehicle:
-          type: object
-          properties:
-            vehicleId:
-              $ref: '#/components/schemas/vehicleId'
-            vehicleType:
-              $ref: '#/components/schemas/vehicleType'    
+        gateType:
+          type: string
+          enum: [IN, INOUT]
+          xml:
+            attribute: true
+        vehicleId:
+          $ref: '#/components/schemas/vehicleId'
+        vehicleType:
+          $ref: '#/components/schemas/vehicleType'
         destination:
           $ref: '#/components/schemas/placeUri'
     suggestedPath:
