@@ -2,16 +2,9 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
             jaxb:version="2.0">
 
-    <!-- [0, +infinity] integer interval -->
-    <xsd:simpleType name="nonNegativeInteger">
-        <xsd:restriction base="xsd:integer">
-            <xsd:minInclusive value="0"/>
-        </xsd:restriction>
-    </xsd:simpleType>
-
-    <!-- [1, +infinity] integer interval -->
-    <xsd:simpleType name="positiveInteger">
-        <xsd:restriction base="xsd:integer">
+    <!-- [1, 65535] integer interval -->
+    <xsd:simpleType name="positiveShort">
+        <xsd:restriction base="xsd:unsignedShort">
             <xsd:minInclusive value="1"/>
         </xsd:restriction>
     </xsd:simpleType>
@@ -21,8 +14,8 @@
         <xsd:sequence>
             <xsd:element name="next" minOccurs="0" type="xsd:anyURI"/>
         </xsd:sequence>
-        <xsd:attribute name="totalPages" type="positiveInteger"/>
-        <xsd:attribute name="page" type="nonNegativeInteger"/>
+        <xsd:attribute name="totalPages" type="positiveShort"/>
+        <xsd:attribute name="page" type="xsd:unsignedShort"/>
     </xsd:complexType>
 
     <!-- Base identifiable object containing its own ID for HATEOAS -->
@@ -40,6 +33,83 @@
             <xsd:enumeration value="INOUT"/>
         </xsd:restriction>
     </xsd:simpleType>
+
+    <!-- Places -->
+    <xsd:complexType name="Places">
+        <xsd:complexContent>
+            <xsd:extension base="pagedResponse">
+                <xsd:sequence>
+                    <xsd:element name="place" maxOccurs="unbounded" type="Place"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="Place">
+        <xsd:complexContent>
+            <xsd:extension base="IdentifiedEntity">
+                <xsd:sequence>
+                    <xsd:element name="nextPlace" minOccurs="0" maxOccurs="unbounded" type="xsd:anyURI"/>
+                </xsd:sequence>
+                <xsd:attribute name="capacity" type="xsd:unsignedShort" use="required"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="Gate">
+        <!-- "Through gates vehicles can enter into or exit from the system.
+              The type of a gate specifies if the gate is for entering only (IN),
+              for exiting only (OUT) or for both (INOUT)." -->
+        <xsd:complexContent>
+            <xsd:extension base="Place">
+                <xsd:attribute name="type" use="required" type="GateType"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="ServiceType">
+        <xsd:attribute name="name" type="xsd:token" use="required"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="ParkingArea">
+        <xsd:complexContent>
+            <xsd:extension base="Place">
+                <!-- "A parking area can have any number of services" -->
+                <xsd:sequence>
+                    <xsd:element name="service" minOccurs="0" maxOccurs="unbounded" type="ServiceType"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="RoadSegmentType">
+        <xsd:complexContent>
+            <!-- "Note that a road segment is also an identified entity,
+                  so it also has a unique id, in addition to its name" -->
+            <xsd:extension base="Place">
+                <!-- "A road segment is characterized by a name and belongs to a road,
+                      which is also characterized by a name." -->
+                <xsd:attribute name="name" type="xsd:token" use="required"/>
+                <xsd:attribute name="road" type="xsd:token" use="required"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <!-- Connections -->
+    <xsd:complexType name="Connections">
+        <xsd:complexContent>
+            <xsd:extension base="pagedResponse">
+                <xsd:sequence>
+                    <xsd:element name="connection" maxOccurs="unbounded" type="Connection"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="Connection">
+        <xsd:attribute name="from" type="xsd:anyURI" use="required"/>
+        <xsd:attribute name="to" type="xsd:anyURI" use="required"/>
+    </xsd:complexType>
 
     <!-- Vehicles -->
     <xsd:complexType name="Vehicle">
@@ -90,5 +160,25 @@
             <xsd:enumeration value="IN_TRANSIT"/>
         </xsd:restriction>
     </xsd:simpleType>
+
+    <!-- Entrance request -->
+    <xsd:complexType name="Entrance">
+        <xsd:sequence>
+            <xsd:element name="destination" type="xsd:anyURI"/>
+        </xsd:sequence>
+        <xsd:attribute name="gateType" type="GateType"/>
+        <xsd:attribute name="vehicleId" type="xsd:token"/>
+        <xsd:attribute name="vehicleType" type="VehicleType"/>
+    </xsd:complexType>
+
+    <!-- Suggested path response -->
+    <xsd:complexType name="SuggestedPath">
+        <!-- TODO complete -->
+    </xsd:complexType>
+
+    <!-- New vehicle object -->
+    <xsd:complexType name="NewVehicle">
+        <!-- TODO complete -->
+    </xsd:complexType>
 
 </xsd:schema>
