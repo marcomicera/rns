@@ -7,12 +7,14 @@
 
     <!-- Project directories -->
     <property name="basedir" location="."/>
+    <property name="schema.dir" location="${basedir}/xsd"/>
     <property name="src.dir" location="${basedir}/src"/>
     <property name="RNS.dir" location="${src.dir}/it/polito/dp2/RNS"/>
     <property name="lab1.dir" location="${RNS.dir}/lab1"/>
     <property name="lab3.dir" location="${RNS.dir}/lab3"/>
     <property name="sol3.dir" location="${RNS.dir}/sol3"/>
     <property name="service.dir" location="${sol3.dir}/service"/>
+    <property name="model.dir" location="${service.dir}/model"/>
     <property name="admClient.dir" location="${sol3.dir}/admClient"/>
     <property name="vehClient.dir" location="${sol3.dir}/vehClient"/>
 
@@ -30,8 +32,18 @@
         </fileset>
     </path>
 
+    <target name="generate-artifacts">
+        <exec executable="xjc" failonerror="true" >
+            <arg value="-d" />
+            <arg value="${src.dir}" />
+            <arg value="-p" />
+            <arg value="it.polito.dp2.RNS.sol3.service.model" />
+            <arg value="${schema.dir}/${serviceName}.xsd" />
+        </exec>
+    </target>
+
     <!-- Service builder target -->
-    <target name="build-service">
+    <target name="build-service" depends="generate-artifacts">
         <echo message="Building ${serviceName}..."/>
         <javac destdir="${build.dir}" debug="${debug}" debuglevel="${debuglevel}" source="${source}" target="${target}"
                includeantruntime="false">
