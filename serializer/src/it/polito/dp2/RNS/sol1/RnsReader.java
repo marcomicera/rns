@@ -9,7 +9,9 @@ import it.polito.dp2.RNS.sol1.jaxb.*;
 import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
-import javax.xml.bind.*;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -32,7 +34,7 @@ public class RnsReader implements it.polito.dp2.RNS.RnsReader {
     /**
      * When set to true, sanity checks are enabled.
      */
-    private static final boolean SANITY_CHECKS = true;
+    private static final boolean SANITY_CHECKS = false;
 
     /**
      * Info about the RNS system.
@@ -89,53 +91,60 @@ public class RnsReader implements it.polito.dp2.RNS.RnsReader {
 
         if (rnsInfo.isSetPlaces()) {
 
+            PlacesType rnsPlaces = rnsInfo.getPlaces();
+
             // Gates
-            if (rnsInfo.getPlaces().isSetGates()) {
-                for (it.polito.dp2.RNS.sol1.jaxb.GateType g : rnsInfo.getPlaces().getGates().getGate()) {
+            if (rnsPlaces.isSetGates()) {
+                for (it.polito.dp2.RNS.sol1.jaxb.GateType g : rnsPlaces.getGates().getGate()) {
                     it.polito.dp2.RNS.sol1.readers.GateReader newGate = new it.polito.dp2.RNS.sol1.readers.GateReader(g);
                     gates.put(g.getId(), newGate);
-                    places.put(g.getId(), new WeakReference<>(newGate));
+                    this.places.put(g.getId(), new WeakReference<>(newGate));
                 }
             }
 
             // Parking areas
-            if (rnsInfo.getPlaces().isSetParkingAreas()) {
-                for (ParkingAreaType pa : rnsInfo.getPlaces().getParkingAreas().getParkingArea()) {
+            if (rnsPlaces.isSetParkingAreas()) {
+                for (ParkingAreaType pa : rnsPlaces.getParkingAreas().getParkingArea()) {
                     it.polito.dp2.RNS.sol1.readers.ParkingAreaReader newParkingArea = new it.polito.dp2.RNS.sol1.readers.ParkingAreaReader(pa);
                     parkingAreas.put(pa.getId(), newParkingArea);
-                    places.put(pa.getId(), new WeakReference<>(newParkingArea));
+                    this.places.put(pa.getId(), new WeakReference<>(newParkingArea));
                 }
             }
 
             // Road segments
-            if (rnsInfo.getPlaces().isSetRoadSegments()) {
-                for (RoadSegmentType rs : rnsInfo.getPlaces().getRoadSegments().getRoadSegment()) {
+            if (rnsPlaces.isSetRoadSegments()) {
+                for (RoadSegmentType rs : rnsPlaces.getRoadSegments().getRoadSegment()) {
                     it.polito.dp2.RNS.sol1.readers.RoadSegmentReader newRoadSegment = new it.polito.dp2.RNS.sol1.readers.RoadSegmentReader(rs);
                     roadSegments.put(rs.getId(), newRoadSegment);
-                    places.put(rs.getId(), new WeakReference<>(newRoadSegment));
+                    this.places.put(rs.getId(), new WeakReference<>(newRoadSegment));
                 }
             }
-        }
 
-        // Connecting places
-        if (rnsInfo.isSetConnections()) {
-            Stream.concat(
-                    Stream.concat(
-                            rnsInfo.getPlaces().getGates().getGate().stream(),
-                            rnsInfo.getPlaces().getParkingAreas().getParkingArea().stream()),
-                    rnsInfo.getPlaces().getRoadSegments().getRoadSegment().stream()
-            ).forEach((PlaceType place) -> {
-                for (NextPlaceType nextPlace : place.getNextPlace()) {
-                    it.polito.dp2.RNS.sol1.readers.PlaceReader from = places.get(place.getId()).get();
-                    it.polito.dp2.RNS.sol1.readers.PlaceReader to = places.get(nextPlace.getName()).get();
-                    connections.add(new it.polito.dp2.RNS.sol1.readers.ConnectionReader(from, to));
-                    if (SANITY_CHECKS) {
-                        assert from != null;
-                        assert to != null;
+            // Connecting places
+            if (rnsInfo.isSetConnections()) {
+
+                Stream<it.polito.dp2.RNS.sol1.jaxb.GateType> gatesStream = rnsPlaces.isSetGates() ? rnsPlaces.getGates().getGate().stream() : Stream.empty();
+                Stream<RoadSegmentType> roadSegmentsStream = rnsPlaces.isSetRoadSegments() ? rnsPlaces.getRoadSegments().getRoadSegment().stream() : Stream.empty();
+                Stream<ParkingAreaType> parkingAreasStream = rnsPlaces.isSetParkingAreas() ? rnsPlaces.getParkingAreas().getParkingArea().stream() : Stream.empty();
+
+                Stream.concat(
+                        Stream.concat(
+                                gatesStream,
+                                roadSegmentsStream),
+                        parkingAreasStream
+                ).forEach((PlaceType place) -> {
+                    for (NextPlaceType nextPlace : place.getNextPlace()) {
+                        it.polito.dp2.RNS.sol1.readers.PlaceReader from = this.places.get(place.getId()).get();
+                        it.polito.dp2.RNS.sol1.readers.PlaceReader to = this.places.get(nextPlace.getName()).get();
+                        connections.add(new it.polito.dp2.RNS.sol1.readers.ConnectionReader(from, to));
+                        if (SANITY_CHECKS) {
+                            assert from != null;
+                            assert to != null;
+                        }
+                        from.addNextPlace(to);
                     }
-                    from.addNextPlace(to);
-                }
-            });
+                });
+            }
         }
     }
 
