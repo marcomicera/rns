@@ -173,12 +173,19 @@
 
     <!-- Suggested path response -->
     <xsd:complexType name="SuggestedPath">
-        <!-- TODO complete -->
+        <xsd:sequence>
+            <xsd:element name="place" type="xsd:anyURI" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
     </xsd:complexType>
 
     <!-- New vehicle object -->
     <xsd:complexType name="NewVehicle">
-        <!-- TODO complete -->
+        <xsd:complexContent>
+            <xsd:extension base="IdentifiedEntity">
+                <xsd:sequence>
+                    <xsd:element name="suggestedPath" type="SuggestedPath"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
     </xsd:complexType>
-
 </xsd:schema>
