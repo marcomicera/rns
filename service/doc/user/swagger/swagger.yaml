@@ -350,7 +350,7 @@ paths:
     get:
       tags:
         - places (admin)
-      summary: retrieves all palces
+      summary: retrieves all places
       operationId: getPlaces
       description: Retrieves a set containing all places in the RNS system
       parameters:
