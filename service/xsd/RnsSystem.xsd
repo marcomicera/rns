@@ -45,6 +45,13 @@
         </xsd:complexContent>
     </xsd:complexType>
 
+    <!-- Alias for the Swagger object -->
+    <xsd:complexType name="GenericPlaces">
+        <xsd:complexContent>
+            <xsd:extension base="Places"/>
+        </xsd:complexContent>
+    </xsd:complexType>
+
     <xsd:complexType name="Place">
         <xsd:complexContent>
             <xsd:extension base="IdentifiedEntity">
@@ -52,6 +59,23 @@
                     <xsd:element name="nextPlace" minOccurs="0" maxOccurs="unbounded" type="xsd:anyURI"/>
                 </xsd:sequence>
                 <xsd:attribute name="capacity" type="xsd:unsignedShort" use="required"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <!-- Alias for the Swagger object -->
+    <xsd:complexType name="GenericPlace">
+        <xsd:complexContent>
+            <xsd:extension base="Place"/>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="Gates">
+        <xsd:complexContent>
+            <xsd:extension base="pagedResponse">
+                <xsd:sequence>
+                    <xsd:element name="gate" maxOccurs="unbounded" type="Gate"/>
+                </xsd:sequence>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
@@ -67,8 +91,14 @@
         </xsd:complexContent>
     </xsd:complexType>
 
-    <xsd:complexType name="ServiceType">
-        <xsd:attribute name="name" type="xsd:token" use="required"/>
+    <xsd:complexType name="ParkingAreas">
+        <xsd:complexContent>
+            <xsd:extension base="pagedResponse">
+                <xsd:sequence>
+                    <xsd:element name="parkingArea" maxOccurs="unbounded" type="ParkingArea"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
     </xsd:complexType>
 
     <xsd:complexType name="ParkingArea">
@@ -76,13 +106,23 @@
             <xsd:extension base="Place">
                 <!-- "A parking area can have any number of services" -->
                 <xsd:sequence>
-                    <xsd:element name="service" minOccurs="0" maxOccurs="unbounded" type="ServiceType"/>
+                    <xsd:element name="service" minOccurs="0" maxOccurs="unbounded" type="xsd:token"/>
                 </xsd:sequence>
             </xsd:extension>
         </xsd:complexContent>
     </xsd:complexType>
 
-    <xsd:complexType name="RoadSegmentType">
+    <xsd:complexType name="RoadSegments">
+        <xsd:complexContent>
+            <xsd:extension base="pagedResponse">
+                <xsd:sequence>
+                    <xsd:element name="roadSegment" maxOccurs="unbounded" type="RoadSegment"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="RoadSegment">
         <xsd:complexContent>
             <!-- "Note that a road segment is also an identified entity,
                   so it also has a unique id, in addition to its name" -->
@@ -124,7 +164,7 @@
                       when it entered the system and by a state." -->
                 <xsd:attribute name="type" type="VehicleType" use="required"/>
 
-                <xsd:attribute name="state" type="VehicleState" use="required"/>
+                <xsd:attribute name="state" type="VehicleStatus" use="required"/>
 
                 <!-- "At any time, each vehicle is in one place,
                       while each place can contain several vehicles." -->
@@ -154,7 +194,7 @@
         </xsd:restriction>
     </xsd:simpleType>
 
-    <xsd:simpleType name="VehicleState">
+    <xsd:simpleType name="VehicleStatus">
         <xsd:restriction base="xsd:token">
             <xsd:enumeration value="PARKED"/>
             <xsd:enumeration value="IN_TRANSIT"/>
