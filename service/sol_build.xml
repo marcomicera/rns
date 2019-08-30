@@ -32,7 +32,6 @@
         </fileset>
         <fileset dir="${ext.lib.dir}">
             <include name="*.jar"/>
-            <exclude name="ant-*.jar"/>
         </fileset>
     </path>
 

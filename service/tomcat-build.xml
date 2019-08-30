@@ -29,10 +29,6 @@
 		<pathelement location="${server.location}/bin/bootstrap.jar" />
 		<pathelement location="${server.location}/bin/tomcat-juli.jar" />
 	</path>
-
-	<!-- The location for extra jar files -->
-	<property name="shared.location" location="/opt/dp2/shared"/>
-	<property name="ext.lib.dir" location="${shared.location}/lib" />
 	
 	<!-- Configure the custom Ant tasks for the Manager application -->
 	<import file="${server.location}/bin/catalina-tasks.xml" />
@@ -46,15 +42,6 @@
 			<jvmarg value="-Dit.polito.dp2.NFV.lab3.Neo4JSimpleXMLURL=${Neo4JSimpleXMLURL}" />
 			<!--jvmarg value="-Dit.polito.dp2.NFV.Random.seed=${seed}" /-->
 			<jvmarg value="-Dit.polito.dp2.NFV.NfvReaderFactory=${NfvInfo.NfvReaderFactory}" />
-			<classpath>
-				<fileset dir="${ext.lib.dir}">
-					<include name="*.jar" />
-					<exclude name="ant-*.jar"/>
-					<exclude name="rngom-2.2.11.jar"/>
-					<exclude name="jaxb-runtime-2.2.11.jar"/>
-					<exclude name="jaxb-xjc-2.2.11.jar"/>
-				</fileset>
-			</classpath>
 		</java>
 	</target>
 
