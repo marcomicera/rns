@@ -4,39 +4,30 @@ import it.polito.dp2.RNS.FactoryConfigurationError;
 import it.polito.dp2.RNS.RnsReader;
 import it.polito.dp2.RNS.RnsReaderException;
 import it.polito.dp2.RNS.RnsReaderFactory;
-import it.polito.dp2.RNS.lab1.RnsInfo;
 import it.polito.dp2.RNS.lab3.ServiceException;
 
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
-import java.net.URI;
-
 public class RnsDatabase {
-
-    /**
-     * Indicates whether the RNS database has been already downloaded or not.
-     */
-    private static boolean loaded = false;
 
     /**
      * Monitor through which RNS info will be retrieved.
      */
     /*private*/ /* FIXME */ public static RnsReader monitor;
+    /**
+     * Indicates whether the RNS database has been already downloaded or not.
+     */
+    private static boolean loaded = false;
 
-    @Context
-    private static UriInfo uriInfo;
+    static {
+
+
+        //URI serviceUri = uriInfo.getAbsolutePathBuilder().build();
+    }
 
     /**
      * This class is a singleton.
      */
     private RnsDatabase() {
 
-    }
-
-    static {
-
-
-        //URI serviceUri = uriInfo.getAbsolutePathBuilder().build();
     }
 
     /**
@@ -61,7 +52,7 @@ public class RnsDatabase {
 
             // Downloading places
             try {
-                PlacesManager.download(monitor, uriInfo);
+                PlacesManager.download(monitor);
             } catch (ServiceException e) {
                 e.printStackTrace();
             }

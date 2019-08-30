@@ -7,6 +7,12 @@ public class Config {
 
     public static final String fileNotFoundPage = "/html/BadRequestBodyTemplate.html";
 
+    /**
+     * Makes this configuration class non-instantiable.
+     */
+    private Config() {
+    }
+
     public static class Neo4J {
 
         public static final String serviceUrl = "it.polito.dp2.RNS.lab3.Neo4JURL";
@@ -21,11 +27,5 @@ public class Config {
 
         public static final String schemaFile = "/xsd/RnsSystem.xsd";
         public static final String jaxbClassesPackage = "it.polito.dp2.RNS.sol3.service.model";
-    }
-
-    /**
-     * Makes this configuration class non-instantiable.
-     */
-    private Config() {
     }
 }

@@ -2,8 +2,25 @@ package it.polito.dp2.RNS.sol3.service;
 
 // This validator performs JAXB unmarshalling with validation
 // against the schema
-import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
+import it.polito.dp2.RNS.sol3.service.conf.Config;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+
+import javax.ws.rs.BadRequestException;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.Provider;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,29 +30,10 @@ import java.lang.reflect.Type;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.Provider;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-
-import it.polito.dp2.RNS.sol3.service.conf.Config;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
+import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
 
 @Provider
-@Consumes({"application/xml","text/xml"})
+@Consumes({"application/xml", "text/xml"})
 public class XmlValidationProvider<T> implements MessageBodyReader<T> {
     final String jaxbPackage = Config.Service.jaxbClassesPackage;
     Unmarshaller unmarshaller;
@@ -53,7 +51,7 @@ public class XmlValidationProvider<T> implements MessageBodyReader<T> {
                 logger.log(Level.SEVERE, errorMessage);
                 throw new IOException(errorMessage);
             }
-            JAXBContext jc = JAXBContext.newInstance( jaxbPackage );
+            JAXBContext jc = JAXBContext.newInstance(jaxbPackage);
             unmarshaller = jc.createUnmarshaller();
             SchemaFactory sf = SchemaFactory.newInstance(W3C_XML_SCHEMA_NS_URI);
             Schema schema = sf.newSchema(new StreamSource(schemaStream));

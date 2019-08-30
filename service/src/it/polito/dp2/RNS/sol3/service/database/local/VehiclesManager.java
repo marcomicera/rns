@@ -1,13 +1,5 @@
 package it.polito.dp2.RNS.sol3.service.database.local;
 
-import it.polito.dp2.RNS.RnsReader;
-import it.polito.dp2.RNS.VehicleReader;
-import it.polito.dp2.RNS.sol3.service.model.Vehicle;
-import it.polito.dp2.RNS.sol3.service.model.Vehicles;
-
-import java.util.List;
-import java.util.Set;
-
 public class VehiclesManager {
 
 //    /**

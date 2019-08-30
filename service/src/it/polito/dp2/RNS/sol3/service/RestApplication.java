@@ -1,7 +1,6 @@
 package it.polito.dp2.RNS.sol3.service;
 
 import it.polito.dp2.RNS.FactoryConfigurationError;
-import it.polito.dp2.RNS.RnsReaderException;
 import it.polito.dp2.RNS.lab3.ServiceException;
 import it.polito.dp2.RNS.sol3.service.database.local.RnsDatabase;
 

@@ -44,13 +44,6 @@ public class Neo4JManager {
     private static BiMap<String, URI> nodes = HashBiMap.create();
     private static Set<URI> relationships = new HashSet<>();
 
-    /**
-     * This class is a singleton.
-     */
-    private Neo4JManager() {
-
-    }
-
     static {
 
         // Web service interaction fields initialization
@@ -59,14 +52,10 @@ public class Neo4JManager {
     }
 
     /**
-     * Class destructor.
-     *
-     * @throws Throwable
+     * This class is a singleton.
      */
-    @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
-        client.close();
+    private Neo4JManager() {
+
     }
 
     /**
@@ -257,5 +246,16 @@ public class Neo4JManager {
             throw new ServiceException("Error while asking for the shortest path between " + source +
                     " and " + destination + ": " + e.getMessage(), e.getCause());
         }
+    }
+
+    /**
+     * Class destructor.
+     *
+     * @throws Throwable
+     */
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+        client.close();
     }
 }

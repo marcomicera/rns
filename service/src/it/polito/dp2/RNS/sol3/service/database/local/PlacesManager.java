@@ -6,7 +6,6 @@ import it.polito.dp2.RNS.sol3.service.database.neo4j.Neo4JManager;
 import it.polito.dp2.RNS.sol3.service.model.GateType;
 import it.polito.dp2.RNS.sol3.service.model.*;
 
-import javax.ws.rs.core.UriInfo;
 import java.lang.ref.WeakReference;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,9 +33,8 @@ public class PlacesManager {
      * Retrieves RNS places info.
      *
      * @param monitor RnsReader interface through which data must be retrieved.
-     * @param uriInfo TODO
      */
-    protected synchronized static void download(RnsReader monitor, UriInfo uriInfo) throws ServiceException {
+    protected synchronized static void download(RnsReader monitor) throws ServiceException {
 
         // Retrieving gates
         for (GateReader retrievedGate : monitor.getGates(null)) {
