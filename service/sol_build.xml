@@ -42,6 +42,7 @@
             <arg value="${src.dir}" />
             <arg value="-p" />
             <arg value="it.polito.dp2.RNS.sol2.database.model" />
+            <arg value="-no-header" />
             <arg value="${schema.dir}/rnsDb.xsd" />
         </exec>
     </target>
@@ -52,6 +53,7 @@
             <arg value="${src.dir}" />
             <arg value="-p" />
             <arg value="it.polito.dp2.RNS.sol3.service.model" />
+            <arg value="-no-header" />
             <arg value="${schema.dir}/${serviceName}.xsd" />
         </exec>
     </target>
