@@ -1,18 +1,17 @@
 package it.polito.dp2.RNS.sol3.service.api;
 
-import it.polito.dp2.RNS.sol3.service.model.GateType;
-import it.polito.dp2.RNS.sol3.service.model.Gates;
-import it.polito.dp2.RNS.sol3.service.model.GenericPlace;
-import it.polito.dp2.RNS.sol3.service.model.GenericPlaces;
-import it.polito.dp2.RNS.sol3.service.model.ParkingAreas;
-import it.polito.dp2.RNS.sol3.service.model.RoadSegments;
+import it.polito.dp2.RNS.lab1.RnsInfo;
+import it.polito.dp2.RNS.sol3.service.database.local.PlacesManager;
+import it.polito.dp2.RNS.sol3.service.database.local.RnsDatabase;
+import it.polito.dp2.RNS.sol3.service.model.*;
+
 import java.net.URI;
-import it.polito.dp2.RNS.sol3.service.model.Vehicles;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 import io.swagger.annotations.*;
+import org.eclipse.persistence.config.SystemProperties;
 
 import java.io.InputStream;
 import java.util.Map;
@@ -46,7 +45,10 @@ public class PlacesApi {
         @ApiResponse(code = 400, message = "Bad request: at least one invalid parameter", response = Void.class)
     })
     public Response getGates(@QueryParam("type")   @ApiParam("The ID prefix for selecting places")  GateType type,@QueryParam("page")  @DefaultValue("0")  @ApiParam("The desired page result")  Integer page) {
-        return Response.ok().entity("magic!").build();
+
+        // FIXME
+        Gates gates = PlacesManager.getGates();
+        return Response.status(200).entity(gates).build();
     }
 
     @GET
@@ -70,7 +72,10 @@ public class PlacesApi {
         @ApiResponse(code = 400, message = "Bad request: at least one invalid parameter", response = Void.class)
     })
     public Response getParkingAreas(@QueryParam("services") @Size(min=0)   @ApiParam("The set of services that parking areas must have")  List<String> services,@QueryParam("page")  @DefaultValue("0")  @ApiParam("The desired page result")  Integer page) {
-        return Response.ok().entity("magic!").build();
+
+        // FIXME
+        ParkingAreas parkingAreas = PlacesManager.getParkingAreas();
+        return Response.status(200).entity(parkingAreas).build();
     }
 
     @GET
@@ -87,7 +92,7 @@ public class PlacesApi {
 
     @GET
     @Produces({ "application/xml", "application/json" })
-    @ApiOperation(value = "retrieves all palces", notes = "Retrieves a set containing all places in the RNS system", response = GenericPlaces.class, tags={ "places (admin)",  })
+    @ApiOperation(value = "retrieves all places", notes = "Retrieves a set containing all places in the RNS system", response = GenericPlaces.class, tags={ "places (admin)",  })
     @ApiResponses(value = { 
         @ApiResponse(code = 200, message = "Places returned", response = GenericPlaces.class),
         @ApiResponse(code = 400, message = "Bad request: at least one invalid parameter", response = Void.class)
@@ -129,7 +134,13 @@ public class PlacesApi {
         @ApiResponse(code = 400, message = "Bad request: at least one invalid parameter", response = Void.class)
     })
     public Response getRoadSegments(@QueryParam("roadName")   @ApiParam("The name of the road to which the segment must belong to")  String roadName,@QueryParam("page")  @DefaultValue("0")  @ApiParam("The desired page result")  Integer page) {
-        return Response.ok().entity("magic!").build();
+
+        // TODO delete
+
+
+        // FIXME
+        String result = "RNS DB monitor: " + RnsDatabase.monitor + "\nit.polito.dp2.RNS.RnsReaderFactory: " + System.getProperty("it.polito.dp2.RNS.RnsReaderFactory");
+        return Response.status(200).entity(result).build();
     }
 
     @GET

@@ -1,11 +1,26 @@
-package it.polito.dp2.RNS.sol3.service.database;
+package it.polito.dp2.RNS.sol3.service.database.local;
 
-public class PlacesManager {
+import it.polito.dp2.RNS.RnsReader;
+import it.polito.dp2.RNS.VehicleReader;
+import it.polito.dp2.RNS.sol3.service.model.Vehicle;
+import it.polito.dp2.RNS.sol3.service.model.Vehicles;
+
+import java.util.List;
+import java.util.Set;
+
+public class VehiclesManager {
 
 //    /**
 //     * Vehicles data
 //     */
 //    private static Vehicles vehicles = new Vehicles();
+//
+//    /**
+//     * This class is a singleton.
+//     */
+//    private VehiclesManager() {
+//
+//    }
 //
 //    /**
 //     * Retrieves RNS vehicles info.
@@ -17,11 +32,11 @@ public class PlacesManager {
 //        // Retrieving vehicles information
 //        Set<VehicleReader> retrievedVehicles = monitor.getVehicles(null, null, null);
 //
-//        // The vehicles list contained in the local catalog
+//        // The vehicles list contained in the local manager
 //        List<Vehicle> vehiclesList = VehiclesManager.vehicles.getVehicles();
 //
 //        // Adding retrieved vehicles in the local vehicles manager
-//        retrievedVehicles.forEach(v -> {
+//        retrievedVehicles.forEach((VehicleReader retrievedVehicle) -> {
 //
 //            // New temporary vehicle object
 //            Vehicle tmpVehicle = new Vehicle();

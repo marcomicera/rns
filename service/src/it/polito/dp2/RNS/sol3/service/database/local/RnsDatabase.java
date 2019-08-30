@@ -1,12 +1,15 @@
-package it.polito.dp2.RNS.sol3.service.database;
+package it.polito.dp2.RNS.sol3.service.database.local;
 
 import it.polito.dp2.RNS.FactoryConfigurationError;
 import it.polito.dp2.RNS.RnsReader;
 import it.polito.dp2.RNS.RnsReaderException;
 import it.polito.dp2.RNS.RnsReaderFactory;
 import it.polito.dp2.RNS.lab1.RnsInfo;
+import it.polito.dp2.RNS.lab3.ServiceException;
 
-import javax.xml.datatype.DatatypeConfigurationException;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
+import java.net.URI;
 
 public class RnsDatabase {
 
@@ -18,7 +21,10 @@ public class RnsDatabase {
     /**
      * Monitor through which RNS info will be retrieved.
      */
-    private static RnsReader monitor;
+    /*private*/ /* FIXME */ public static RnsReader monitor;
+
+    @Context
+    private static UriInfo uriInfo;
 
     /**
      * This class is a singleton.
@@ -27,32 +33,41 @@ public class RnsDatabase {
 
     }
 
+    static {
+
+
+        //URI serviceUri = uriInfo.getAbsolutePathBuilder().build();
+    }
+
     /**
      * Initializes this database.
      *
      * @throws FactoryConfigurationError if there is some error while retrieving an implementation of the
      *                                   RnsReader interface.
      * @throws RnsReaderException        if an implementation of {@code RnsReader} cannot be created.
+     * @throws ServiceException          TODO
      */
-    public synchronized static void init() throws RnsReaderException, FactoryConfigurationError {
+    public synchronized static void init() {
 
         // If the database has not been downloaded yet
         if (!loaded) {
 
-            // TODO debugging
-            System.out.println("Downloading RNS info...");
-
             // Using the RnsReader interface to retrieve data
-            monitor = RnsReaderFactory.newInstance().newRnsReader();
+            try {
+                monitor = RnsReaderFactory.newInstance().newRnsReader();
+            } catch (RnsReaderException e) {
+                e.printStackTrace();
+            }
 
-            // TODO debugging
-            System.out.println("Input data:");
-            new RnsInfo(monitor).printAll();
-
-            // TODO Downloading places
+            // Downloading places
+            try {
+                PlacesManager.download(monitor, uriInfo);
+            } catch (ServiceException e) {
+                e.printStackTrace();
+            }
 
             // Downloading vehicles
-            VehiclesManager.download(monitor);
+            // VehiclesManager.download(monitor, uriInfo);
 
             // Setting the database download status flag
             loaded = true;
