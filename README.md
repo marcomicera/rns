@@ -17,3 +17,4 @@
 - [Neo4J 3.2.3](https://neo4j.com/download-thanks/?edition=community&release=3.2.3&flavour=unix)
   - [Disable authentication](https://neo4j.com/docs/operations-manual/current/authentication-authorization/enable/)
 - [Apache Tomcat 8.5.20](https://archive.apache.org/dist/tomcat/tomcat-8/v8.5.20/bin/apache-tomcat-8.5.20.tar.gz)
+  - **Important**: set `shared.loader=/opt/dp2/shared/lib/*.jar` in `tomcat_dir/conf/catalina.properties`
