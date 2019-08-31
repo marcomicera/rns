@@ -10,6 +10,7 @@ service/doc/user/generation/openapi-generator-cli.jar
 serializer/lab1.zip
 loader/lab2.zip
 service/lab3.zip
+.ant-targets-build.xml
 
 #
 # Maven
